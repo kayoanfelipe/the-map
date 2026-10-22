@@ -479,7 +479,7 @@ const D=(n)=>{const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()+n);r
 const store={get(k,d){try{const v=localStorage.getItem('themap.'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem('themap.'+k,JSON.stringify(v))}catch(e){}},del(k){try{localStorage.removeItem('themap.'+k)}catch(e){}}};
 
 /* ---------- Supabase ---------- */
-const SB_URL='',SB_KEY='';
+const SB_URL='https://kqucpivagntlmukfghhg.supabase.co',SB_KEY='sb_publishable_yFxha4btvFg2bftRPaPhTA_kZgUNhAV';
 const sb=(window.supabase&&/^https:\/\//.test(SB_URL)&&SB_KEY.length>20)?window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true,storageKey:'themap.auth'}}):null;
 let members=[],CHECKINS=[],SETTINGS={};
 const byId=id=>members.find(m=>m.id===id);
