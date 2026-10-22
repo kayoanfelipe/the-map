@@ -261,6 +261,8 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
 .logo .lockup{display:inline-flex;flex-direction:column;align-items:center}
 .logo .by{margin:4px 0 0;font-size:14px;font-weight:400;letter-spacing:0;color:var(--fg2);line-height:1}
 .logo .tag{margin:14px 0 0;color:var(--fg2);font-size:16px;font-style:italic;max-width:30ch;text-wrap:balance}
+.resend{display:block;margin:18px auto 0;min-height:44px;padding:0 16px;color:var(--fg2);font-size:15px;font-weight:600}
+.resend:disabled{color:var(--fg3)}
 .code{letter-spacing:.5em;text-align:center;font-size:26px!important;font-variant-numeric:tabular-nums;font-weight:600}
 .demo{margin-top:36px;padding-top:18px;border-top:1px solid var(--line)}
 .demo{text-align:center}
@@ -408,6 +410,7 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
         <div class="field" style="margin-top:0"><label for="code" class="sr">Código de 6 dígitos</label><input id="code" class="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="······"><p class="hint" id="codeHint">Enviamos um código para o seu e-mail.</p></div>
         <p class="err" id="codeErr" hidden></p>
         <div style="margin-top:14px"><button class="glassbtn" type="submit">Entrar</button></div>
+        <button type="button" class="resend" id="codeResend" disabled>Reenviar código</button>
       </form>
     </div>
   </div>
@@ -513,7 +516,7 @@ let live=null,srT=null;
 function softReload(){clearTimeout(srT);srT=setTimeout(async()=>{if(!me)return;try{await loadAll();if(!me||me.active===false){signOutLocal('Seu acesso foi desativado.');return}refresh()}catch(e){}},400)}
 function subscribeLive(){if(live||!sb)return;live=sb.channel('themap-live').on('postgres_changes',{event:'*',schema:'public',table:'checkins'},softReload).on('postgres_changes',{event:'*',schema:'public',table:'members'},softReload).subscribe()}
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&me)softReload()});
-async function signOutLocal(msg){try{if(live){sb.removeChannel(live);live=null}await sb.auth.signOut()}catch(e){}me=null;myCheckin=null;CHECKINS=[];members=[];closeAll();refresh();$('#login').classList.remove('out');$('#codeForm').hidden=true;$('#emailForm').hidden=false;$('#email').value='';if(msg){$('#emailErr').textContent=msg;$('#emailErr').hidden=false}}
+async function signOutLocal(msg){try{if(live){sb.removeChannel(live);live=null}await sb.auth.signOut()}catch(e){}me=null;myCheckin=null;CHECKINS=[];members=[];closeAll();refresh();$('#login').classList.remove('out');$('#codeForm').hidden=true;$('#emailForm').hidden=false;$('#email').value=store.get('lastEmail','');if(msg){$('#emailErr').textContent=msg;$('#emailErr').hidden=false}}
 
 /* ---------- helpers ---------- */
 const $=s=>document.querySelector(s);
@@ -783,6 +786,13 @@ $('#editSkip').onclick=()=>{$('#fIg').value='';$('#fSeek').value='';saveProfile(
 /* ---------- login ---------- */
 let loginEmail='';
 const notReady='O app ainda não está conectado ao banco de dados.';
+let cdT=null;
+function cooldown(sec){const b=$('#codeResend');clearInterval(cdT);let n=sec;const tick=()=>{if(n<=0){clearInterval(cdT);b.disabled=false;b.textContent='Reenviar código';return}b.disabled=true;b.textContent=`Reenviar em ${n}s`;n--};tick();cdT=setInterval(tick,1000)}
+function sendErrMsg(e){return(e&&(e.status===429||/rate|seconds|limit/i.test(e.message||'')))?'Limite de envios atingido. Tente de novo em alguns minutos.':'Não foi possível enviar. Tente de novo.'}
+async function sendCode(email){return sb.auth.signInWithOtp({email,options:{shouldCreateUser:true,emailRedirectTo:location.origin+location.pathname}})}
+$('#codeResend').onclick=async()=>{const b=$('#codeResend');const err=$('#codeErr');err.hidden=true;b.disabled=true;b.textContent='Enviando…';
+  const {error}=await sendCode(loginEmail);if(error){err.textContent=sendErrMsg(error);err.hidden=false;cooldown(30);return}toast('Novo código enviado');cooldown(60)};
+$('#code').addEventListener('input',e=>{const v=e.target.value.replace(/\D/g,'').slice(0,6);e.target.value=v;$('#codeErr').hidden=true;if(v.length===6)$('#codeForm').requestSubmit()});
 $('#emailForm').onsubmit=async e=>{e.preventDefault();const email=$('#email').value.trim().toLowerCase();const err=$('#emailErr');err.hidden=true;
   if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){err.textContent='Digite um e-mail válido.';err.hidden=false;return}
   if(!sb){err.textContent=notReady;err.hidden=false;return}
@@ -790,13 +800,14 @@ $('#emailForm').onsubmit=async e=>{e.preventDefault();const email=$('#email').va
   try{
     const {data:ok,error:e1}=await sb.rpc('can_login',{p_email:email});if(e1)throw e1;
     if(!ok){err.textContent='Acesso exclusivo para membros do The Group.';err.hidden=false;return}
-    const {error:e2}=await sb.auth.signInWithOtp({email,options:{shouldCreateUser:true,emailRedirectTo:location.origin+location.pathname}});
-    if(e2){err.textContent=/rate|seconds|limit/i.test(e2.message)?'Muitas tentativas. Espere um minuto e tente de novo.':'Não foi possível enviar o código. Tente de novo.';err.hidden=false;return}
+    const {error:e2}=await sendCode(email);
+    if(e2){err.textContent=sendErrMsg(e2);err.hidden=false;return}
+    store.set('lastEmail',email);cooldown(60);
     loginEmail=email;$('#emailForm').hidden=true;$('#codeForm').hidden=false;$('#codeHint').textContent=`Enviamos um código para ${email}. Se chegar um link, toque nele neste aparelho. Confira também o spam.`;$('#code').value='';$('#codeErr').hidden=true;setTimeout(()=>$('#code').focus({preventScroll:true}),50);
   }catch(x){err.textContent='Sem conexão com o servidor. Tente de novo.';err.hidden=false}
   finally{btn.disabled=false;btn.textContent='Continuar'}};
 $('#codeBack').onclick=()=>{$('#codeForm').hidden=true;$('#emailForm').hidden=false};
-$('#codeForm').onsubmit=async e=>{e.preventDefault();const c=$('#code').value.replace(/\D/g,'');const err=$('#codeErr');err.hidden=true;if(c.length!==6){err.textContent='O código tem 6 dígitos.';err.hidden=false;return}
+$('#codeForm').onsubmit=async e=>{e.preventDefault();if(entering)return;const c=$('#code').value.replace(/\D/g,'');const err=$('#codeErr');err.hidden=true;if(c.length!==6){err.textContent='O código tem 6 dígitos.';err.hidden=false;return}
   const btn=e.target.querySelector('button[type=submit]');btn.disabled=true;btn.textContent='Entrando…';
   try{
     entering=true;const {error}=await sb.auth.verifyOtp({email:loginEmail,token:c,type:'email'});
@@ -822,7 +833,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-(async function boot(){fitBrazil();renderBubbles();
+(async function boot(){fitBrazil();renderBubbles();$('#email').value=store.get('lastEmail','');
   if(!sb)return;
   try{const {data:{session}}=await sb.auth.getSession();if(!session)return;
     $('#login').style.transition='none';$('#login').classList.add('out');
