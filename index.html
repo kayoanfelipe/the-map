@@ -790,7 +790,7 @@ $('#emailForm').onsubmit=async e=>{e.preventDefault();const email=$('#email').va
   try{
     const {data:ok,error:e1}=await sb.rpc('can_login',{p_email:email});if(e1)throw e1;
     if(!ok){err.textContent='Acesso exclusivo para membros do The Group.';err.hidden=false;return}
-    const {error:e2}=await sb.auth.signInWithOtp({email,options:{shouldCreateUser:true}});
+    const {error:e2}=await sb.auth.signInWithOtp({email,options:{shouldCreateUser:true,emailRedirectTo:location.origin+location.pathname}});
     if(e2){err.textContent=/rate|seconds|limit/i.test(e2.message)?'Muitas tentativas. Espere um minuto e tente de novo.':'Não foi possível enviar o código. Tente de novo.';err.hidden=false;return}
     loginEmail=email;$('#emailForm').hidden=true;$('#codeForm').hidden=false;$('#codeHint').textContent=`Enviamos um código para ${email}. Se chegar um link, toque nele neste aparelho. Confira também o spam.`;$('#code').value='';$('#codeErr').hidden=true;setTimeout(()=>$('#code').focus({preventScroll:true}),50);
   }catch(x){err.textContent='Sem conexão com o servidor. Tente de novo.';err.hidden=false}
