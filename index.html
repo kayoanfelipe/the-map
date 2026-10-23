@@ -468,7 +468,7 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
       <div class="field"><label for="fWa">WhatsApp</label><input id="fWa" type="tel" inputmode="tel" autocomplete="tel" placeholder="(11) 99999-9999" required><p class="hint">Não aparece no perfil. Serve para te marcarem no grupo.</p></div>
       <div class="field"><label for="fCo">Empresa</label><input id="fCo" required></div>
       <div class="field"><label for="fNiche">Nicho</label><input id="fNiche" placeholder="Ex.: Incorporação, SaaS, Varejo de luxo" required></div>
-      <div class="field"><label for="fHome">Cidade onde mora</label><select id="fHome"></select></div>
+      <div class="field"><label for="fHomeQ">Cidade onde mora</label><input class="search" id="fHomeQ" placeholder="Buscar cidade" autocomplete="off" autocorrect="off"><input type="hidden" id="fHome"><div class="cities" id="fHomeList"></div></div>
       <label class="check" id="termsRow"><input type="checkbox" id="fTerms"><span>Li o termo de uso: o mapa mostra só a cidade ou o evento onde fiz check-in, e eu não compartilho a localização de outros membros.</span></label>
       </div>
       <div id="editB">
@@ -1020,10 +1020,12 @@ function renderSuggest(){const home=me&&me.home?city(me.home):null;const evs=[];
   $('#ciSuggest').innerHTML=h}
 const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 const sub=c=>c.c===BR?c.s:c.c;
-function renderCityList(){const q=norm($('#citySearch').value.trim());if(!q){$('#cityList').innerHTML='';$('#ciSuggest').hidden=false;return}$('#ciSuggest').hidden=true;
-  const starts=c=>norm(c.n).startsWith(q)||(c.s&&norm(c.s)===q);const has=c=>norm(c.n).includes(q)||norm(c.c).includes(q);
-  const list=[...CITIES.filter(starts),...CITIES.filter(c=>!starts(c)&&has(c))].slice(0,8);
-  $('#cityList').innerHTML=list.map(c=>`<button type="button" data-pick="${c.id}">${c.n}<small>${sub(c)}</small></button>`).join('')||`<p class="hint" style="color:var(--fg3);padding:10px 2px">Nenhuma cidade com esse nome. Peça ao admin para incluir.</p>`}
+function cityMatches(q){q=norm(q.trim());if(!q)return[];const w=c=>(c.w||1)+(c.k?10:0);const starts=c=>norm(c.n).startsWith(q);const has=c=>norm(c.n).includes(q)||norm(c.c).includes(q);
+  const a=CITIES.filter(starts).sort((x,y)=>w(y)-w(x)||x.n.localeCompare(y.n));const b=a.length<10?CITIES.filter(c=>!starts(c)&&has(c)).sort((x,y)=>w(y)-w(x)||x.n.localeCompare(y.n)):[];return a.concat(b).slice(0,10)}
+function cityListHtml(list){return list.map(c=>`<button type="button" data-pick="${c.id}">${esc(c.n)}<small>${esc(sub(c))}</small></button>`).join('')||`<p class="hint" style="color:var(--fg3);padding:10px 2px">Nenhuma cidade com esse nome.</p>`}
+function renderCityList(){const q=$('#citySearch').value.trim();if(!q){$('#cityList').innerHTML='';$('#ciSuggest').hidden=false;return}$('#ciSuggest').hidden=true;$('#cityList').innerHTML=cityListHtml(cityMatches(q))}
+$('#fHomeQ').addEventListener('input',()=>{$('#fHome').value='';const q=$('#fHomeQ').value;$('#fHomeList').innerHTML=q.trim()?cityListHtml(cityMatches(q)):''});
+$('#fHomeList').addEventListener('click',e=>{const b=e.target.closest('[data-pick]');if(!b)return;$('#fHome').value=b.dataset.pick;$('#fHomeQ').value=city(b.dataset.pick).n;$('#fHomeList').innerHTML='';haptic()});
 function renderCi(){
   $('#shCheckin').querySelectorAll('[data-pick]').forEach(b=>b.classList.toggle('on',b.dataset.pick===ci.place));
   const isDate=!ci.trip&&ci.until&&ci.until!==D(0)&&ci.until!==D(1);
@@ -1140,8 +1142,7 @@ $('#admForm').onsubmit=async e=>{e.preventDefault();const name=$('#aName').value
 let pendingPhoto=null,editStage=1;
 function openEdit(first){
   editStage=1;$('#editTitle').textContent=first?'Complete seu perfil':'Editar perfil';$('#editSub').textContent='Para quem te vir no mapa saber em 3 segundos por que falar com você.';$('#editSub').hidden=!first;$('#termsRow').hidden=!first;$('#editA').hidden=false;$('#editB').hidden=first;$('#editSkip').hidden=true;$('#editSave').textContent=first?'Continuar':'Salvar';
-  $('#fHome').innerHTML=`<option value="">Escolher</option><optgroup label="Brasil">`+CITIES.filter(c=>c.c===BR).map(c=>`<option value="${c.id}">${c.n}</option>`).join('')+`</optgroup><optgroup label="Outros países">`+CITIES.filter(c=>c.c!==BR).map(c=>`<option value="${c.id}">${c.n} · ${c.c}</option>`).join('')+`</optgroup>`;
-  $('#fName').value=me.name||'';$('#fWa').value=me.wa?(me.wa.startsWith('55')&&me.wa.length<=13?(()=>{const d=me.wa.slice(2);return `(${d.slice(0,2)}) ${d.slice(2,d.length-4)}-${d.slice(-4)}`})():'+'+me.wa):'';$('#fCo').value=me.co||'';$('#fNiche').value=me.niche||'';$('#fIg').value=me.ig?'@'+me.ig.replace('@',''):'';$('#fHome').value=me.home||'';$('#fSeek').value=me.seek||'';$('#fTerms').checked=!first;pendingPhoto=me.photo||null;$('#editAv').outerHTML=avatar({...me,photo:pendingPhoto},'big').replace('class="av big"','class="av big" id="editAv" style="width:72px;height:72px;font-size:24px"');$('#editErr').hidden=true;
+  $('#fName').value=me.name||'';$('#fWa').value=me.wa?(me.wa.startsWith('55')&&me.wa.length<=13?(()=>{const d=me.wa.slice(2);return `(${d.slice(0,2)}) ${d.slice(2,d.length-4)}-${d.slice(-4)}`})():'+'+me.wa):'';$('#fCo').value=me.co||'';$('#fNiche').value=me.niche||'';$('#fIg').value=me.ig?'@'+me.ig.replace('@',''):'';$('#fHome').value=knownCity(me.home)?me.home:'';$('#fHomeQ').value=knownCity(me.home)?city(me.home).n:'';$('#fHomeList').innerHTML='';$('#fSeek').value=me.seek||'';$('#fTerms').checked=!first;pendingPhoto=me.photo||null;$('#editAv').outerHTML=avatar({...me,photo:pendingPhoto},'big').replace('class="av big"','class="av big" id="editAv" style="width:72px;height:72px;font-size:24px"');$('#editErr').hidden=true;
   openSheet('shEdit');
 }
 $('#fWa').addEventListener('input',e=>{const el=e.target;if(el.value.trim().startsWith('+'))return;let d=el.value.replace(/\D/g,'').slice(0,11);let o=d;if(d.length>2)o=`(${d.slice(0,2)}) `+d.slice(2);if(d.length>7)o=`(${d.slice(0,2)}) ${d.slice(2,d.length-4)}-${d.slice(-4)}`;el.value=o});
@@ -1251,13 +1252,14 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792773899';
+const APP_VERSION='1792775709';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
   if(stack.includes('shEdit')||stack.includes('shEvForm')||stack.includes('shCrop'))return;location.replace(location.pathname+'?v='+v)}catch(e){}}
 checkUpdate();document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkUpdate()});setInterval(checkUpdate,5*60*1000);
-(async function boot(){fitWorld(false);renderBubbles();$('#email').value=store.get('lastEmail','');
+async function loadCities(){try{const r=await fetch('cities.json?v='+APP_VERSION,{cache:'force-cache'});if(!r.ok)return;const extra=await r.json();const key=c=>norm(c.n)+'|'+(c.c===BR?c.s:norm(c.c));const have=new Set(CITIES.map(key));for(const c of extra){if(have.has(key(c)))continue;have.add(key(c));CITIES.push(c)}}catch(e){console.warn('cities',e)}}
+(async function boot(){fitWorld(false);renderBubbles();$('#email').value=store.get('lastEmail','');await loadCities();
   const showLogin=()=>{const l=$('#login');l.classList.remove('out');requestAnimationFrame(()=>l.classList.remove('boot'));idleSpin(true)};
   let saved=false;try{saved=!!localStorage.getItem('themap.auth')}catch(e){}
   if(!saved){const l=$('#login');l.style.transition='none';l.classList.remove('boot');requestAnimationFrame(()=>{l.style.transition=''});idleSpin(true)}
