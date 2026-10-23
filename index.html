@@ -826,11 +826,30 @@ function msgEvent(p){if(!me)return;const n=p&&p.new,o=p&&p.old;
   else if(p.eventType==='UPDATE'&&n){const x=MSGS.find(y=>y.id===n.id);if(x)x.read=n.read_at||null}
   else if(p.eventType==='DELETE'&&o){MSGS=MSGS.filter(x=>x.id!==o.id)}
   refresh()}
+/* avisos no celular (web push) */
+let swReg=null,pushState='off';
+function pushSupported(){return 'serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window}
+async function initPush(){if(!pushSupported()||!sb)return;try{swReg=await navigator.serviceWorker.register('sw.js');const sub=await swReg.pushManager.getSubscription();pushState=sub&&Notification.permission==='granted'?'on':'off'}catch(e){pushState='off'}}
+function pushHint(){if(!pushSupported())return platform()==='ios'&&!isInstalled()?'Instale o app na tela de início para ativar':'Este navegador não permite avisos';if(Notification.permission==='denied')return'Bloqueado nos ajustes do celular. Libere lá para ativar.';return pushState==='on'?'Você recebe um aviso a cada mensagem nova':'Receba um aviso quando chegar mensagem'}
+function b64ToU8(s){const p='='.repeat((4-s.length%4)%4);const b=atob((s+p).replace(/-/g,'+').replace(/_/g,'/'));return Uint8Array.from(b,c=>c.charCodeAt(0))}
+async function enablePush(){if(!pushSupported()){toast(platform()==='ios'&&!isInstalled()?'Instale o app na tela de início primeiro':'Este navegador não permite avisos');return false}
+  const perm=await Notification.requestPermission();if(perm!=='granted'){toast('Avisos não autorizados');return false}
+  if(!swReg)await initPush();if(!swReg){toast('Não foi possível preparar os avisos.');return false}
+  let {data:key}=await sb.rpc('push_public_key');
+  if(!key){try{await sb.functions.invoke('push',{body:{setup:true}})}catch(e){}({data:key}=await sb.rpc('push_public_key'))}
+  if(!key){toast('Avisos ainda não configurados.');return false}
+  try{let sub=await swReg.pushManager.getSubscription();if(!sub)sub=await swReg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64ToU8(key)});
+    const j=sub.toJSON();const {error}=await sb.from('push_subscriptions').upsert({endpoint:j.endpoint,member_id:me.id,p256dh:j.keys.p256dh,auth:j.keys.auth});if(error)throw error;
+    pushState='on';try{sb.functions.invoke('push',{body:{test:true}})}catch(e){}return true}
+  catch(e){toast('Não foi possível ativar os avisos.');return false}}
+async function disablePush(){try{const sub=swReg&&await swReg.pushManager.getSubscription();if(sub){await sb.from('push_subscriptions').delete().eq('endpoint',sub.endpoint);await sub.unsubscribe()}}catch(e){}pushState='off'}
+function pushBanner(){if(!me||pushState==='on'||!pushSupported()||Notification.permission==='denied')return'';return`<button class="linkrow" id="pushAsk" style="border:0;border-bottom:1px solid var(--line)"><span class="ic">🔔</span><span class="t"><b>Ativar avisos no celular</b><small>Saiba na hora quando chegar mensagem</small></span><span class="chev">›</span></button>`}
 function openInbox(){renderInbox();openSheet('shInbox')}
 function renderInbox(){const list=conversations();const el=$('#inboxBody');
   $('#inboxSub').textContent=list.length?`${list.length} ${list.length===1?'conversa':'conversas'}`:'Conversas com membros';
-  el.innerHTML=list.length?list.map(c=>{const m=byId(c.id);const mineLast=c.last.from===me.id;return`<button class="row convrow${c.unread?' unread':''}" data-chat="${c.id}">${avatar(m)}<span class="t"><b><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(m.name)}</span><small>${whenShort(c.last.at)}</small></b><small class="snip">${mineLast?'Você: ':''}${esc(c.last.body)}</small></span>${c.unread?`<span class="dot" aria-label="${c.unread} não lidas"></span>`:'<span class="chev">›</span>'}</button>`}).join('')
-    :`<div class="empty"><b>Nenhuma conversa ainda.</b>Toque em um membro no mapa e mande uma mensagem.</div>`;
+  el.innerHTML=pushBanner()+(list.length?list.map(c=>{const m=byId(c.id);const mineLast=c.last.from===me.id;return`<button class="row convrow${c.unread?' unread':''}" data-chat="${c.id}">${avatar(m)}<span class="t"><b><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(m.name)}</span><small>${whenShort(c.last.at)}</small></b><small class="snip">${mineLast?'Você: ':''}${esc(c.last.body)}</small></span>${c.unread?`<span class="dot" aria-label="${c.unread} não lidas"></span>`:'<span class="chev">›</span>'}</button>`}).join('')
+    :`<div class="empty"><b>Nenhuma conversa ainda.</b>Toque em um membro no mapa e mande uma mensagem.</div>`);
+  const pa=$('#pushAsk');if(pa)pa.onclick=async()=>{pa.disabled=true;if(await enablePush()){haptic();toast('Avisos ativados')}renderInbox()};
   el.querySelectorAll('[data-chat]').forEach(b=>b.onclick=()=>{haptic();openChat(b.dataset.chat)})}
 function openChat(id,prefill){const m=byId(id);if(!m)return;chatWith=id;$('#chatMenu').hidden=true;
   $('#chatWho').innerHTML=`${avatar(m)}<span style="min-width:0"><b>${esc(m.name)}</b><small>${esc([m.co,m.niche].filter(Boolean).join(' · ')||'Toque para ver o perfil')}</small></span>`;
@@ -953,12 +972,13 @@ function openMe(){
    <div class="linkrow" style="padding:10px 0"><span class="t"><b>Modo invisível</b><small>Vê o mapa sem aparecer nele</small></span><button class="sw" role="switch" aria-checked="${invisible}" id="swInv" aria-label="Modo invisível"></button></div>
    <div class="linkrow" style="padding:10px 0"><span class="t"><b>Mensagens no app</b><small>Membros podem te escrever aqui</small></span><button class="sw" role="switch" aria-checked="${!me.dmOff}" id="swDm" aria-label="Mensagens no app"></button></div>
    <div class="sec">Avisos</div>
-   ${[['nArr','Chegadas na minha cidade'],['nDay','Resumo do dia'],['nEv','Eventos']].map(([k,t])=>`<div class="linkrow" style="min-height:48px;padding:10px 0"><span class="t"><b>${t}</b></span><button class="sw" role="switch" aria-checked="${store.get(k,true)}" data-pref="${k}" aria-label="${t}"></button></div>`).join('')}
+   <div class="linkrow" style="padding:10px 0"><span class="t"><b>Mensagens no celular</b><small id="pushSub">${esc(pushHint())}</small></span><button class="sw" role="switch" aria-checked="${pushState==='on'}" id="swPush" aria-label="Mensagens no celular"></button></div>
    ${me.admin?`<div class="sec">Administração</div><button class="linkrow" id="goAdmin"><span class="ic">⚙</span><span class="t"><b>Membros</b><small>Cadastrar e desativar acessos</small></span><span class="chev">›</span></button><button class="linkrow" id="goAdmEvents"><span class="ic">▦</span><span class="t"><b>Gerenciar eventos</b><small>Criar, editar e apagar eventos</small></span><span class="chev">›</span></button>`:''}
    <div style="margin-top:18px"><button class="secondary danger" id="logout">Sair</button></div>
 `;
   $('#swInv').onclick=async()=>{const v=!invisible;try{await saveMember(me.id,{invisible:v})}catch(e){toast('Não foi possível mudar agora.');return}invisible=v;$('#swInv').setAttribute('aria-checked',invisible);haptic();refresh();toast(invisible?'Você está invisível no mapa':'Você voltou a aparecer')};
   $('#swDm').onclick=async()=>{const v=!me.dmOff;try{await saveMember(me.id,{dmOff:v})}catch(e){toast('Não foi possível mudar agora.');return}$('#swDm').setAttribute('aria-checked',!v);haptic();toast(v?'Só pelo grupo do WhatsApp':'Membros podem te escrever no app')};
+  $('#swPush').onclick=async()=>{const b=$('#swPush');if(b.disabled)return;b.disabled=true;try{if(pushState==='on')await disablePush();else if(!(await enablePush()))return;haptic();toast(pushState==='on'?'Avisos ativados':'Avisos desativados')}finally{b.disabled=false;b.setAttribute('aria-checked',pushState==='on');$('#pushSub').textContent=pushHint()}};
   $('#meBody').querySelectorAll('[data-pref]').forEach(b=>b.onclick=()=>{const v=!(b.getAttribute('aria-checked')==='true');b.setAttribute('aria-checked',v);store.set(b.dataset.pref,v);haptic()});
   if(me.admin){$('#goAdmin').onclick=openAdmin;$('#goAdmEvents').onclick=openAdmEvents}
   if($('#addWa'))$('#addWa').onclick=()=>openEdit(false);
@@ -1083,7 +1103,8 @@ $('#codeForm').onsubmit=async e=>{e.preventDefault();if(entering)return;const c=
     enter(me);
   }catch(x){err.textContent='Sem conexão com o servidor. Tente de novo.';err.hidden=false}
   finally{entering=false;btn.disabled=false;btn.textContent='Entrar'}};
-function enter(m){me=m;shownBubbles=new Set();bubbleFirst=true;subscribeLive();haptic();$('#login').classList.add('out');refresh();
+function enter(m){me=m;shownBubbles=new Set();bubbleFirst=true;subscribeLive();haptic();$('#login').classList.add('out');refresh();initPush();
+  const qc=new URLSearchParams(location.search).get('chat');if(qc&&byId(qc)){history.replaceState(null,'',location.pathname);setTimeout(()=>openChat(qc),900)}
   const c=city(me.home||'sp');fitWorld(false);setTimeout(()=>flyTo(c.lng,c.lat,2.4,2200),450)
   if(!me.complete)setTimeout(()=>openEdit(true),500)}
 const SHARE_ICON='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-label="Compartilhar"><path d="M12 15V3"/><path d="M8 7l4-4 4 4"/><path d="M6 11H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-1"/></svg>';
@@ -1117,7 +1138,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792720353';
+const APP_VERSION='1792720699';
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
   if(stack.includes('shEdit')||stack.includes('shEvForm')||stack.includes('shCrop'))return;location.replace(location.pathname+'?v='+v)}catch(e){}}
