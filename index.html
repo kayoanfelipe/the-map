@@ -29,7 +29,7 @@
   --glass:radial-gradient(240.16% 139.71% at 0% -1.68%,rgba(255,255,255,0) 0%,rgba(110,110,110,.40) 100%);
   --glass-shadow:1px 1px .5px -2px rgba(255,255,255,.2) inset,-1px -1px .5px -2px rgba(255,255,255,.2) inset,0 0 8px 0 rgba(160,160,160,.5) inset,0 2px 8px 2px rgba(0,0,0,.1);
   --shadow:0 -1px 0 rgba(255,255,255,.05), 0 -12px 40px rgba(0,0,0,.55);
-  --font:"SF Pro","SF Pro Display","SF Pro Text",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Helvetica,Arial,sans-serif;
+  --font:"SF Pro","SF Pro Display","SF Pro Text",-apple-system,BlinkMacSystemFont,Inter,"Helvetica Neue",Helvetica,Arial,sans-serif;
   --radius:22px;
   color-scheme:dark;
 }
@@ -1155,7 +1155,8 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792767365';
+const APP_VERSION='1792768094';
+if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
   if(stack.includes('shEdit')||stack.includes('shEvForm')||stack.includes('shCrop'))return;location.replace(location.pathname+'?v='+v)}catch(e){}}
