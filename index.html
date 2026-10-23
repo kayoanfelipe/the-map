@@ -245,8 +245,9 @@ input[type=date].search{appearance:none;-webkit-appearance:none}
 .fdot.top{right:-2px;bottom:-2px;border-color:var(--bg)}
 @keyframes fdot{0%{box-shadow:0 0 0 0 rgba(255,255,255,.45)}70%{box-shadow:0 0 0 7px rgba(255,255,255,0)}100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}}
 @media (prefers-reduced-motion:reduce){.fdot{animation:none}}
-.row .meta b.free{color:var(--accent-ink);background:var(--accent);padding:3px 9px;border-radius:999px;font-size:12px;display:inline-block}
-.row .meta small{display:block;color:var(--fg3);font-size:12px;margin-top:3px}
+.row .tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+.row .tags i{font-style:normal;font-size:11.5px;font-weight:700;padding:3px 8px;border-radius:999px;background:var(--accent-soft);color:var(--fg);white-space:nowrap}
+.row .tags i.free{background:var(--accent);color:var(--accent-ink)}
 .freecard{margin:10px 0 2px;padding:12px 14px 13px;border-radius:16px;background:var(--surface2);transition:background .25s}
 .freecard.on{background:var(--accent-soft);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
 .freecard .fh{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:9px}.freecard .fh b{font-size:14.5px;font-weight:700;letter-spacing:-.01em;white-space:nowrap}.freecard .fh small{color:var(--fg3);font-size:12px;text-align:right}
@@ -826,7 +827,7 @@ document.querySelectorAll('.sheet').forEach(sh=>{
 });
 
 /* ---------- city / event / profile ---------- */
-function memberRow(ck){const m=byId(ck.m);const f=freeOf(m);const host=m.host&&m.home===ck.place;return`<button class="row" data-prof="${m.id}" data-ck="${ck.place}"><span class="avw">${avatar(m)}${f?'<i class="fdot"></i>':''}</span><span class="t"><b>${esc(m.name)}${ck.mine?' <span class="pill adm">você</span>':''}</b><small>${host?'Anfitrião · ':''}${esc(m.co)} · ${esc(m.niche)}</small></span><span class="meta">${f?`<b class="free">${esc(freeLabel(f))}</b>${ck.home?'':`<small>${whenLabel(ck)}</small>`}`:`<b>${ck.home?'':whenLabel(ck)}</b>`}</span><span class="chev">›</span></button>`}
+function memberRow(ck){const m=byId(ck.m);const f=freeOf(m);const host=m.host&&m.home===ck.place;return`<button class="row" data-prof="${m.id}" data-ck="${ck.place}"><span class="avw">${avatar(m)}${f?'<i class="fdot"></i>':''}</span><span class="t"><b>${esc(m.name)}${ck.mine?' <span class="pill adm">você</span>':''}</b><small>${esc(m.co)} · ${esc(m.niche)}</small>${f||host?`<span class="tags">${f?`<i class="free">${esc(freeLabel(f))}</i>`:''}${host?'<i>Anfitrião</i>':''}</span>`:''}</span><span class="meta"><b>${ck.home?'':whenLabel(ck)}</b></span><span class="chev">›</span></button>`}
 let curCity=null,curProf=null;
 function rerenderSheets(){rerendering=true;try{if(stack.includes('shMe'))openMe();if(stack.includes('shProfile')&&curProf)openProfile(curProf);if(stack.includes('shCity')&&curCity)openCity(curCity);if(stack.includes('shInbox'))renderInbox()}finally{rerendering=false}}
 function openCity(id){curCity=id;
@@ -1242,7 +1243,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792789116';
+const APP_VERSION='1792789281';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
