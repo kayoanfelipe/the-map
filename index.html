@@ -760,7 +760,7 @@ function renderBubbles(){
 /* ---------- sheets ---------- */
 const stack=[];
 let ignorePop=0;
-function openSheet(id){const el=$('#'+id);if(stack.includes(id)){closeTo(id);return}try{history.pushState({sh:id},'')}catch(e){}const prev=stack[stack.length-1];if(prev)$('#'+prev).classList.add('behind');stack.push(id);el.style.zIndex=10+stack.length;el.classList.add('open');el.querySelector('.sb').scrollTop=0;$('#scrim').classList.add('on');el.style.transform=''}
+function openSheet(id){const el=$('#'+id);if(stack.includes(id)){closeTo(id);return}if(platform()==='android'){try{history.pushState({sh:id},'')}catch(e){}}const prev=stack[stack.length-1];if(prev)$('#'+prev).classList.add('behind');stack.push(id);el.style.zIndex=10+stack.length;el.classList.add('open');el.querySelector('.sb').scrollTop=0;$('#scrim').classList.add('on');el.style.transform=''}
 function closeSheet(fromPop){const id=stack.pop();if(!id)return;if(!fromPop&&history.state&&history.state.sh===id){ignorePop++;try{history.back()}catch(e){ignorePop--}}const el=$('#'+id);el.classList.remove('open','dragging');el.style.transform='';setTimeout(()=>{if(!stack.includes(id))el.style.zIndex=''},500);const prev=stack[stack.length-1];if(prev)$('#'+prev).classList.remove('behind');else $('#scrim').classList.remove('on');if(id==='shChat'){chatWith=null;if(me)refresh()}}
 function closeTo(id){while(stack.length&&stack[stack.length-1]!==id)closeSheet()}
 window.addEventListener('popstate',()=>{if(ignorePop>0){ignorePop--;return}if(stack.length){const top=stack[stack.length-1];if(top==='shEdit'&&me&&!me.complete){try{history.pushState({sh:top},'')}catch(e){}toast('Complete o perfil para entrar no mapa');return}closeSheet(true)}});
@@ -1155,7 +1155,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792766509';
+const APP_VERSION='1792767365';
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
   if(stack.includes('shEdit')||stack.includes('shEvForm')||stack.includes('shCrop'))return;location.replace(location.pathname+'?v='+v)}catch(e){}}
