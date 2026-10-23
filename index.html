@@ -610,12 +610,13 @@ const sb=(window.supabase&&/^https:\/\//.test(SB_URL)&&SB_KEY.length>20)?window.
 let members=[],CHECKINS=[],SETTINGS={},RSVPS=[],MSGS=[],BLOCKS=[],chatWith=null;
 const byId=id=>members.find(m=>m.id===id);
 const city=id=>CITIES.find(c=>c.id===id)||{id,n:'Cidade',s:'',c:BR,lat:0,lng:0};
+const knownCity=id=>!!id&&CITIES.some(c=>c.id===id);
 const event=id=>EVENTS.find(e=>e.id===id)||{id,n:'Evento',city:'sp',when:'',start:'',end:''};
 let me=null,myCheckin=null,invisible=false;
 const today=()=>D(0);
 function fromRow(r){return{id:r.id,email:r.email,name:r.name||'',active:r.active,admin:r.is_admin,wa:r.wa||'',co:r.company||'',niche:r.niche||'',home:r.home_city||'',ig:r.instagram||'',seek:r.seeking||'',photo:r.photo_url||null,dmOff:!!r.dm_off,complete:r.complete,invisible:r.invisible,user_id:r.user_id}}
 function evFromRow(r){const d=new Date(r.starts_on+'T12:00:00');const c=city(r.city);return{id:r.id,n:r.name,city:r.city,venue:r.venue||'',start:r.starts_on,end:r.ends_on,when:`${WD[d.getDay()]} ${pad2(d.getDate())}/${pad2(d.getMonth()+1)}${r.time_label?' · '+r.time_label:''}${c?' · '+c.n:''}`,short:`${pad2(d.getDate())}/${pad2(d.getMonth()+1)}`,active:r.active&&r.ends_on>=today()}}
-function whenLabel(ck){return ck.place.startsWith('ev:')?event(ck.place.slice(3)).short:untilLabel(ck.until)}
+function whenLabel(ck){return ck.home?'mora aqui':ck.place.startsWith('ev:')?event(ck.place.slice(3)).short:untilLabel(ck.until)}
 function upcomingEvents(){return EVENTS.filter(e=>e.active).sort((a,b)=>a.start<b.start?-1:1)}
 function rsvpsOf(evId){return RSVPS.filter(r=>r.e===evId&&byId(r.m)&&byId(r.m).active!==false&&(!byId(r.m).invisible||(me&&r.m===me.id)))}
 function iGo(evId){return !!me&&RSVPS.some(r=>r.e===evId&&r.m===me.id)}
@@ -637,6 +638,9 @@ async function loadAll(){
 function activeCheckins(){
   const list=CHECKINS.filter(c=>c.until>=today()&&byId(c.m)&&byId(c.m).active!==false&&!byId(c.m).invisible&&(!me||c.m!==me.id));
   if(me&&myCheckin&&myCheckin.until>=today()&&!invisible) list.push({...myCheckin,m:me.id,mine:true});
+  /* quem não marcou nada aparece na cidade do perfil */
+  const has=new Set(list.map(k=>k.m));
+  for(const m of members){if(has.has(m.id)||!knownCity(m.home)||m.active===false||m.invisible)continue;if(me&&m.id===me.id&&invisible)continue;list.push({m:m.id,place:m.home,until:null,open:[],home:true,mine:!!(me&&m.id===me.id)})}
   return list;
 }
 const COLS={name:'name',wa:'wa',co:'company',niche:'niche',home:'home_city',ig:'instagram',seek:'seeking',photo:'photo_url',dmOff:'dm_off',complete:'complete',invisible:'invisible',active:'active'};
@@ -745,7 +749,7 @@ window.addEventListener('resize',()=>{sizeCanvas();z=Math.max(zMin(),z);applyTra
 sizeCanvas();
 function cityCounts(){const c={};for(const ck of activeCheckins()){if(ck.place.startsWith('ev:')){const ev=event(ck.place.slice(3));c[ev.city]=(c[ev.city]||0)+1}else c[ck.place]=(c[ck.place]||0)+1}return c}
 function renderBubbles(){
-  const counts=cityCounts();const myCity=me&&myCheckin&&!invisible?(myCheckin.place.startsWith('ev:')?event(myCheckin.place.slice(3)).city:myCheckin.place):null;
+  const counts=cityCounts();const myCity=me&&!invisible?(myCheckin&&myCheckin.until>=today()?(myCheckin.place.startsWith('ev:')?event(myCheckin.place.slice(3)).city:myCheckin.place):(me.home||null)):null;
   bubbleMode=z<0.7?'country':'city';
   if(bubbleMode==='country'){const groups={};for(const c of CITIES.filter(c=>counts[c.id])){const g=groups[c.c]||(groups[c.c]={n:0,top:null});g.n+=counts[c.id];if(!g.top||counts[c.id]>counts[g.top.id])g.top=c}
     $('#bubbles').innerHTML=Object.entries(groups).sort((a,b)=>b[1].n-a[1].n).map(([name,g],i)=>{const anchor=name===BR?city('bsb'):g.top;const n=g.n;const r=Math.min(30,15+n*3);return`<g class="bubble" data-country="${esc(name)}" data-anchor="${g.top.id}" data-lng="${anchor.lng}" data-lat="${anchor.lat}" tabindex="0" role="button" aria-label="${esc(name)}: ${n}">${bubbleInner('c:'+name,i,`<circle class="halo" r="${r+9}"/><circle class="b" r="${r}"/><text style="font-size:${n>9?15:16}px">${n}</text><text class="name" y="${r+15}">${esc(name)}</text>`,r)}</g>`}).join('');bubbleFirst=false;applyTransform();return}
@@ -773,7 +777,7 @@ document.querySelectorAll('.sheet').forEach(sh=>{
 });
 
 /* ---------- city / event / profile ---------- */
-function memberRow(ck){const m=byId(ck.m);return`<button class="row" data-prof="${m.id}" data-ck="${ck.place}"><span>${avatar(m)}</span><span class="t"><b>${esc(m.name)}${ck.mine?' <span class="pill adm">você</span>':''}</b><small>${esc(m.co)} · ${esc(m.niche)}</small></span><span class="meta"><b>${whenLabel(ck)}</b></span><span class="chev">›</span></button>`}
+function memberRow(ck){const m=byId(ck.m);return`<button class="row" data-prof="${m.id}" data-ck="${ck.place}"><span>${avatar(m)}</span><span class="t"><b>${esc(m.name)}${ck.mine?' <span class="pill adm">você</span>':''}</b><small>${esc(m.co)} · ${esc(m.niche)}</small></span><span class="meta"><b>${ck.home?'':whenLabel(ck)}</b></span><span class="chev">›</span></button>`}
 function openCity(id){
   const c=city(id);const cks=activeCheckins().filter(k=>k.place===id);const evs=[];
   const total=cks.length+evs.reduce((a,b)=>a+b.n,0);
@@ -814,6 +818,7 @@ function inviteMsg(m,ctx){const tag=m.wa?'@'+m.wa:'@'+m.name.split(' ')[0];
   if(ctx&&ctx.type==='city'){const ck=ctx.ck;const c=city(ck.place);const cn=c?c.n:'';const when=ck.until===today()?' hoje':' '+untilLabel(ck.until);
     const opts=(ck.open||[]).filter(o=>OPEN_PHRASE[o]);const ask=opts.length?`Bora marcar ${opts.slice(0,2).map(o=>OPEN_PHRASE[o]).join(' ou ')}?`:'Bora se encontrar?';
     return`${tag} vi que você tá em ${cn}${when}. ${ask}`}
+  if(ctx&&ctx.type==='home')return`${tag} vi que você é de ${ctx.c.n}. Bora marcar um café?`;
   return`${tag} bora marcar um encontro?`}
 /* ---------- chat 1 a 1 ---------- */
 function msgRow(r){return{id:r.id,from:r.sender_id,to:r.recipient_id,body:r.body,at:r.created_at,read:r.read_at||null}}
@@ -890,9 +895,9 @@ $('#chatSend').onclick=sendMsg;
 $('#chatIn').addEventListener('input',e=>{const t=e.target;t.style.height='';t.style.height=Math.min(120,t.scrollHeight)+'px';$('#chatSend').disabled=!t.value.trim()||!chatState().ok});
 $('#chatIn').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!('ontouchstart' in window)){e.preventDefault();sendMsg()}});
 function openProfile(id,place){
-  const m=byId(id);const ck=activeCheckins().find(k=>k.m===id&&!k.place.startsWith('ev:'));const mine=me&&id===me.id;
+  const m=byId(id);const ck=activeCheckins().find(k=>k.m===id&&!k.place.startsWith('ev:')&&!k.home);const mine=me&&id===me.id;
   const evsOf=upcomingEvents().filter(e=>RSVPS.some(r=>r.e===e.id&&r.m===id));
-  const ctx=place&&place.startsWith('ev:')?{type:'event',e:event(place.slice(3))}:ck?{type:'city',ck}:evsOf.length?{type:'event',e:evsOf[0]}:null;
+  const ctx=place&&place.startsWith('ev:')?{type:'event',e:event(place.slice(3))}:ck?{type:'city',ck}:evsOf.length?{type:'event',e:evsOf[0]}:knownCity(m.home)?{type:'home',c:city(m.home)}:null;
   $('#profBody').innerHTML=`<div class="pf">${avatar(m,'big')}<h2>${esc(m.name)}</h2><div class="co">${esc(m.co)} · ${esc(m.niche)}${m.home?` · ${esc(city(m.home).n)}`:''}</div>
     ${ck||evsOf.length?`<div class="now">${ck?`<span>${placeName(ck.place)} · ${whenLabel(ck)}</span>${ck.open.map(o=>`<span>${esc(o)}</span>`).join('')}`:''}${evsOf.map(e=>`<span>${esc(e.n)} · ${e.short}</span>`).join('')}</div>`:''}
     ${m.seek?`<div class="seek"><small>O que estou buscando</small>${esc(m.seek)}</div>`:''}
@@ -928,7 +933,7 @@ function openCheckin(pre={}){
 }
 function goStep(n){ciStep=n;$('#ciTitle').textContent=CI_TITLES[n];[1,2,3].forEach(i=>{$('#cs'+i).hidden=i!==n});$('#ciDots').querySelectorAll('i').forEach((d,i)=>d.classList.toggle('on',i<n));$('#ciBack').hidden=n===1;$('#shCheckin .sb').scrollTop=0;renderCi()}
 function renderSuggest(){const home=me&&me.home?city(me.home):null;const evs=[];const recent=store.get('recent',[]).filter(id=>city(id)&&(!home||id!==home.id)).slice(0,2);
-  let h='';if(home)h+=`<button type="button" class="chip" data-pick="${home.id}">${esc(home.n)}</button>`;
+  let h='';if(home)h+=`<button type="button" class="chip" data-pick="${home.id}">${esc(home.n)} · sua cidade</button>`;
   for(const ev of evs)h+=`<button type="button" class="chip" data-pick="ev:${ev.id}">${esc(ev.n)} · ${ev.short}</button>`;
   for(const id of recent)h+=`<button type="button" class="chip" data-pick="${id}">${esc(city(id).n)}</button>`;
   $('#ciSuggest').innerHTML=h}
@@ -950,7 +955,9 @@ function renderCi(){
   $('#btnConfirm').disabled=!ok;$('#btnConfirm').textContent=ciStep===3?'Confirmar':'Continuar';
 }
 $('#citySearch').addEventListener('input',renderCityList);
-$('#shCheckin').addEventListener('click',e=>{const b=e.target.closest('[data-pick]');if(!b)return;ci.place=b.dataset.pick;haptic();if(ci.place.startsWith('ev:')){ci.until=event(ci.place.slice(3)).end;goStep(3)}else{if(ci.until&&ci.until<today())ci.until=null;goStep(2)}});
+$('#shCheckin').addEventListener('click',async e=>{const b=e.target.closest('[data-pick]');if(!b)return;ci.place=b.dataset.pick;haptic();
+  if(me&&ci.place===me.home){const back=!!myCheckin;if(back){const {error}=await sb.from('checkins').delete().eq('member_id',me.id);if(error){toast('Não foi possível salvar.');return}myCheckin=null;CHECKINS=CHECKINS.filter(k=>k.m!==me.id)}closeAll();refresh();toast(back?`Você voltou para ${city(me.home).n}.`:`Essa é a sua cidade. Você já aparece aqui.`);setTimeout(()=>openCity(me.home),380);return}
+  if(ci.place.startsWith('ev:')){ci.until=event(ci.place.slice(3)).end;goStep(3)}else{if(ci.until&&ci.until<today())ci.until=null;goStep(2)}});
 $('#untilChips').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;haptic();if(b.dataset.until==='date'){$('#untilDate').hidden=false;$('#untilDate').min=D(0);if(!$('#untilDate').value)$('#untilDate').value=D(3);ci.until=$('#untilDate').value;renderCi();try{$('#untilDate').showPicker&&$('#untilDate').showPicker()}catch(x){}}else{$('#untilDate').hidden=true;ci.until=D(+b.dataset.until);goStep(3)}});
 $('#untilDate').addEventListener('change',()=>{if($('#untilDate').value){ci.until=$('#untilDate').value;goStep(3)}});
 $('#openChips').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;const o=b.dataset.open;haptic();if(o==='só avisando')ci.open=ci.open.includes(o)?[]:[o];else{ci.open=ci.open.filter(x=>x!=='só avisando');ci.open.includes(o)?ci.open=ci.open.filter(x=>x!==o):ci.open.push(o)}renderCi()});
@@ -1137,8 +1144,9 @@ function refresh(){
   $('#meAv').outerHTML=avatar(me).replace('class="av"','class="av" id="meAv"');$('#eyeBadge').hidden=!invisible;
   const has=myCheckin&&myCheckin.until>=today();
   const abroad=Object.keys(cityCounts()).filter(id=>city(id).c!==BR).reduce((a,id)=>a+cityCounts()[id],0);$('#worldN').hidden=!abroad;$('#worldN').textContent=abroad;
-  $('#myStatus').hidden=!has;$('#btnCheckin').hidden=has;$('#btnWorld').hidden=!abroad;
+  const atHome=!has&&knownCity(me.home);$('#myStatus').hidden=!(has||atHome);$('#btnCheckin').hidden=has;$('#stEnd').hidden=!has;$('#btnWorld').hidden=!abroad;
   if(has){$('#stCity').textContent=placeName(myCheckin.place);$('#stMeta').textContent='· '+whenLabel(myCheckin)+(invisible?' · invisível':'')}
+  else if(atHome){$('#stCity').textContent=city(me.home).n;$('#stMeta').textContent='· sua cidade'+(invisible?' · invisível':'');if(!invisible&&!store.get('homeNoticed',false)){store.set('homeNoticed',true);setTimeout(()=>toast(`Você aparece em ${city(me.home).n}. Para sumir do mapa, use o modo invisível.`),1200)}}
   const ev=nextMyEvent()||null;$('#eventcard').hidden=!ev;
   const nUp=upcomingEvents().length;$('#evN').hidden=!nUp;$('#evN').textContent=nUp;
   const nMsg=unreadCount();$('#msgN').hidden=!nMsg;$('#msgN').textContent=nMsg;
@@ -1147,7 +1155,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792764348';
+const APP_VERSION='1792766170';
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
   if(stack.includes('shEdit')||stack.includes('shEvForm')||stack.includes('shCrop'))return;location.replace(location.pathname+'?v='+v)}catch(e){}}
