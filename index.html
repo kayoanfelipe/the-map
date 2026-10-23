@@ -910,7 +910,7 @@ function openProfile(id,place){
   $('#profFoot').innerHTML=mine?`<button class="secondary" id="profEdit">Editar meu perfil</button>`:`${canDm?`<button class="primary" id="btnMsg"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-8 8H7l-4 3V12a8 8 0 0 1 8-8h2a8 8 0 0 1 8 8z"/></svg>Mensagem</button>`:`<button class="secondary" id="btnMsg">${BLOCKS.includes(m.id)?'Você bloqueou este membro':'Prefere conversar pelo grupo'}</button>`}${SETTINGS.group_link?'<button class="resend" id="btnOpenGroup" style="margin-top:6px">Abrir o grupo no WhatsApp</button>':''}`;
   openSheet('shProfile');
   if(mine)$('#profEdit').onclick=()=>openEdit(false);
-  else{$('#btnMsg').onclick=()=>{haptic();if(canDm)openChat(m.id,dmMsg(m,ctx));else if(BLOCKS.includes(m.id))openChat(m.id)};
+  else{$('#btnMsg').onclick=()=>{haptic();if(!canDm&&!BLOCKS.includes(m.id))return;const pre=canDm?dmMsg(m,ctx):undefined;closeAll();renderInbox();openSheet('shInbox');openChat(m.id,pre)};
     const og=$('#btnOpenGroup');if(og)og.onclick=()=>{const link=SETTINGS.group_link||'';if(!link)return;const a=document.createElement('a');a.href=link;a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();a.remove()}}
 }
 document.addEventListener('click',e=>{
@@ -1155,7 +1155,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792768094';
+const APP_VERSION='1792769983';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
