@@ -573,7 +573,7 @@ const SB_URL='https://kqucpivagntlmukfghhg.supabase.co',SB_KEY='sb_publishable_y
 const sb=(window.supabase&&/^https:\/\//.test(SB_URL)&&SB_KEY.length>20)?window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true,storageKey:'themap.auth'}}):null;
 let members=[],CHECKINS=[],SETTINGS={},RSVPS=[];
 const byId=id=>members.find(m=>m.id===id);
-const city=id=>CITIES.find(c=>c.id===id);
+const city=id=>CITIES.find(c=>c.id===id)||{id,n:'Cidade',s:'',c:BR,lat:0,lng:0};
 const event=id=>EVENTS.find(e=>e.id===id)||{id,n:'Evento',city:'sp',when:'',start:'',end:''};
 let me=null,myCheckin=null,invisible=false;
 const today=()=>D(0);
@@ -620,7 +620,7 @@ function waValid(d){return d.length>=12&&d.length<=15}
 function waPretty(d){if(!d)return'';const m=d.match(/^55(\d{2})(\d{4,5})(\d{4})$/);return m?`+55 ${m[1]} ${m[2]}-${m[3]}`:'+'+d}
 function initials(n){return n.trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase()}
 function hue(s){let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))%360;return h}
-function avatar(m,cls=''){const h=hue(m.id||m.name);const k=cls?'av '+cls:'av';return m.photo?`<span class="${k}"><img src="${m.photo}" alt=""></span>`:`<span class="${k}" style="background:linear-gradient(135deg,hsl(${h} 38% 46%),hsl(${(h+40)%360} 42% 36%))">${initials(m.name||'?')}</span>`}
+function avatar(m,cls=''){const h=hue(m.id||m.name);const k=cls?'av '+cls:'av';return m.photo&&/^https:\/\//.test(m.photo)?`<span class="${k}"><img src="${esc(m.photo)}" alt=""></span>`:`<span class="${k}" style="background:linear-gradient(135deg,hsl(${h} 38% 46%),hsl(${(h+40)%360} 42% 36%))">${initials(m.name||'?')}</span>`}
 function openStr(open){return open.join(' · ')}
 function placeName(p){return p.startsWith('ev:')?event(p.slice(3)).n:city(p).n}
 function haptic(){try{navigator.vibrate&&navigator.vibrate(12)}catch(e){}}
@@ -1027,7 +1027,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792717563';
+const APP_VERSION='1792719306';
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
   if(stack.includes('shEdit')||stack.includes('shEvForm')||stack.includes('shCrop'))return;location.replace(location.pathname+'?v='+v)}catch(e){}}
