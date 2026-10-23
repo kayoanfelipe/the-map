@@ -247,10 +247,11 @@ input[type=date].search{appearance:none;-webkit-appearance:none}
 @media (prefers-reduced-motion:reduce){.fdot{animation:none}}
 .row .meta b.free{color:var(--accent-ink);background:var(--accent);padding:3px 9px;border-radius:999px;font-size:12px;display:inline-block}
 .row .meta small{display:block;color:var(--fg3);font-size:12px;margin-top:3px}
-.freecard{margin:12px 0 4px;padding:16px;border-radius:18px;background:var(--surface2);transition:background .25s}
+.freecard{margin:10px 0 2px;padding:12px 14px 13px;border-radius:16px;background:var(--surface2);transition:background .25s}
 .freecard.on{background:var(--accent-soft);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
-.freecard .fh{margin-bottom:12px}.freecard .fh b{display:block;font-size:16.5px;font-weight:700;letter-spacing:-.01em}.freecard .fh small{display:block;color:var(--fg2);font-size:13px;margin-top:2px}
-.freecard .chips.sm{margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}.freecard .chips.sm .chip{height:34px;font-size:13.5px;padding:0 13px}
+.freecard .fh{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:9px}.freecard .fh b{font-size:14.5px;font-weight:700;letter-spacing:-.01em;white-space:nowrap}.freecard .fh small{color:var(--fg3);font-size:12px;text-align:right}
+.freecard .chips{gap:6px}.freecard .chip{height:34px;font-size:13.5px;padding:0 13px}
+.freecard .chips.sm{margin-top:9px;padding-top:9px;border-top:1px solid var(--line)}.freecard .chips.sm .chip{height:30px;font-size:12.5px;padding:0 11px}
 .bubble .fd{fill:var(--accent);stroke:#0b0b0d;stroke-width:2}
 .linkrow{display:flex;align-items:center;gap:12px;width:100%;padding:14px 0;border-bottom:1px solid var(--line);text-decoration:none;color:inherit;min-height:52px;text-align:left}
 .linkrow .ic{width:36px;height:36px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--fg2);font-size:16px;flex:none}
@@ -677,7 +678,7 @@ function activeCheckins(){
 }
 const COLS={name:'name',wa:'wa',co:'company',niche:'niche',home:'home_city',ig:'instagram',seek:'seeking',photo:'photo_url',dmOff:'dm_off',complete:'complete',invisible:'invisible',active:'active',host:'host',freeKind:'free_kind',freeTime:'free_time',freeDay:'free_day'};
 /* 'Livre hoje': só vale no dia e some sozinho à meia-noite */
-const FREE_KINDS=['café','almoço','jantar','drink'];const FREE_TIMES={'café':['09:00','10:00','15:00','16:00'],'almoço':['12:00','12:30','13:00'],'jantar':['19:00','20:00','21:00'],'drink':['18:00','19:00','20:00','21:00']};
+const FREE_KINDS=['café','almoço','jantar','drink','charuto'];const FREE_TIMES={'café':['09:00','10:00','15:00','16:00'],'almoço':['12:00','12:30','13:00'],'jantar':['19:00','20:00','21:00'],'drink':['18:00','19:00','21:00'],'charuto':['19:00','20:00','21:00']};
 function freeOf(m){return m&&m.freeKind&&m.freeDay===today()&&m.active!==false&&!m.invisible?{kind:m.freeKind,time:m.freeTime}:null}
 function hm(t){if(!t)return'';const h=String(+t.slice(0,2)),mm=t.slice(3);return h+'h'+(mm&&mm!=='00'?mm:'')}
 function cap(s){return s.charAt(0).toUpperCase()+s.slice(1)}
@@ -1057,7 +1058,7 @@ function openMe(){
   $('#meSub').textContent=me.email;
   $('#meBody').innerHTML=`<button class="row" data-prof="${me.id}" style="border:0"><span>${avatar(me)}</span><span class="t"><b>${esc(me.name)}</b><small>${esc(me.co||'Complete seu perfil')}${me.niche?' · '+esc(me.niche):''}</small></span><span class="chev">›</span></button>
    ${me.wa?'':`<button class="linkrow" id="addWa" style="border:0"><span class="t"><b>Adicione seu WhatsApp</b><small>Para os membros te marcarem no grupo</small></span><span class="chev">›</span></button>`}
-   ${(()=>{const f=freeOf(me);return`<div class="freecard${f?' on':''}"><div class="fh"><b>${f?'Você está livre hoje':'Livre hoje?'}</b><small>${f?'Quem estiver na sua cidade vê. Some à meia-noite.':'Marque e quem estiver na mesma cidade fica sabendo.'}</small></div><div class="chips" id="freeKinds">${FREE_KINDS.map(k=>`<button class="chip ghost${f&&f.kind===k?' on':''}" data-free="${k}">${cap(k)}</button>`).join('')}</div>${f?`<div class="chips sm" id="freeTimes"><button class="chip ghost${f.time?'':' on'}" data-ftime="">Qualquer hora</button>${FREE_TIMES[f.kind].map(t=>`<button class="chip ghost${f.time===t?' on':''}" data-ftime="${t}">${hm(t)}</button>`).join('')}</div>`:''}</div>`})()}
+   ${(()=>{const f=freeOf(me);return`<div class="freecard${f?' on':''}"><div class="fh"><b>Livre hoje</b><small>${f?'Some à meia-noite':'Quem estiver na sua cidade vê'}</small></div><div class="chips" id="freeKinds">${FREE_KINDS.map(k=>`<button class="chip ghost${f&&f.kind===k?' on':''}" data-free="${k}">${cap(k)}</button>`).join('')}</div>${f?`<div class="chips sm" id="freeTimes"><button class="chip ghost${f.time?'':' on'}" data-ftime="">Qualquer hora</button>${FREE_TIMES[f.kind].map(t=>`<button class="chip ghost${f.time===t?' on':''}" data-ftime="${t}">${hm(t)}</button>`).join('')}</div>`:''}</div>`})()}
    <div class="sec">Próximas viagens</div>
    ${upcomingTrips(me.id).map(t=>`<div class="linkrow" style="padding:10px 0"><span class="t"><b>${esc(city(t.place).n)}</b><small>${rangeLabel(t.start,t.end)}${t.open.length?' · '+esc(t.open.join(' · ')):''}</small></span><button class="close xs" data-trip-del="${t.id}" aria-label="Cancelar viagem">✕</button></div>`).join('')}
    <button class="linkrow" id="addTrip" style="border:0"><span class="ic">+</span><span class="t"><b>Marcar viagem</b><small>Quem estiver lá fica sabendo que você vai</small></span><span class="chev">›</span></button>
@@ -1241,7 +1242,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792788699';
+const APP_VERSION='1792789116';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
