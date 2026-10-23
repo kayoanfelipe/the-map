@@ -461,12 +461,12 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
   <!-- Edit profile sheet -->
   <section class="sheet" id="shEdit" aria-label="Editar perfil">
     <div class="grab"><i></i></div>
-    <div class="sh gutter"><div><h2 id="editTitle">Complete seu perfil</h2><p id="editSub">Para quem te vir no mapa saber em 3 segundos por que falar com você.</p></div></div>
+    <div class="sh gutter"><div><h2 id="editTitle">Complete seu perfil</h2><p id="editSub">Assim os membros sabem, em poucos segundos, por que falar com você.</p></div></div>
     <form class="sb gutter" id="editForm" novalidate>
       <div id="editA">
       <div class="photo"><span class="av big" id="editAv" style="width:72px;height:72px;font-size:24px"></span><label class="btn" id="photoBtn">Escolher foto<input type="file" id="photoIn" accept="image/*"></label></div>
       <div class="field"><label for="fName">Nome</label><input id="fName" required autocomplete="name"></div>
-      <div class="field"><label for="fWa">WhatsApp</label><input id="fWa" type="tel" inputmode="tel" autocomplete="tel" placeholder="(11) 99999-9999" required><p class="hint">Não aparece no perfil. Serve para te marcarem no grupo.</p></div>
+      <div class="field"><label for="fWa">WhatsApp</label><input id="fWa" type="tel" inputmode="tel" autocomplete="tel" placeholder="(11) 99999-9999" required><p class="hint">Não aparece no perfil. Usado para mencionar você no grupo.</p></div>
       <div class="field"><label for="fCo">Empresa</label><input id="fCo" required></div>
       <div class="field"><label for="fNiche">Nicho</label><input id="fNiche" placeholder="Ex.: Incorporação, SaaS, Varejo de luxo" required></div>
       <div class="field"><label for="fHomeQ">Cidade onde mora</label><input class="search" id="fHomeQ" placeholder="Buscar cidade" autocomplete="off" autocorrect="off"><input type="hidden" id="fHome"><div class="cities" id="fHomeList"></div></div>
@@ -834,11 +834,11 @@ function openCity(id){curCity=id;
   const c=city(id);const cks=activeCheckins().filter(k=>k.place===id);const evs=[];
   const total=cks.length+evs.reduce((a,b)=>a+b.n,0);
   const fr=cks.filter(k=>freeOf(byId(k.m))).sort((a,b)=>(freeOf(byId(a.m)).time||'99')<(freeOf(byId(b.m)).time||'99')?-1:1);const frIds=new Set(fr.map(k=>k.m));
-  $('#cityName').textContent=c.n;$('#cityCount').textContent=(c.c===BR?'':c.c+' · ')+(total?`${total} ${total>1?'membros':'membro'} agora`:'ninguém agora')+(fr.length?` · ${fr.length} ${fr.length>1?'livres':'livre'} hoje`:'');
+  $('#cityName').textContent=c.n;$('#cityCount').textContent=(c.c===BR?'':c.c+' · ')+(total?`${total} ${total>1?'membros':'membro'} agora`:'nenhum membro agora')+(fr.length?` · ${fr.length} ${fr.length>1?'livres':'livre'} hoje`:'');
   const res=cks.filter(k=>!frIds.has(k.m)&&byId(k.m).home===id).sort((a,b)=>(byId(b.m).host?1:0)-(byId(a.m).host?1:0)),vis=cks.filter(k=>!frIds.has(k.m)&&byId(k.m).home!==id);
   let h='';
   for(const {e,n} of evs)h+=`<button class="eventrow" data-ev="${e.id}"><span class="ic">${initials(e.n)}</span><span class="t"><b>${e.n}</b><small>${n} ${evWord(e,n)} · ${e.when}</small></span><span class="chev" style="margin-left:auto;color:var(--fg3)">›</span></button>`;
-  if(!cks.length&&!evs.length&&!upcomingTrips().some(t=>t.place===id))h+=`<div class="empty"><b>Ninguém em ${esc(c.s==='SP'&&id==='sp'?'SP':c.n)} agora.</b>Seja o primeiro a avisar.<div style="margin-top:18px"><button class="secondary" data-checkin-city="${id}">Marcar ${esc(c.n)}</button></div></div>`;
+  if(!cks.length&&!evs.length&&!upcomingTrips().some(t=>t.place===id))h+=`<div class="empty"><b>Nenhum membro em ${esc(c.s==='SP'&&id==='sp'?'SP':c.n)} agora.</b>Marque sua presença para aparecer aqui.<div style="margin-top:18px"><button class="secondary" data-checkin-city="${id}">Marcar ${esc(c.n)}</button></div></div>`;
   if(fr.length)h+=`<div class="sec">Livre hoje</div>`+fr.map(memberRow).join('');
   if(vis.length)h+=`<div class="sec">De passagem</div>`+vis.map(memberRow).join('');
   const soon=upcomingTrips().filter(t=>t.place===id);if(soon.length)h+=`<div class="sec">Em breve</div>`+soon.map(t=>{const m=byId(t.m);return`<button class="row" data-prof="${m.id}" data-ck="trip:${id}"><span>${avatar(m)}</span><span class="t"><b>${esc(m.name)}${me&&t.m===me.id?' <span class="pill adm">você</span>':''}</b><small>${esc(m.co)} · ${esc(m.niche)}</small></span><span class="meta"><b>${rangeLabel(t.start,t.end)}</b></span><span class="chev">›</span></button>`}).join('');
@@ -851,14 +851,14 @@ function openEventsRender(list){
   $('#evsBody').innerHTML=list.length?list.map(e=>{const d=new Date(e.start+'T12:00:00');const rs=rsvpsOf(e.id);const n=rs.length;
     const faces=rs.slice(0,4).map(r=>avatar(byId(r.m))).join('');
     return`<button class="evcard" data-ev="${e.id}"><span class="date"><b>${d.getDate()}</b><small>${MO_SHORT[d.getMonth()]}</small></span><span class="t"><b>${esc(e.n)}</b><small>${e.when}</small>${e.venue?`<small class="venue">${esc(e.venue.split(' · ')[0])}</small>`:''}
-      <span class="who">${n?`<span class="stack">${faces}</span>`:''}<span>${n?`${n} ${n===1?'confirmou':'confirmaram'}`:'Seja o primeiro a confirmar'}</span>${iGo(e.id)?'<span class="mine">Você vai</span>':''}</span></span></button>`}).join('')
+      <span class="who">${n?`<span class="stack">${faces}</span>`:''}<span>${n?`${n} ${n===1?'confirmou':'confirmaram'}`:'Nenhuma confirmação ainda'}</span>${iGo(e.id)?'<span class="mine">Você vai</span>':''}</span></span></button>`}).join('')
     :`<div class="empty"><b>Nenhum evento agendado.</b>Quando houver um encontro do The Group, ele aparece aqui.</div>`}
 function openEvent(id){const e=event(id);const rs=rsvpsOf(id);const n=rs.length;const future=e.start>today();const going=iGo(id);
   $('#evName').textContent=e.n;$('#evCount').textContent=e.when;
   const c=city(e.city);const mapsQ=encodeURIComponent(e.venue+(c?', '+c.n:''));
   const venueBlock=e.venue?`<a class="venuecard" href="https://maps.apple.com/?q=${mapsQ}" target="_blank" rel="noopener"><span class="pin"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-6.1 7-12a7 7 0 1 0-14 0c0 5.9 7 12 7 12z"/><circle cx="12" cy="10" r="2.6"/></svg></span><span class="t"><b>${esc(e.venue.split(' · ')[0])}</b>${e.venue.includes(' · ')?`<small>${esc(e.venue.split(' · ').slice(1).join(' · '))}${c?' · '+esc(c.n):''}</small>`:(c?`<small>${esc(c.n)}</small>`:'')}</span><span class="go">Abrir no Mapas ↗</span></a>`:'';
   const rows=rs.slice().sort((a,b)=>(b.m===(me&&me.id))-(a.m===(me&&me.id))).map(r=>{const m=byId(r.m);return`<button class="row" data-prof="${m.id}" data-ck="ev:${id}"><span>${avatar(m)}</span><span class="t"><b>${esc(m.name)}${me&&m.id===me.id?' <span class="pill adm">você</span>':''}</b><small>${esc(m.co)} · ${esc(m.niche)}</small></span><span class="chev">›</span></button>`}).join('');
-  $('#evBody').innerHTML=venueBlock+(n?`<div class="sec">${future?'Confirmaram presença':'Membros presentes'} <span>${n}</span></div>${rows}`:`<div class="empty"><b>Ninguém confirmou ainda.</b>Seja o primeiro.</div>`);
+  $('#evBody').innerHTML=venueBlock+(n?`<div class="sec">${future?'Confirmaram presença':'Membros presentes'} <span>${n}</span></div>${rows}`:`<div class="empty"><b>Nenhuma confirmação ainda.</b>Confirme sua presença para aparecer aqui.</div>`);
   $('#evFoot').innerHTML=going?`<button class="secondary" id="btnRsvp">Cancelar minha presença</button>`:`<button class="primary" id="btnRsvp">Confirmar presença</button>`;
   $('#btnRsvp').onclick=async()=>{const b=$('#btnRsvp');b.disabled=true;
     const res=going?await sb.from('event_rsvps').delete().eq('event_id',id).eq('member_id',me.id):await sb.from('event_rsvps').insert({event_id:id,member_id:me.id});
@@ -867,18 +867,8 @@ function openEvent(id){const e=event(id);const rs=rsvpsOf(id);const n=rs.length;
     haptic();toast(going?'Presença cancelada':'Presença confirmada');refresh();openEvent(id);if(stack.includes('shEvents'))renderEventsQuiet()};
   openSheet('shEvent')}
 function renderEventsQuiet(){openEventsRender(upcomingEvents())}
-const OPEN_PHRASE={'café':'um café','almoço':'um almoço','jantar':'um jantar','drink':'um drink'};
-function inviteMsg(m,ctx){const tag=m.wa?'@'+m.wa:'@'+m.name.split(' ')[0];
-  if(ctx&&ctx.type==='event'){const e=ctx.e;return e.start>today()?`${tag} vi que você confirmou presença na ${e.n}. Bora se encontrar lá?`:`${tag} tá na ${e.n}? Bora se encontrar aqui?`}
-  if(ctx&&ctx.type==='city'){const ck=ctx.ck;const c=city(ck.place);const cn=c?c.n:'';const when=ck.until===today()?' hoje':' '+untilLabel(ck.until);
-    const opts=(ck.open||[]).filter(o=>OPEN_PHRASE[o]);const ask=opts.length?`Bora marcar ${opts.slice(0,2).map(o=>OPEN_PHRASE[o]).join(' ou ')}?`:'Bora se encontrar?';
-    return`${tag} vi que você tá em ${cn}${when}. ${ask}`}
-  if(ctx&&ctx.type==='home')return`${tag} vi que você é de ${ctx.c.n}. Bora marcar um café?`;
-  if(ctx&&ctx.type==='trip')return`${tag} vi que você vai estar em ${ctx.c.n} ${rangeLabel(ctx.t.start,ctx.t.end)}. Bora marcar algo por lá?`;
-  return`${tag} bora marcar um encontro?`}
 /* ---------- chat 1 a 1 ---------- */
 function msgRow(r){return{id:r.id,from:r.sender_id,to:r.recipient_id,body:r.body,at:r.created_at,read:r.read_at||null}}
-function dmMsg(m,ctx){const t=inviteMsg(m,ctx).replace(/^@\S+\s*/,'');return`Oi ${m.name.split(' ')[0]}, ${t.charAt(0).toLowerCase()+t.slice(1)}`}
 function unreadCount(){if(!me)return 0;return MSGS.filter(x=>x.to===me.id&&!x.read&&byId(x.from)&&!BLOCKS.includes(x.from)).length}
 function threadWith(id){return MSGS.filter(x=>(x.from===me.id&&x.to===id)||(x.from===id&&x.to===me.id)).sort((a,b)=>a.at<b.at?-1:1)}
 function conversations(){const map={};for(const x of MSGS){const other=x.from===me.id?x.to:x.from;if(!byId(other))continue;const c=map[other]||(map[other]={id:other,last:null,unread:0});if(!c.last||x.at>c.last.at)c.last=x;if(x.to===me.id&&!x.read)c.unread++}return Object.values(map).sort((a,b)=>a.last.at<b.last.at?1:-1)}
@@ -897,7 +887,7 @@ function pushSupported(){return 'serviceWorker' in navigator&&'PushManager' in w
 async function initPush(){if(!pushSupported()||!sb)return;try{swReg=await navigator.serviceWorker.register('sw.js');const sub=await swReg.pushManager.getSubscription();pushState=sub&&Notification.permission==='granted'?'on':'off';
   if(pushState==='off'&&store.get('pushOn',false)&&Notification.permission==='granted'&&me)await enablePush(true)}catch(e){pushState='off'}
   if(stack.includes('shInbox'))renderInbox();const sw=$('#swPush');if(sw&&stack.includes('shMe')){sw.setAttribute('aria-checked',pushState==='on');$('#pushSub').textContent=pushHint()}}
-function pushHint(){if(!pushSupported())return platform()==='ios'&&!isInstalled()?'Instale o app na tela de início para ativar':'Este navegador não permite avisos';if(Notification.permission==='denied')return'Bloqueado nos ajustes do celular. Libere lá para ativar.';return pushState==='on'?'Você recebe um aviso a cada mensagem nova':'Receba um aviso quando chegar mensagem'}
+function pushHint(){if(!pushSupported())return platform()==='ios'&&!isInstalled()?'Instale o app na tela de início para ativar':'Este navegador não permite avisos';if(Notification.permission==='denied')return'Bloqueado nas configurações do celular. Permita as notificações para ativar.';return pushState==='on'?'Você recebe um aviso a cada mensagem nova':'Receba um aviso quando chegar mensagem'}
 function b64ToU8(s){const p='='.repeat((4-s.length%4)%4);const b=atob((s+p).replace(/-/g,'+').replace(/_/g,'/'));return Uint8Array.from(b,c=>c.charCodeAt(0))}
 async function enablePush(silent){const say=silent?()=>{}:toast;if(!pushSupported()){say(platform()==='ios'&&!isInstalled()?'Instale o app na tela de início primeiro':'Este navegador não permite avisos');return false}
   const perm=await Notification.requestPermission();if(perm!=='granted'){say('Avisos não autorizados');return false}
@@ -910,7 +900,7 @@ async function enablePush(silent){const say=silent?()=>{}:toast;if(!pushSupporte
     pushState='on';store.set('pushOn',true);if(!silent){try{sb.functions.invoke('push',{body:{test:true}})}catch(e){}}return true}
   catch(e){say('Não foi possível ativar os avisos.');return false}}
 async function disablePush(){store.set('pushOn',false);try{const sub=swReg&&await swReg.pushManager.getSubscription();if(sub){await sb.from('push_subscriptions').delete().eq('endpoint',sub.endpoint);await sub.unsubscribe()}}catch(e){}pushState='off'}
-function pushBanner(){if(!me||pushState==='on'||store.get('pushOn',false)||!pushSupported()||Notification.permission==='denied')return'';return`<button class="linkrow" id="pushAsk" style="border:0;border-bottom:1px solid var(--line)"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg></span><span class="t"><b>Ativar avisos no celular</b><small>Saiba na hora quando chegar mensagem</small></span><span class="chev">›</span></button>`}
+function pushBanner(){if(!me||pushState==='on'||store.get('pushOn',false)||!pushSupported()||Notification.permission==='denied')return'';return`<button class="linkrow" id="pushAsk" style="border:0;border-bottom:1px solid var(--line)"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg></span><span class="t"><b>Ativar avisos no celular</b><small>Receba um aviso a cada nova mensagem</small></span><span class="chev">›</span></button>`}
 let msgPollT=0,msgSyncing=false;
 async function syncMessages(){if(!me||!sb||msgSyncing||document.hidden)return;if(!(stack.includes('shInbox')||stack.includes('shChat')))return;msgSyncing=true;
   try{const {data,error}=await sb.from('messages').select('*').order('created_at');if(error||!data)return;const fresh=data.map(msgRow);const key=l=>l.map(x=>x.id+':'+(x.read?1:0)).sort().join(',');
@@ -921,7 +911,7 @@ function openInbox(){renderInbox();openSheet('shInbox');syncMessages()}
 function renderInbox(){const list=conversations();const el=$('#inboxBody');
   $('#inboxSub').textContent=list.length?`${list.length} ${list.length===1?'conversa':'conversas'}`:'Conversas com membros';
   el.innerHTML=pushBanner()+(list.length?list.map(c=>{const m=byId(c.id);const mineLast=c.last.from===me.id;return`<button class="row convrow${c.unread?' unread':''}" data-chat="${c.id}">${avatar(m)}<span class="t"><b><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(m.name)}</span><small>${whenShort(c.last.at)}</small></b><small class="snip">${mineLast?'Você: ':''}${esc(c.last.body)}</small></span>${c.unread?`<span class="dot" aria-label="${c.unread} não lidas"></span>`:'<span class="chev">›</span>'}</button>`}).join('')
-    :`<div class="empty"><b>Nenhuma conversa ainda.</b>Toque em um membro no mapa e mande uma mensagem.</div>`);
+    :`<div class="empty"><b>Nenhuma conversa ainda.</b>Toque em um membro no mapa para enviar uma mensagem.</div>`);
   const pa=$('#pushAsk');if(pa)pa.onclick=async()=>{pa.disabled=true;if(await enablePush()){haptic();toast('Avisos ativados')}renderInbox()};
   el.querySelectorAll('[data-chat]').forEach(b=>b.onclick=()=>{haptic();openChat(b.dataset.chat)})}
 function openChat(id,prefill){const m=byId(id);if(!m)return;chatWith=id;$('#chatMenu').hidden=true;
@@ -962,11 +952,11 @@ function openProfile(id,place){curProf=id;
   const myTrips=upcomingTrips(id);const trCtx=place&&place.startsWith('trip:')&&myTrips.find(t=>t.place===place.slice(5));
   const ctx=trCtx?{type:'trip',t:trCtx,c:city(trCtx.place)}:place&&place.startsWith('ev:')?{type:'event',e:event(place.slice(3))}:ck?{type:'city',ck}:evsOf.length?{type:'event',e:evsOf[0]}:knownCity(m.home)?{type:'home',c:city(m.home)}:null;
   $('#profBody').innerHTML=`<div class="pf">${avatar(m,'big')}<h2>${esc(m.name)}</h2><div class="co">${esc(m.co)} · ${esc(m.niche)}${m.home?` · ${esc(city(m.home).n)}`:''}</div>
-    ${(()=>{const f=freeOf(m),hc=m.host&&knownCity(m.home)?city(m.home):null;return f||hc?`<div class="now">${f?`<span class="free">Livre hoje · ${esc(freeLabel(f))}</span>`:''}${hc?`<span>Anfitrião em ${esc(hc.n)}</span>`:''}</div>`:''})()}
+    ${(()=>{const f=freeOf(m),hc=mine&&m.host&&knownCity(m.home)?city(m.home):null;return f||hc?`<div class="now">${f?`<span class="free">Livre hoje · ${esc(freeLabel(f))}</span>`:''}${hc?`<span>Anfitrião em ${esc(hc.n)}</span>`:''}</div>`:''})()}
     ${ck||evsOf.length?`<div class="now">${ck?`<span>${placeName(ck.place)} · ${whenLabel(ck)}</span>${ck.open.map(o=>`<span>${esc(o)}</span>`).join('')}`:''}${evsOf.map(e=>`<span>${esc(e.n)} · ${e.short}</span>`).join('')}</div>`:''}
     ${myTrips.length?`<div class="now" style="margin-top:10px">${myTrips.slice(0,3).map(t=>`<span>Em breve: ${esc(city(t.place).n)} · ${rangeLabel(t.start,t.end)}</span>`).join('')}</div>`:''}
     ${m.seek?`<div class="seek"><small>O que estou buscando</small>${esc(m.seek)}</div>`:''}
-    ${!mine&&m.host&&knownCity(m.home)?`<div class="seek host"><small>Anfitrião em ${esc(city(m.home).n)}</small>Chegou na cidade? Pode chamar para uma dica ou um café.</div>`:''}
+    ${!mine&&m.host&&knownCity(m.home)?`<div class="seek host"><small>Anfitrião em ${esc(city(m.home).n)}</small>Disponível para receber membros que chegam à cidade.</div>`:''}
     </div>
     <div style="margin-top:8px">
     ${m.ig?`<a class="linkrow" href="https://instagram.com/${encodeURIComponent(m.ig.replace('@',''))}" target="_blank" rel="noopener" style="border:0"><span class="ic">◎</span><span class="t"><b>@${esc(m.ig.replace('@',''))}</b><small>Instagram</small></span><span class="chev">↗</span></a>`:''}
@@ -1046,7 +1036,7 @@ $('#btnConfirm').onclick=async()=>{if(ciStep<3){goStep(ciStep+1);return}
   if(!ci.place.startsWith('ev:'))store.set('recent',[ci.place,...store.get('recent',[]).filter(x=>x!==ci.place)].slice(0,4));haptic();closeAll();refresh();
   const n=activeCheckins().filter(k=>k.place===ci.place).length-(invisible?0:1);
   const hs=ci.place.startsWith('ev:')?[]:hostsIn(ci.place,me.id);
-  toast(invisible?'Salvo · você está invisível':hs.length?`${hs.slice(0,2).map(h=>h.name.split(' ')[0]).join(' e ')} te ${hs.length>1?'recebem':'recebe'} em ${placeName(ci.place)}. Quer uma dica ou um café?`:n>0?`${n} ${n>1?'membros':'membro'} ${ci.place.startsWith('ev:')?'na':'em'} ${placeName(ci.place)} agora`:'Você é o primeiro aqui. Avisamos quem chegar.');
+  toast(invisible?'Salvo · você está invisível':hs.length?`${hs.length>1?'Anfitriões':'Anfitrião'} em ${placeName(ci.place)}: ${hs.slice(0,2).map(h=>h.name.split(' ')[0]).join(' e ')}. Envie uma mensagem para combinar.`:n>0?`${n} ${n>1?'membros':'membro'} ${ci.place.startsWith('ev:')?'na':'em'} ${placeName(ci.place)} agora`:'Você é o primeiro membro aqui. Quem chegar será avisado.');
   setTimeout(()=>ci.place.startsWith('ev:')?openEvent(ci.place.slice(3)):openCity(ci.place),380)};
 $('#btnCheckin').onclick=()=>openCheckin();
 $('#btnWorld').onclick=()=>{haptic();worldView=!worldView;worldView?fitWorld(true):fitBrazil(true);$('#worldLbl').textContent=worldView?'Brasil':'Mundo'};
@@ -1058,16 +1048,16 @@ $('#btnMe').onclick=()=>openMe();
 function openMe(){
   $('#meSub').textContent=me.email;
   $('#meBody').innerHTML=`<button class="row" data-prof="${me.id}" style="border:0"><span>${avatar(me)}</span><span class="t"><b>${esc(me.name)}</b><small>${esc(me.co||'Complete seu perfil')}${me.niche?' · '+esc(me.niche):''}</small></span><span class="chev">›</span></button>
-   ${me.wa?'':`<button class="linkrow" id="addWa" style="border:0"><span class="t"><b>Adicione seu WhatsApp</b><small>Para os membros te marcarem no grupo</small></span><span class="chev">›</span></button>`}
-   ${(()=>{const f=freeOf(me);return`<div class="freecard${f?' on':''}"><div class="fh"><b>Livre hoje</b><small>${f?'Some à meia-noite':'Quem estiver na sua cidade vê'}</small></div><div class="chips" id="freeKinds">${FREE_KINDS.map(k=>`<button class="chip ghost${f&&f.kind===k?' on':''}" data-free="${k}">${cap(k)}</button>`).join('')}</div>${f?`<div class="chips sm" id="freeTimes"><button class="chip ghost${f.time?'':' on'}" data-ftime="">Qualquer hora</button>${FREE_TIMES[f.kind].map(t=>`<button class="chip ghost${f.time===t?' on':''}" data-ftime="${t}">${hm(t)}</button>`).join('')}</div>`:''}</div>`})()}
+   ${me.wa?'':`<button class="linkrow" id="addWa" style="border:0"><span class="t"><b>Adicione seu WhatsApp</b><small>Usado para mencionar você no grupo</small></span><span class="chev">›</span></button>`}
+   ${(()=>{const f=freeOf(me);return`<div class="freecard${f?' on':''}"><div class="fh"><b>Livre hoje</b><small>${f?'Válido até meia-noite':'Visível para membros na sua cidade'}</small></div><div class="chips" id="freeKinds">${FREE_KINDS.map(k=>`<button class="chip ghost${f&&f.kind===k?' on':''}" data-free="${k}">${cap(k)}</button>`).join('')}</div>${f?`<div class="chips sm" id="freeTimes"><button class="chip ghost${f.time?'':' on'}" data-ftime="">Qualquer hora</button>${FREE_TIMES[f.kind].map(t=>`<button class="chip ghost${f.time===t?' on':''}" data-ftime="${t}">${hm(t)}</button>`).join('')}</div>`:''}</div>`})()}
    <div class="sec">Próximas viagens</div>
    ${upcomingTrips(me.id).map(t=>`<div class="linkrow" style="padding:10px 0"><span class="t"><b>${esc(city(t.place).n)}</b><small>${rangeLabel(t.start,t.end)}${t.open.length?' · '+esc(t.open.join(' · ')):''}</small></span><button class="close xs" data-trip-del="${t.id}" aria-label="Cancelar viagem">✕</button></div>`).join('')}
-   <button class="linkrow" id="addTrip" style="border:0"><span class="ic">+</span><span class="t"><b>Marcar viagem</b><small>Quem estiver lá fica sabendo que você vai</small></span><span class="chev">›</span></button>
+   <button class="linkrow" id="addTrip" style="border:0"><span class="ic">+</span><span class="t"><b>Marcar viagem</b><small>Membros na cidade serão avisados</small></span><span class="chev">›</span></button>
    ${knownCity(me.home)?`<div class="sec">Minha cidade</div>
-   <div class="linkrow" style="padding:10px 0"><span class="t"><b>Anfitrião em ${esc(city(me.home).n)}</b><small>Quem chegar fica sabendo que pode te procurar</small></span><button class="sw" role="switch" aria-checked="${!!me.host}" id="swHost" aria-label="Anfitrião"></button></div>`:''}
+   <div class="linkrow" style="padding:10px 0"><span class="t"><b>Anfitrião em ${esc(city(me.home).n)}</b><small>Membros que chegarem à cidade serão avisados</small></span><button class="sw" role="switch" aria-checked="${!!me.host}" id="swHost" aria-label="Anfitrião"></button></div>`:''}
    <div class="sec">Privacidade</div>
-   <div class="linkrow" style="padding:10px 0"><span class="t"><b>Modo invisível</b><small>Vê o mapa sem aparecer nele</small></span><button class="sw" role="switch" aria-checked="${invisible}" id="swInv" aria-label="Modo invisível"></button></div>
-   <div class="linkrow" style="padding:10px 0"><span class="t"><b>Mensagens no app</b><small>Membros podem te escrever aqui</small></span><button class="sw" role="switch" aria-checked="${!me.dmOff}" id="swDm" aria-label="Mensagens no app"></button></div>
+   <div class="linkrow" style="padding:10px 0"><span class="t"><b>Modo invisível</b><small>Veja o mapa sem aparecer nele</small></span><button class="sw" role="switch" aria-checked="${invisible}" id="swInv" aria-label="Modo invisível"></button></div>
+   <div class="linkrow" style="padding:10px 0"><span class="t"><b>Mensagens no app</b><small>Membros podem enviar mensagens para você</small></span><button class="sw" role="switch" aria-checked="${!me.dmOff}" id="swDm" aria-label="Mensagens no app"></button></div>
    <div class="sec">Avisos</div>
    <div class="linkrow" style="padding:10px 0"><span class="t"><b>Mensagens no celular</b><small id="pushSub">${esc(pushHint())}</small></span><button class="sw" role="switch" aria-checked="${pushState==='on'}" id="swPush" aria-label="Mensagens no celular"></button></div>
    ${me.admin?`<div class="sec">Administração</div><button class="linkrow" id="goAdmin"><span class="ic">⚙</span><span class="t"><b>Membros</b><small>Cadastrar e desativar acessos</small></span><span class="chev">›</span></button><button class="linkrow" id="goAdmEvents"><span class="ic">▦</span><span class="t"><b>Gerenciar eventos</b><small>Criar, editar e apagar eventos</small></span><span class="chev">›</span></button>`:''}
@@ -1075,10 +1065,10 @@ function openMe(){
 `;
   $('#swInv').onclick=async()=>{const v=!invisible;try{await saveMember(me.id,{invisible:v})}catch(e){toast('Não foi possível mudar agora.');return}invisible=v;$('#swInv').setAttribute('aria-checked',invisible);haptic();refresh();toast(invisible?'Você está invisível no mapa':'Você voltou a aparecer')};
   $('#meBody').querySelectorAll('[data-free]').forEach(b=>b.onclick=async()=>{const k=b.dataset.free;const cur=freeOf(me);const off=cur&&cur.kind===k;const patch=off?{freeKind:'',freeTime:'',freeDay:''}:{freeKind:k,freeTime:'',freeDay:today()};
-    try{await saveMember(me.id,{freeKind:patch.freeKind||null,freeTime:null,freeDay:patch.freeDay||null})}catch(e){toast('Não foi possível salvar agora.');return}Object.assign(me,patch);haptic();openMe();refresh();toast(off?'Você não está mais livre hoje':`Livre para um ${k} hoje`)});
+    try{await saveMember(me.id,{freeKind:patch.freeKind||null,freeTime:null,freeDay:patch.freeDay||null})}catch(e){toast('Não foi possível salvar agora.');return}Object.assign(me,patch);haptic();openMe();refresh();toast(off?'Disponibilidade removida':`Disponível para um ${k} hoje`)});
   $('#meBody').querySelectorAll('[data-ftime]').forEach(b=>b.onclick=async()=>{const t=b.dataset.ftime;try{await saveMember(me.id,{freeTime:t||null})}catch(e){toast('Não foi possível salvar agora.');return}me.freeTime=t;haptic();openMe();refresh()});
-  if($('#swHost'))$('#swHost').onclick=async()=>{const v=!me.host;try{await saveMember(me.id,{host:v})}catch(e){toast('Não foi possível mudar agora.');return}me.host=v;$('#swHost').setAttribute('aria-checked',v);haptic();toast(v?`Você é anfitrião em ${city(me.home).n}`:'Você deixou de ser anfitrião')};
-  $('#swDm').onclick=async()=>{const v=!me.dmOff;try{await saveMember(me.id,{dmOff:v})}catch(e){toast('Não foi possível mudar agora.');return}$('#swDm').setAttribute('aria-checked',!v);haptic();toast(v?'Só pelo grupo do WhatsApp':'Membros podem te escrever no app')};
+  if($('#swHost'))$('#swHost').onclick=async()=>{const v=!me.host;try{await saveMember(me.id,{host:v})}catch(e){toast('Não foi possível mudar agora.');return}me.host=v;$('#swHost').setAttribute('aria-checked',v);haptic();toast(v?`Anfitrião em ${city(me.home).n} ativado`:'Anfitrião desativado')};
+  $('#swDm').onclick=async()=>{const v=!me.dmOff;try{await saveMember(me.id,{dmOff:v})}catch(e){toast('Não foi possível mudar agora.');return}$('#swDm').setAttribute('aria-checked',!v);haptic();toast(v?'Mensagens no app desativadas':'Mensagens no app ativadas')};
   $('#swPush').onclick=async()=>{const b=$('#swPush');if(b.disabled)return;b.disabled=true;try{if(pushState==='on')await disablePush();else if(!(await enablePush()))return;haptic();toast(pushState==='on'?'Avisos ativados':'Avisos desativados')}finally{b.disabled=false;b.setAttribute('aria-checked',pushState==='on');$('#pushSub').textContent=pushHint()}};
   $('#meBody').querySelectorAll('[data-pref]').forEach(b=>b.onclick=()=>{const v=!(b.getAttribute('aria-checked')==='true');b.setAttribute('aria-checked',v);store.set(b.dataset.pref,v);haptic()});
   if(me.admin){$('#goAdmin').onclick=openAdmin;$('#goAdmEvents').onclick=openAdmEvents}
@@ -1122,17 +1112,17 @@ function openAdmin(){
   $('#fGroup').value=SETTINGS.group_link||'';
   const list=members.filter(m=>m.id!==me.id);$('#admCount').textContent=list.length+1;
   $('#admList').innerHTML=list.map(m=>`<div class="row"><span>${avatar(m)}</span><span class="t"><b>${esc(m.name)} ${m.active===false?'<span class="pill off">desativado</span>':m.complete?'':'<span class="pill">sem perfil</span>'}</b><small>${esc(m.email)}</small></span><button class="chip ghost" style="height:34px;font-size:13px" data-toggle="${m.id}">${m.active===false?'Reativar':'Desativar'}</button></div>`).join('');
-  $('#admList').querySelectorAll('[data-toggle]').forEach(b=>b.onclick=async()=>{const m=byId(b.dataset.toggle);const was=m.active!==false;try{await saveMember(m.id,{active:!was})}catch(e){toast('Não foi possível alterar.');return}haptic();toast(was?`${m.name.split(' ')[0]} perdeu o acesso`:`${m.name.split(' ')[0]} reativado`);openAdmin();refresh()});
+  $('#admList').querySelectorAll('[data-toggle]').forEach(b=>b.onclick=async()=>{const m=byId(b.dataset.toggle);const was=m.active!==false;try{await saveMember(m.id,{active:!was})}catch(e){toast('Não foi possível alterar.');return}haptic();toast(was?`Acesso de ${m.name.split(' ')[0]} desativado`:`Acesso de ${m.name.split(' ')[0]} reativado`);openAdmin();refresh()});
   openSheet('shAdmin');
 }
 $('#fGroup').addEventListener('change',async()=>{const v=$('#fGroup').value.trim();const {error}=await sb.from('settings').upsert({key:'group_link',value:v});if(error){toast('Não foi possível salvar o link.');return}SETTINGS.group_link=v;toast('Link do grupo salvo')});
 $('#admForm').onsubmit=async e=>{e.preventDefault();const name=$('#aName').value.trim(),email=$('#aEmail').value.trim().toLowerCase();const err=$('#admErr');err.hidden=true;
   if(!name||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){err.textContent='Preencha nome e um e-mail válido.';err.hidden=false;return}
   if(members.some(m=>m.email.toLowerCase()===email)){err.textContent='Esse e-mail já está cadastrado.';err.hidden=false;return}
-  const {data,error}=await sb.from('members').insert({name,email}).select().single();if(error){err.textContent='Não foi possível cadastrar. Tente de novo.';err.hidden=false;return}members.push(fromRow(data));$('#aName').value='';$('#aEmail').value='';haptic();toast(`${name.split(' ')[0]} cadastrado. Já pode entrar com o e-mail.`);openAdmin()};
+  const {data,error}=await sb.from('members').insert({name,email}).select().single();if(error){err.textContent='Não foi possível cadastrar. Tente de novo.';err.hidden=false;return}members.push(fromRow(data));$('#aName').value='';$('#aEmail').value='';haptic();toast(`Cadastro concluído. ${name.split(' ')[0]} já pode entrar com o e-mail.`);openAdmin()};
 let pendingPhoto=null,editStage=1;
 function openEdit(first){
-  editStage=1;$('#editTitle').textContent=first?'Complete seu perfil':'Editar perfil';$('#editSub').textContent='Para quem te vir no mapa saber em 3 segundos por que falar com você.';$('#editSub').hidden=!first;$('#termsRow').hidden=!first;$('#editA').hidden=false;$('#editB').hidden=first;$('#editSkip').hidden=true;$('#editSave').textContent=first?'Continuar':'Salvar';
+  editStage=1;$('#editTitle').textContent=first?'Complete seu perfil':'Editar perfil';$('#editSub').textContent='Assim os membros sabem, em poucos segundos, por que falar com você.';$('#editSub').hidden=!first;$('#termsRow').hidden=!first;$('#editA').hidden=false;$('#editB').hidden=first;$('#editSkip').hidden=true;$('#editSave').textContent=first?'Continuar':'Salvar';
   $('#fName').value=me.name||'';$('#fWa').value=me.wa?(me.wa.startsWith('55')&&me.wa.length<=13?(()=>{const d=me.wa.slice(2);return `(${d.slice(0,2)}) ${d.slice(2,d.length-4)}-${d.slice(-4)}`})():'+'+me.wa):'';$('#fCo').value=me.co||'';$('#fNiche').value=me.niche||'';$('#fIg').value=me.ig?'@'+me.ig.replace('@',''):'';$('#fHome').value=knownCity(me.home)?me.home:'';$('#fHomeQ').value=knownCity(me.home)?city(me.home).n:'';$('#fHomeList').innerHTML='';$('#fSeek').value=me.seek||'';$('#fTerms').checked=!first;pendingPhoto=me.photo||null;$('#editAv').outerHTML=avatar({...me,photo:pendingPhoto},'big').replace('class="av big"','class="av big" id="editAv" style="width:72px;height:72px;font-size:24px"');$('#editErr').hidden=true;
   openSheet('shEdit');
 }
@@ -1162,12 +1152,12 @@ async function saveProfile(){const first=!me.complete;const v=id=>$('#'+id).valu
   catch(e){err.textContent='Não foi possível salvar. Verifique a conexão e tente de novo.';err.hidden=false;return}
   finally{btn.disabled=false}
   haptic();closeAll();refresh();
-  if(first){toast('Bem-vindo ao mapa, '+me.name.split(' ')[0]);const c=city(me.home);centerOn(c.lng,c.lat,2.4)}else toast('Perfil salvo')}
+  if(first){toast('Boas-vindas ao The Group, '+me.name.split(' ')[0]);const c=city(me.home);centerOn(c.lng,c.lat,2.4)}else toast('Perfil salvo')}
 $('#editForm').onsubmit=e=>{e.preventDefault();const first=!me.complete;const v=id=>$('#'+id).value.trim();const err=$('#editErr');err.hidden=true;
   if(editStage===1){if(!v('fName')||!v('fCo')||!v('fNiche')||!v('fHome')){err.textContent='Nome, empresa, nicho e cidade são obrigatórios.';err.hidden=false;return}
     if(!waValid(waDigits(v('fWa')))){err.textContent='Digite um WhatsApp válido, com DDD.';err.hidden=false;return}
     if(first&&!$('#fTerms').checked){err.textContent='Para entrar, aceite o termo de uso.';err.hidden=false;return}
-    if(first){editStage=2;$('#editA').hidden=true;$('#editB').hidden=false;$('#editTitle').textContent='Quase lá';$('#editSub').textContent='Opcional: seu Instagram e o que você está buscando.';$('#editSkip').hidden=false;$('#editSave').textContent='Salvar';$('#shEdit .sb').scrollTop=0;haptic();return}}
+    if(first){editStage=2;$('#editA').hidden=true;$('#editB').hidden=false;$('#editTitle').textContent='Última etapa';$('#editSub').textContent='Opcional: seu Instagram e o que você está buscando.';$('#editSkip').hidden=false;$('#editSave').textContent='Salvar';$('#shEdit .sb').scrollTop=0;haptic();return}}
   saveProfile()};
 $('#editSkip').onclick=()=>{$('#fIg').value='';$('#fSeek').value='';saveProfile()};
 
@@ -1220,7 +1210,7 @@ function platform(){const ua=navigator.userAgent;if(/iPhone|iPad|iPod/.test(ua)|
 function updateInstallTip(){const tip=$('#installTip');let dismissed=false;try{dismissed=sessionStorage.getItem('themap.tipClosed')==='1'}catch(e){}
   const pf=platform();const show=!!me&&!isInstalled()&&!dismissed&&(pf!=='other'||installEvt);
   tip.hidden=!show;if(!show)return;
-  if(installEvt){$('#tipText').textContent='Fica na sua tela de início e você não precisa entrar de novo.';$('#tipAction').hidden=false}
+  if(installEvt){$('#tipText').textContent='O app fica na tela de início e o acesso permanece salvo.';$('#tipAction').hidden=false}
   else if(pf==='ios'){$('#tipText').innerHTML=`Toque em ${SHARE_ICON} Compartilhar e depois em <b style="display:inline;font-size:13px">Adicionar à Tela de Início</b>. Assim você não precisa entrar de novo.`;$('#tipAction').hidden=true}
   else{$('#tipText').innerHTML=`Toque no menu <b style="display:inline;font-size:13px">⋮</b> do navegador e em <b style="display:inline;font-size:13px">Instalar app</b>. Assim você não precisa entrar de novo.`;$('#tipAction').hidden=true}}
 $('#tipClose').onclick=()=>{try{sessionStorage.setItem('themap.tipClosed','1')}catch(e){}$('#installTip').hidden=true};
@@ -1234,7 +1224,7 @@ function refresh(){
   const abroad=Object.keys(cityCounts()).filter(id=>city(id).c!==BR).reduce((a,id)=>a+cityCounts()[id],0);$('#worldN').hidden=!abroad;$('#worldN').textContent=abroad;
   const atHome=!has&&knownCity(me.home);$('#myStatus').hidden=!(has||atHome);$('#btnCheckin').hidden=has||atHome;$('#stEnd').hidden=!has;$('#btnWorld').hidden=!abroad;
   if(has){$('#stCity').textContent=placeName(myCheckin.place);$('#stMeta').textContent='· '+whenLabel(myCheckin)+(invisible?' · invisível':'')}
-  else if(atHome){$('#stCity').textContent=city(me.home).n;$('#stMeta').textContent='· sua cidade'+(invisible?' · invisível':'');if(!invisible&&!store.get('homeNoticed',false)){store.set('homeNoticed',true);setTimeout(()=>toast(`Você aparece em ${city(me.home).n}. Para sumir do mapa, use o modo invisível.`),1200)}}
+  else if(atHome){$('#stCity').textContent=city(me.home).n;$('#stMeta').textContent='· sua cidade'+(invisible?' · invisível':'');if(!invisible&&!store.get('homeNoticed',false)){store.set('homeNoticed',true);setTimeout(()=>toast(`Você aparece em ${city(me.home).n}. Para não aparecer no mapa, use o modo invisível.`),1200)}}
   const ev=nextMyEvent()||null;$('#eventcard').hidden=!ev;
   const nUp=upcomingEvents().length;$('#evN').hidden=!nUp;$('#evN').textContent=nUp;
   const nMsg=unreadCount();$('#msgN').hidden=!nMsg;$('#msgN').textContent=nMsg;
@@ -1243,7 +1233,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792789281';
+const APP_VERSION='1792789664';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
