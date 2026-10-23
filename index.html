@@ -120,6 +120,17 @@ svg[data-tier="c"] .lbl.state text{opacity:.8}
 /* bottom dock */
 #dock{position:absolute;left:0;right:0;bottom:0;padding-bottom:calc(14px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:center;gap:10px;z-index:5;pointer-events:none}
 #dock>*{pointer-events:auto}
+.tip{display:flex;align-items:center;gap:12px;width:min(100%,420px);border-radius:20px;padding:12px 10px 12px 12px;text-align:left;animation:tipIn .5s cubic-bezier(.34,1.4,.64,1)}
+.tip .tipic{width:40px;height:40px;border-radius:10px;overflow:hidden;flex:none}
+.tip .tipic img{width:100%;height:100%;display:block}
+.tip .t{flex:1;min-width:0}
+.tip b{display:block;font-size:15px}
+.tip small{display:block;font-size:13px;color:var(--fg2);line-height:1.35;margin-top:2px}
+.tip small svg{vertical-align:-3px;margin:0 1px}
+.tipbtn{height:36px;padding:0 14px;border-radius:999px;background:var(--fg);color:var(--accent-ink);font-weight:700;font-size:14px;flex:none}
+.tipx{width:32px;height:32px;border-radius:50%;background:var(--surface2);color:var(--fg2);font-size:13px;flex:none;display:grid;place-items:center}
+@keyframes tipIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.tip{animation:none}}
 .primary{height:52px;padding:0 28px;border-radius:999px;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:16px;display:inline-flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 2px 8px 2px rgba(0,0,0,.15);transition:transform .35s cubic-bezier(.34,1.56,.64,1),opacity .2s}
 .primary:active{transform:scale(.97)}
 .primary[disabled]{background:var(--surface2);color:var(--fg3);box-shadow:none;cursor:default}
@@ -287,6 +298,12 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
   <div id="eventcard" class="gutter" hidden><button id="eventBtn"><span class="ic" id="evIc">TH</span><span><b id="evTitle">Você está na The House</b><small id="evSub">38 presentes</small></span></button></div>
 
   <div id="dock" class="gutter">
+    <div id="installTip" class="tip glass" hidden role="note">
+      <span class="tipic"><img src="apple-touch-icon.png" alt=""></span>
+      <span class="t"><b>Instale o The Map</b><small id="tipText"></small></span>
+      <button class="tipbtn" id="tipAction" hidden>Instalar</button>
+      <button class="tipx" id="tipClose" aria-label="Fechar aviso">✕</button>
+    </div>
     <button class="status" id="myStatus" hidden><span class="dot"></span><span><b id="stCity">São Paulo</b> <span id="stMeta">· até sexta</span></span><span style="color:var(--fg3);font-size:18px">›</span><span class="x" id="stEnd" role="button" aria-label="Encerrar check-in">✕</span></button>
     <button class="estou" id="btnCheckin"><span id="btnCheckinLbl">Marcar local</span></button>
   </div>
@@ -495,7 +512,8 @@ let me=null,myCheckin=null,invisible=false;
 const today=()=>D(0);
 function fromRow(r){return{id:r.id,email:r.email,name:r.name||'',active:r.active,admin:r.is_admin,wa:r.wa||'',co:r.company||'',niche:r.niche||'',home:r.home_city||'',ig:r.instagram||'',seek:r.seeking||'',photo:r.photo_url||null,complete:r.complete,invisible:r.invisible,user_id:r.user_id}}
 function evFromRow(r){const d=new Date(r.starts_on+'T12:00:00');const c=city(r.city);return{id:r.id,n:r.name,city:r.city,start:r.starts_on,end:r.ends_on,when:`${WD[d.getDay()]} ${pad2(d.getDate())}/${pad2(d.getMonth()+1)}${r.time_label?' · '+r.time_label:''}${c?' · '+c.n:''}`,short:`${pad2(d.getDate())}/${pad2(d.getMonth()+1)}`,active:r.active&&r.ends_on>=today()}}
-function evWord(e,n){return e.start>today()?(n===1?'vai':'vão'):(n===1?'presente':'presentes')}
+function whenLabel(ck){return ck.place.startsWith('ev:')?event(ck.place.slice(3)).short:untilLabel(ck.until)}
+function evWord(e,n){return e.start>today()?(n===1?'confirmou presença':'confirmaram presença'):(n===1?'presente':'presentes')}
 async function loadAll(){
   const [m,c,e,s]=await Promise.all([sb.from('members').select('*').order('name'),sb.from('checkins').select('member_id,place,until,open_to'),sb.from('events').select('*').order('starts_on'),sb.from('settings').select('key,value')]);
   const err=m.error||c.error||e.error||s.error;if(err)throw err;
@@ -635,7 +653,7 @@ document.querySelectorAll('.sheet').forEach(sh=>{
 });
 
 /* ---------- city / event / profile ---------- */
-function memberRow(ck){const m=byId(ck.m);return`<button class="row" data-prof="${m.id}" data-ck="${ck.place}"><span>${avatar(m)}</span><span class="t"><b>${esc(m.name)}${ck.mine?' <span class="pill adm">você</span>':''}</b><small>${esc(m.co)} · ${esc(m.niche)}</small></span><span class="meta"><b>${untilLabel(ck.until)}</b></span><span class="chev">›</span></button>`}
+function memberRow(ck){const m=byId(ck.m);return`<button class="row" data-prof="${m.id}" data-ck="${ck.place}"><span>${avatar(m)}</span><span class="t"><b>${esc(m.name)}${ck.mine?' <span class="pill adm">você</span>':''}</b><small>${esc(m.co)} · ${esc(m.niche)}</small></span><span class="meta"><b>${whenLabel(ck)}</b></span><span class="chev">›</span></button>`}
 function openCity(id){
   const c=city(id);const cks=activeCheckins().filter(k=>k.place===id);const evs=EVENTS.filter(e=>e.active&&e.city===id).map(e=>({e,n:activeCheckins().filter(k=>k.place==='ev:'+e.id).length}));
   const total=cks.length+evs.reduce((a,b)=>a+b.n,0);
@@ -649,22 +667,25 @@ function openCity(id){
   $('#cityBody').innerHTML=h;openSheet('shCity');centerOn(c.lng,c.lat,useTiles?Math.max(2.6,0.0711*Math.pow(2,lmap.getZoom()+1)):Math.max(z,2.6));
 }
 function openEvent(id){const e=event(id);const cks=activeCheckins().filter(k=>k.place==='ev:'+id);$('#evName').textContent=e.n;$('#evCount').textContent=`${cks.length} ${evWord(e,cks.length)} · ${e.when}`;
-  $('#evBody').innerHTML=(cks.length?`<p style="color:var(--fg2);font-size:14px;margin:4px 0 6px">Quem está aqui, para você saber quem procurar. O endereço não aparece.</p>`+cks.map(memberRow).join(''):`<div class="empty"><b>Ninguém na ${esc(e.n)} ainda.</b>Seja o primeiro a avisar.</div>`)+(me&&myCheckin&&myCheckin.place==='ev:'+id?'':`<div style="margin-top:18px"><button class="secondary" data-checkin-ev="${id}">Fazer check-in na ${esc(e.n)}</button></div>`);
+  const future=e.start>today();
+  $('#evBody').innerHTML=(cks.length?`<div class="sec">${future?'Confirmaram presença':'Membros presentes'}</div>`+cks.map(memberRow).join(''):`<div class="empty"><b>${future?'Ninguém confirmou ainda.':'Ninguém marcou presença ainda.'}</b>Seja o primeiro.</div>`)+(me&&myCheckin&&myCheckin.place==='ev:'+id?'':`<div style="margin-top:18px"><button class="secondary" data-checkin-ev="${id}">${future?'Confirmar presença':'Estou aqui'}</button></div>`);
   openSheet('shEvent')}
 function openProfile(id,place){
   const m=byId(id);const ck=activeCheckins().find(k=>k.m===id);const mine=me&&id===me.id;
   $('#profBody').innerHTML=`<div class="pf">${avatar(m,'big')}<h2>${esc(m.name)}</h2><div class="co">${esc(m.co)} · ${esc(m.niche)}${m.home?` · ${esc(city(m.home).n)}`:''}</div>
-    ${ck?`<div class="now"><span>${placeName(ck.place)} · ${untilLabel(ck.until)}</span>${ck.open.map(o=>`<span>${esc(o)}</span>`).join('')}</div>`:''}
+    ${ck?`<div class="now"><span>${placeName(ck.place)} · ${whenLabel(ck)}</span>${ck.open.map(o=>`<span>${esc(o)}</span>`).join('')}</div>`:''}
     ${m.seek?`<div class="seek"><small>O que estou buscando</small>${esc(m.seek)}</div>`:''}
     </div>
     <div style="margin-top:8px">
     ${m.ig?`<a class="linkrow" href="https://instagram.com/${encodeURIComponent(m.ig.replace('@',''))}" target="_blank" rel="noopener" style="border:0"><span class="ic">◎</span><span class="t"><b>@${esc(m.ig.replace('@',''))}</b><small>Instagram</small></span><span class="chev">↗</span></a>`:''}
     </div>`;
   const first=m.name.split(' ')[0];const where=ck?(ck.place.startsWith('ev:')?'na '+placeName(ck.place):'em '+(ck.place==='sp'?'SP':placeName(ck.place))):'';
-  $('#profFoot').innerHTML=mine?`<button class="secondary" id="profEdit">Editar meu perfil</button>`:`<button class="primary" id="btnCall"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.6 8.6 0 0 1-3.8-.9L3 21l2-4.6A8.4 8.4 0 1 1 21 11.5z"/></svg>Chamar no grupo</button>`;
+  $('#profFoot').innerHTML=mine?`<button class="secondary" id="profEdit">Editar meu perfil</button>`:`<button class="primary" id="btnCall"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.6 8.6 0 0 1-3.8-.9L3 21l2-4.6A8.4 8.4 0 1 1 21 11.5z"/></svg>Chamar no grupo</button>${SETTINGS.group_link?'<button class="resend" id="btnOpenGroup" style="margin-top:6px">Só abrir o grupo</button>':''}`;
   openSheet('shProfile');
   if(mine)$('#profEdit').onclick=()=>openEdit(false);
-  else $('#btnCall').onclick=async()=>{const tag=m.wa?'@'+m.wa:'@'+first;const msg=`${tag} tá ${where||'por aí'}? Bora marcar?`;window.__lastCall=msg;let ok=false;try{await navigator.clipboard.writeText(msg);ok=true}catch(e){}haptic();const link=SETTINGS.group_link||'';if(link){toast(ok?'Mensagem copiada. Cole no grupo.':'Abrindo o grupo');const a=document.createElement('a');a.href=link;a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();a.remove()}else toast(ok?'Mensagem copiada. Cole no grupo.':'Cole no grupo: '+msg)};
+  else{$('#btnCall').onclick=async()=>{const tag=m.wa?'@'+m.wa:'@'+first;const msg=`${tag} tá ${where||'por aí'}? Bora marcar?`;window.__lastCall=msg;try{await navigator.clipboard.writeText(msg)}catch(e){}haptic();
+    toast('Escolha o grupo The Group e toque em enviar');const a=document.createElement('a');a.href='https://wa.me/?text='+encodeURIComponent(msg);a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();a.remove()};
+    const og=$('#btnOpenGroup');if(og)og.onclick=()=>{const link=SETTINGS.group_link||'';if(!link)return;const a=document.createElement('a');a.href=link;a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();a.remove()}}
 }
 document.addEventListener('click',e=>{
   const p=e.target.closest('[data-prof]');if(p){openProfile(p.dataset.prof,p.dataset.ck);return}
@@ -823,16 +844,31 @@ $('#codeForm').onsubmit=async e=>{e.preventDefault();if(entering)return;const c=
 function enter(m){me=m;shownBubbles=new Set();bubbleFirst=true;subscribeLive();haptic();$('#login').classList.add('out');refresh();
   const c=city(me.home||'sp');if(useTiles){centerOn(c.lng,c.lat,2.4)}else{fitBrazil();setTimeout(()=>centerOn(c.lng,c.lat,2.4),250)}
   if(!me.complete)setTimeout(()=>openEdit(true),500)}
+const SHARE_ICON='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-label="Compartilhar"><path d="M12 15V3"/><path d="M8 7l4-4 4 4"/><path d="M6 11H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-1"/></svg>';
+let installEvt=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvt=e;updateInstallTip()});
+window.addEventListener('appinstalled',()=>{installEvt=null;updateInstallTip()});
+function isInstalled(){return navigator.standalone===true||matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: fullscreen)').matches}
+function platform(){const ua=navigator.userAgent;if(/iPhone|iPad|iPod/.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1))return'ios';if(/Android/.test(ua))return'android';return'other'}
+function updateInstallTip(){const tip=$('#installTip');let dismissed=false;try{dismissed=sessionStorage.getItem('themap.tipClosed')==='1'}catch(e){}
+  const pf=platform();const show=!!me&&!isInstalled()&&!dismissed&&(pf!=='other'||installEvt);
+  tip.hidden=!show;if(!show)return;
+  if(installEvt){$('#tipText').textContent='Fica na sua tela de início e você não precisa entrar de novo.';$('#tipAction').hidden=false}
+  else if(pf==='ios'){$('#tipText').innerHTML=`Toque em ${SHARE_ICON} Compartilhar e depois em <b style="display:inline;font-size:13px">Adicionar à Tela de Início</b>. Assim você não precisa entrar de novo.`;$('#tipAction').hidden=true}
+  else{$('#tipText').innerHTML=`Toque no menu <b style="display:inline;font-size:13px">⋮</b> do navegador e em <b style="display:inline;font-size:13px">Instalar app</b>. Assim você não precisa entrar de novo.`;$('#tipAction').hidden=true}}
+$('#tipClose').onclick=()=>{try{sessionStorage.setItem('themap.tipClosed','1')}catch(e){}$('#installTip').hidden=true};
+$('#tipAction').onclick=async()=>{if(!installEvt)return;installEvt.prompt();try{await installEvt.userChoice}catch(e){}installEvt=null;updateInstallTip()};
 function refresh(){
+  updateInstallTip();
   renderBubbles();
   if(!me)return;
   $('#meAv').outerHTML=avatar(me).replace('class="av"','class="av" id="meAv"');$('#eyeBadge').hidden=!invisible;
   const has=myCheckin&&myCheckin.until>=today();
   const abroad=Object.keys(cityCounts()).filter(id=>city(id).c!==BR).reduce((a,id)=>a+cityCounts()[id],0);$('#worldN').hidden=!abroad;$('#worldN').textContent=abroad;
   $('#myStatus').hidden=!has;$('#btnCheckin').hidden=has;$('#btnWorld').hidden=!abroad;
-  if(has){$('#stCity').textContent=placeName(myCheckin.place);$('#stMeta').textContent='· '+untilLabel(myCheckin.until)+(invisible?' · invisível':'')}
+  if(has){$('#stCity').textContent=placeName(myCheckin.place);$('#stMeta').textContent='· '+whenLabel(myCheckin)+(invisible?' · invisível':'')}
   const ev=has&&myCheckin.place.startsWith('ev:')?event(myCheckin.place.slice(3)):null;$('#eventcard').hidden=!ev;
-  if(ev){const n=activeCheckins().filter(k=>k.place==='ev:'+ev.id).length;$('#evTitle').textContent=(ev.start>today()?'Você vai na ':'Você está na ')+ev.n;$('#evIc').textContent=initials(ev.n);$('#evSub').textContent=`${n} ${evWord(ev,n)} · toque para ver quem`}
+  if(ev){const n=activeCheckins().filter(k=>k.place==='ev:'+ev.id).length;$('#evTitle').textContent=ev.start>today()?ev.n:'Você está na '+ev.n;$('#evIc').textContent=initials(ev.n);$('#evSub').textContent=ev.start>today()?`Presença confirmada · ${n} ${n===1?'confirmado':'confirmados'}`:`${n} ${evWord(ev,n)} · toque para ver quem`}
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
