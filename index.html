@@ -96,7 +96,7 @@ svg[data-tier="c"] .lbl.state text{opacity:.8}
 .brand span{font-size:12px;color:var(--fg2);font-weight:600;letter-spacing:.06em;text-transform:uppercase}
 .glass,.avatarbtn,.worldbtn,.status,#eventcard button{background:var(--glass);box-shadow:var(--glass-shadow);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
 .avatarbtn{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;position:relative;background:none!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
-.avatarbtn .av{width:36px;height:36px}
+.avatarbtn .av{width:36px;height:36px;box-shadow:0 0 0 1px rgba(255,255,255,.18)}
 .evbtn{align-self:flex-start;height:40px;margin-top:2px;padding:0 14px 0 12px;border-radius:999px;font-size:14px;font-weight:700;display:inline-flex;align-items:center;gap:7px;background:var(--glass);box-shadow:var(--glass-shadow);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
 .evbtn .n{background:var(--fg);color:var(--accent-ink);border-radius:999px;min-width:20px;height:20px;padding:0 6px;display:grid;place-items:center;font-size:12px}
 .worldbtn{height:34px;padding:0 12px;border-radius:999px;font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:6px}
@@ -310,7 +310,7 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
 .cardpick{display:block;width:100%;aspect-ratio:4/5;max-height:52vh;border-radius:24px;background:var(--surface2);display:grid;place-items:center;font-weight:700;font-size:17px;color:var(--fg2);overflow:hidden;position:relative;cursor:pointer}
 .cardpick img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.cardpick img:not([hidden])+span,.cardpick:has(img:not([hidden])) span{display:none}
 .cardv{position:relative;width:100%;aspect-ratio:4/5;max-height:62vh;border-radius:24px;overflow:hidden;background:#000;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
-.cardv img{width:100%;height:100%;object-fit:cover;display:block}
+.cardv img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .25s}
 .cardcap{position:absolute;left:0;right:0;bottom:0;padding:56px 18px 18px;background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.72));font-size:17px;font-weight:600;line-height:1.3;text-shadow:0 1px 2px rgba(0,0,0,.5)}.cardcap:empty{display:none}
 .cardnav{position:absolute;top:0;bottom:0;left:0;width:35%}.cardnav.right{left:auto;right:0}
 .carddots{display:flex;justify-content:center;gap:6px;margin:14px 0 4px}.carddots i{width:6px;height:6px;border-radius:50%;background:var(--fg3)}.carddots i.on{background:var(--fg)}
@@ -910,12 +910,12 @@ $('#cardIn').addEventListener('change',async e=>{const f=e.target.files[0];e.tar
   catch(x){const m=String((x&&x.message)||x||'');console.error('card',x);toast(/10 cartões/.test(m)?'Você já tem 10 cartões nas últimas 24 horas.':'Não foi possível publicar: '+m.slice(0,70));return}
   haptic();toast('Cartão no ar por 24 horas');try{await reloadCards();refresh();rerenderSheets()}catch(x){console.error('card refresh',x)}});
 async function reloadCards(){const cd=await sb.from('cards').select('*').order('created_at');if(cd.error)throw cd.error;CARDS=cd.data.filter(c=>new Date(c.expires_at)>new Date()).map(c=>({id:c.id,m:c.member_id,path:c.photo_path,url:sb.storage.from('cards').getPublicUrl(c.photo_path).data.publicUrl,cap:c.caption||'',place:c.place,at:c.created_at}))}
-function openCards(mid,i=0){const list=cardsOf(mid);if(!list.length)return;cardView={list,i:Math.max(0,Math.min(list.length-1,i))};openSheet('shCards');renderCard()}
+async function openCards(mid,i=0){try{await reloadCards()}catch(e){}const list=cardsOf(mid);if(!list.length){refresh();rerenderSheets();toast('Nenhum cartão no ar');return}cardView={list,i:Math.max(0,Math.min(list.length-1,i))};$('#cardImg').removeAttribute('src');$('#cardImg').style.opacity='0';openSheet('shCards');renderCard()}
 function renderCard(dir){const {list,i}=cardView;const c=list[i];if(!c){closeSheet();return}const m=byId(c.m);
   if(dir){const v=$('#cardV');v.classList.remove('slide');v.style.transform=`translateX(${dir>0?44:-44}px)`;v.style.opacity='.25';requestAnimationFrame(()=>requestAnimationFrame(()=>{v.classList.add('slide');v.style.transform='';v.style.opacity='1'}))}
   $('#cardsDelAsk').hidden=true;$('#cardsDel').hidden=false;
   $('#cardsWho').innerHTML=`${avatar(m)}<span style="min-width:0"><b>${esc(m.name)}</b><small>${c.place?esc(city(c.place).n)+' · ':''}há ${ago(c.at)}</small></span>`;
-  $('#cardImg').src=c.url;$('#cardCap2').textContent=c.cap;$('#cardsDelWrap').hidden=!(me&&c.m===me.id);
+  const im=$('#cardImg');if(im.getAttribute('src')!==c.url){im.style.opacity='0';im.onload=()=>{im.style.opacity='1'};im.src=c.url}$('#cardCap2').textContent=c.cap;$('#cardsDelWrap').hidden=!(me&&c.m===me.id);
   $('#cardDots').innerHTML=list.length>1?list.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join(''):''}
 $('#cardPrev2').onclick=()=>{if(cardView.i>0){cardView.i--;renderCard(-1)}};
 $('#cardNext').onclick=()=>{if(cardView.i<cardView.list.length-1){cardView.i++;renderCard(1)}else closeSheet()};
@@ -1249,7 +1249,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792772929';
+const APP_VERSION='1792773114';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
