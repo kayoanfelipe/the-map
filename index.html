@@ -47,7 +47,7 @@ a{color:var(--link)}
 /* ---------- App shell ---------- */
 #app{position:absolute;inset:0;overflow:clip}
 #map canvas,#map svg{position:absolute;inset:0;width:100%;height:100%;display:block}
-#map{background:radial-gradient(120% 90% at 50% 40%,#0c1020 0%,#06070d 55%,#030305 100%);position:absolute;inset:0;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
+#map{background:radial-gradient(120% 90% at 50% 40%,#0b0b0d 0%,#060607 55%,#020203 100%);position:absolute;inset:0;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
 #map:active{cursor:grabbing}
 
 .country{fill:var(--land);stroke:var(--border);stroke-width:1;vector-effect:non-scaling-stroke;stroke-linejoin:round;stroke-linecap:round}
@@ -302,7 +302,7 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
 .demo .chips .chip{height:38px;font-size:14px}
 .back{color:var(--fg2);font-weight:600;font-size:15px;display:inline-flex;align-items:center;gap:6px;height:44px;margin-bottom:8px}
 .chathead{align-items:center;padding-bottom:10px}
-.av.ring{box-shadow:0 0 0 2px var(--surface),0 0 0 4px #E0AA3E}
+.av.ring{box-shadow:0 0 0 2px var(--surface),0 0 0 4px #E6B04A}
 .close.xs{width:26px;height:26px;font-size:10px;color:var(--fg3);background:var(--surface2)}
 .cardpick{display:block;width:100%;aspect-ratio:4/5;max-height:52vh;border-radius:24px;background:var(--surface2);display:grid;place-items:center;font-weight:700;font-size:17px;color:var(--fg2);overflow:hidden;position:relative;cursor:pointer}
 .cardpick img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.cardpick img:not([hidden])+span,.cardpick:has(img:not([hidden])) span{display:none}
@@ -926,7 +926,13 @@ $('#cardsDel').onclick=async()=>{const c=cardView.list[cardView.i];if(!c)return;
 (()=>{let sx=0;const v=$('#cardV');v.addEventListener('pointerdown',e=>{sx=e.clientX});v.addEventListener('pointerup',e=>{const dx=e.clientX-sx;if(Math.abs(dx)<50)return;if(dx<0)$('#cardNext').click();else $('#cardPrev2').click()})})();
 function cardStrip(ids){const rows=ids.map(id=>({m:byId(id),n:cardsOf(id).length})).filter(x=>x.m&&x.n);if(!rows.length)return'';return`<div class="sec">Cartões de hoje</div><div class="cardstrip">${rows.map(x=>`<button data-cards="${x.m.id}">${avatar(x.m)}<span>${esc(x.m.name.split(' ')[0])}</span></button>`).join('')}</div>`}
 function bindCardStrip(root){root.querySelectorAll('[data-cards]').forEach(b=>b.onclick=e=>{e.stopPropagation();haptic();openCards(b.dataset.cards)})}
-function openInbox(){renderInbox();openSheet('shInbox')}
+let msgPollT=0,msgSyncing=false;
+async function syncMessages(){if(!me||!sb||msgSyncing||document.hidden)return;if(!(stack.includes('shInbox')||stack.includes('shChat')))return;msgSyncing=true;
+  try{const {data,error}=await sb.from('messages').select('*').order('created_at');if(error||!data)return;const fresh=data.map(msgRow);const key=l=>l.map(x=>x.id+':'+(x.read?1:0)).sort().join(',');
+    if(key(fresh)!==key(MSGS.filter(x=>!x.tmp))){const tmp=MSGS.filter(x=>x.tmp);MSGS=fresh.concat(tmp);if(stack.includes('shChat')&&chatWith)markRead(chatWith);refresh()}}
+  catch(e){}finally{msgSyncing=false}}
+function startMsgPoll(){clearInterval(msgPollT);msgPollT=setInterval(syncMessages,8000)}
+function openInbox(){renderInbox();openSheet('shInbox');syncMessages()}
 function renderInbox(){const list=conversations();const el=$('#inboxBody');
   $('#inboxSub').textContent=list.length?`${list.length} ${list.length===1?'conversa':'conversas'}`:'Conversas com membros';
   el.innerHTML=pushBanner()+cardStrip([...new Set(CARDS.map(c=>c.m))].filter(id=>!me||id!==me.id))+(list.length?list.map(c=>{const m=byId(c.id);const mineLast=c.last.from===me.id;return`<button class="row convrow${c.unread?' unread':''}" data-chat="${c.id}">${avatar(m)}<span class="t"><b><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(m.name)}</span><small>${whenShort(c.last.at)}</small></b><small class="snip">${mineLast?'Você: ':''}${esc(c.last.body)}</small></span>${c.unread?`<span class="dot" aria-label="${c.unread} não lidas"></span>`:'<span class="chev">›</span>'}</button>`}).join('')
@@ -1207,7 +1213,7 @@ $('#codeForm').onsubmit=async e=>{e.preventDefault();if(entering)return;const c=
     enter(me);
   }catch(x){err.textContent='Sem conexão com o servidor. Tente de novo.';err.hidden=false}
   finally{entering=false;btn.disabled=false;btn.textContent='Entrar'}};
-function enter(m){me=m;shownBubbles=new Set();bubbleFirst=true;subscribeLive();haptic();$('#login').classList.add('out');refresh();initPush();try{if(!sessionStorage.getItem('themap.swept')){sessionStorage.setItem('themap.swept','1');sb.functions.invoke('push',{body:{sweep:true}}).catch(()=>{})}}catch(e){}
+function enter(m){me=m;shownBubbles=new Set();bubbleFirst=true;subscribeLive();startMsgPoll();haptic();$('#login').classList.add('out');refresh();initPush();try{if(!sessionStorage.getItem('themap.swept')){sessionStorage.setItem('themap.swept','1');sb.functions.invoke('push',{body:{sweep:true}}).catch(()=>{})}}catch(e){}
   const qc=new URLSearchParams(location.search).get('chat');if(qc&&byId(qc)){history.replaceState(null,'',location.pathname);setTimeout(()=>openChat(qc),900)}
   const qcity=new URLSearchParams(location.search).get('city');if(qcity&&knownCity(qcity)){history.replaceState(null,'',location.pathname);setTimeout(()=>openCity(qcity),900)}
   const c=city(me.home||'sp');const far=z<=zMin()*1.01;if(!far)fitWorld(false);setTimeout(()=>flyTo(c.lng,c.lat,2.4,2200),far?250:450)
@@ -1244,7 +1250,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792771770';
+const APP_VERSION='1792772275';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
