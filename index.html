@@ -931,7 +931,7 @@ function openCheckin(pre={}){
   $('#citySearch').value='';renderSuggest();renderCityList();goStep(ci.place?(ci.place.startsWith('ev:')?3:2):1);openSheet('shCheckin');
   if(!ci.place)setTimeout(()=>{try{$('#citySearch').focus({preventScroll:true})}catch(e){}},450);
 }
-function goStep(n){ciStep=n;$('#ciTitle').textContent=CI_TITLES[n];[1,2,3].forEach(i=>{$('#cs'+i).hidden=i!==n});$('#ciDots').querySelectorAll('i').forEach((d,i)=>d.classList.toggle('on',i<n));$('#ciBack').hidden=n===1;$('#shCheckin .sb').scrollTop=0;renderCi()}
+function goStep(n){ciStep=n;$('#ciTitle').textContent=n===1&&me&&!myCheckin&&knownCity(me.home)?'Para onde você vai?':CI_TITLES[n];[1,2,3].forEach(i=>{$('#cs'+i).hidden=i!==n});$('#ciDots').querySelectorAll('i').forEach((d,i)=>d.classList.toggle('on',i<n));$('#ciBack').hidden=n===1;$('#shCheckin .sb').scrollTop=0;renderCi()}
 function renderSuggest(){const home=me&&me.home?city(me.home):null;const evs=[];const recent=store.get('recent',[]).filter(id=>city(id)&&(!home||id!==home.id)).slice(0,2);
   let h='';if(home)h+=`<button type="button" class="chip" data-pick="${home.id}">${esc(home.n)} · sua cidade</button>`;
   for(const ev of evs)h+=`<button type="button" class="chip" data-pick="ev:${ev.id}">${esc(ev.n)} · ${ev.short}</button>`;
@@ -1144,7 +1144,7 @@ function refresh(){
   $('#meAv').outerHTML=avatar(me).replace('class="av"','class="av" id="meAv"');$('#eyeBadge').hidden=!invisible;
   const has=myCheckin&&myCheckin.until>=today();
   const abroad=Object.keys(cityCounts()).filter(id=>city(id).c!==BR).reduce((a,id)=>a+cityCounts()[id],0);$('#worldN').hidden=!abroad;$('#worldN').textContent=abroad;
-  const atHome=!has&&knownCity(me.home);$('#myStatus').hidden=!(has||atHome);$('#btnCheckin').hidden=has;$('#stEnd').hidden=!has;$('#btnWorld').hidden=!abroad;
+  const atHome=!has&&knownCity(me.home);$('#myStatus').hidden=!(has||atHome);$('#btnCheckin').hidden=has||atHome;$('#stEnd').hidden=!has;$('#btnWorld').hidden=!abroad;
   if(has){$('#stCity').textContent=placeName(myCheckin.place);$('#stMeta').textContent='· '+whenLabel(myCheckin)+(invisible?' · invisível':'')}
   else if(atHome){$('#stCity').textContent=city(me.home).n;$('#stMeta').textContent='· sua cidade'+(invisible?' · invisível':'');if(!invisible&&!store.get('homeNoticed',false)){store.set('homeNoticed',true);setTimeout(()=>toast(`Você aparece em ${city(me.home).n}. Para sumir do mapa, use o modo invisível.`),1200)}}
   const ev=nextMyEvent()||null;$('#eventcard').hidden=!ev;
@@ -1155,7 +1155,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792766170';
+const APP_VERSION='1792766509';
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
   if(stack.includes('shEdit')||stack.includes('shEvForm')||stack.includes('shCrop'))return;location.replace(location.pathname+'?v='+v)}catch(e){}}
