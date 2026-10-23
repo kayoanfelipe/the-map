@@ -406,8 +406,10 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
           <button class="chip" data-until="0">Hoje</button>
           <button class="chip" data-until="1">Amanhã</button>
           <button class="chip" data-until="date">Escolher data</button>
+          <button class="chip ghost" data-until="trip">Ainda vou</button>
         </div>
         <input type="date" class="search" id="untilDate" style="margin-top:12px" hidden>
+        <div id="tripDates" hidden style="margin-top:12px"><div class="row2" style="gap:10px"><label style="flex:1"><small class="hint" style="display:block;margin:0 0 6px 2px">Chego</small><input type="date" class="search" id="tripFrom"></label><label style="flex:1"><small class="hint" style="display:block;margin:0 0 6px 2px">Volto</small><input type="date" class="search" id="tripTo"></label></div></div>
       </div>
       <div class="cstep" id="cs3" hidden>
         <div class="chips big" id="openChips">
@@ -607,7 +609,7 @@ const store={get(k,d){try{const v=localStorage.getItem('themap.'+k);return v==nu
 /* ---------- Supabase ---------- */
 const SB_URL='https://kqucpivagntlmukfghhg.supabase.co',SB_KEY='sb_publishable_yFxha4btvFg2bftRPaPhTA_kZgUNhAV';
 const sb=(window.supabase&&/^https:\/\//.test(SB_URL)&&SB_KEY.length>20)?window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true,storageKey:'themap.auth'}}):null;
-let members=[],CHECKINS=[],SETTINGS={},RSVPS=[],MSGS=[],BLOCKS=[],chatWith=null;
+let members=[],CHECKINS=[],SETTINGS={},RSVPS=[],MSGS=[],BLOCKS=[],chatWith=null,TRIPS=[],VISITS=[];
 const byId=id=>members.find(m=>m.id===id);
 const city=id=>CITIES.find(c=>c.id===id)||{id,n:'Cidade',s:'',c:BR,lat:0,lng:0};
 const knownCity=id=>!!id&&CITIES.some(c=>c.id===id);
@@ -616,6 +618,9 @@ let me=null,myCheckin=null,invisible=false;
 const today=()=>D(0);
 function fromRow(r){return{id:r.id,email:r.email,name:r.name||'',active:r.active,admin:r.is_admin,wa:r.wa||'',co:r.company||'',niche:r.niche||'',home:r.home_city||'',ig:r.instagram||'',seek:r.seeking||'',photo:r.photo_url||null,dmOff:!!r.dm_off,complete:r.complete,invisible:r.invisible,user_id:r.user_id}}
 function evFromRow(r){const d=new Date(r.starts_on+'T12:00:00');const c=city(r.city);return{id:r.id,n:r.name,city:r.city,venue:r.venue||'',start:r.starts_on,end:r.ends_on,when:`${WD[d.getDay()]} ${pad2(d.getDate())}/${pad2(d.getMonth()+1)}${r.time_label?' · '+r.time_label:''}${c?' · '+c.n:''}`,short:`${pad2(d.getDate())}/${pad2(d.getMonth()+1)}`,active:r.active&&r.ends_on>=today()}}
+const rangeLabel=(a,b)=>{const da=new Date(a+'T12:00:00'),db_=new Date(b+'T12:00:00');if(a===b)return da.getDate()+' '+MO[da.getMonth()];if(da.getMonth()===db_.getMonth())return da.getDate()+' a '+db_.getDate()+' '+MO[db_.getMonth()];return da.getDate()+' '+MO[da.getMonth()]+' a '+db_.getDate()+' '+MO[db_.getMonth()]};
+function upcomingTrips(mid){return TRIPS.filter(t=>t.start>today()&&(!mid||t.m===mid)&&byId(t.m)&&byId(t.m).active!==false&&(!byId(t.m).invisible||(me&&t.m===me.id))).sort((a,b)=>a.start<b.start?-1:1)}
+function passport(mid){const v=VISITS.filter(x=>x.m===mid);const countries=new Set(v.map(x=>city(x.place).c));return{cities:v.length,countries:countries.size,list:v.sort((a,b)=>a.last<b.last?1:-1)}}
 function whenLabel(ck){return ck.home?'mora aqui':ck.place.startsWith('ev:')?event(ck.place.slice(3)).short:untilLabel(ck.until)}
 function upcomingEvents(){return EVENTS.filter(e=>e.active).sort((a,b)=>a.start<b.start?-1:1)}
 function rsvpsOf(evId){return RSVPS.filter(r=>r.e===evId&&byId(r.m)&&byId(r.m).active!==false&&(!byId(r.m).invisible||(me&&r.m===me.id)))}
@@ -629,17 +634,22 @@ async function loadAll(){
   EVENTS=e.data.map(evFromRow).filter(x=>city(x.city));
   CHECKINS=c.data.filter(r=>r.until>=today()).map(r=>({m:r.member_id,place:r.place,until:r.until,open:r.open_to||[]})).filter(k=>!k.place.startsWith('ev:')||EVENTS.some(x=>'ev:'+x.id===k.place));
   SETTINGS=Object.fromEntries(s.data.map(r=>[r.key,r.value]));
-  const [mg,bl]=await Promise.all([sb.from('messages').select('*').order('created_at'),sb.from('blocks').select('blocked_id')]);
+  const [mg,bl,tp,vs]=await Promise.all([sb.from('messages').select('*').order('created_at'),sb.from('blocks').select('blocked_id'),sb.from('trips').select('*').order('starts_on'),sb.from('visits').select('*')]);
   MSGS=mg.error?[]:mg.data.map(msgRow);BLOCKS=bl.error?[]:bl.data.map(b=>b.blocked_id);
+  TRIPS=tp.error?[]:tp.data.filter(t=>t.ends_on>=today()&&knownCity(t.place)).map(t=>({id:t.id,m:t.member_id,place:t.place,start:t.starts_on,end:t.ends_on,open:t.open_to||[]}));
+  VISITS=vs.error?[]:vs.data.filter(v=>knownCity(v.place)).map(v=>({m:v.member_id,place:v.place,first:v.first_on,last:v.last_on,times:v.times}));
   const {data:{user}}=await sb.auth.getUser();
   me=user?(members.find(x=>x.user_id===user.id)||members.find(x=>x.email===(user.email||'').toLowerCase())||null):null;
-  if(me){invisible=!!me.invisible;const mine=CHECKINS.find(k=>k.m===me.id);myCheckin=mine?{place:mine.place,until:mine.until,open:mine.open}:null}
+  if(me){invisible=!!me.invisible;const mine=CHECKINS.find(k=>k.m===me.id);myCheckin=mine?{place:mine.place,until:mine.until,open:mine.open}:null;
+    const due=!myCheckin&&TRIPS.find(t=>t.m===me.id&&t.start<=today());
+    if(due){const row={member_id:me.id,place:due.place,place_name:city(due.place).n,until:due.end,open_to:due.open};const {error}=await sb.from('checkins').upsert(row,{onConflict:'member_id'});if(!error){await sb.from('trips').delete().eq('id',due.id);TRIPS=TRIPS.filter(t=>t.id!==due.id);myCheckin={place:due.place,until:due.end,open:due.open};CHECKINS=CHECKINS.filter(k=>k.m!==me.id).concat([{m:me.id,...myCheckin}])}}}
 }
 function activeCheckins(){
   const list=CHECKINS.filter(c=>c.until>=today()&&byId(c.m)&&byId(c.m).active!==false&&!byId(c.m).invisible&&(!me||c.m!==me.id));
   if(me&&myCheckin&&myCheckin.until>=today()&&!invisible) list.push({...myCheckin,m:me.id,mine:true});
-  /* quem não marcou nada aparece na cidade do perfil */
+  /* viagem em andamento conta como check-in */
   const has=new Set(list.map(k=>k.m));
+  for(const t of TRIPS){if(has.has(t.m)||t.start>today()||t.end<today())continue;const m=byId(t.m);if(!m||m.active===false||m.invisible)continue;list.push({m:t.m,place:t.place,until:t.end,open:t.open,trip:true,mine:!!(me&&t.m===me.id)});has.add(t.m)}
   for(const m of members){if(has.has(m.id)||!knownCity(m.home)||m.active===false||m.invisible)continue;if(me&&m.id===me.id&&invisible)continue;list.push({m:m.id,place:m.home,until:null,open:[],home:true,mine:!!(me&&m.id===me.id)})}
   return list;
 }
@@ -648,7 +658,7 @@ async function saveMember(id,patch){const row={};for(const k in patch)if(COLS[k]
 async function uploadPhoto(dataUrl){const blob=await (await fetch(dataUrl)).blob();const {data:{user}}=await sb.auth.getUser();const path=`${user.id}/avatar.jpg`;const {error}=await sb.storage.from('avatars').upload(path,blob,{upsert:true,contentType:'image/jpeg'});if(error)throw error;return sb.storage.from('avatars').getPublicUrl(path).data.publicUrl+'?v='+Date.now()}
 let live=null,srT=null;
 function softReload(){clearTimeout(srT);srT=setTimeout(async()=>{if(!me)return;try{await loadAll();if(!me||me.active===false){signOutLocal('Seu acesso foi desativado.');return}refresh()}catch(e){}},400)}
-function subscribeLive(){if(live||!sb)return;live=sb.channel('themap-live').on('postgres_changes',{event:'*',schema:'public',table:'checkins'},softReload).on('postgres_changes',{event:'*',schema:'public',table:'event_rsvps'},softReload).on('postgres_changes',{event:'*',schema:'public',table:'events'},softReload).on('postgres_changes',{event:'*',schema:'public',table:'members'},softReload).on('postgres_changes',{event:'*',schema:'public',table:'messages'},p=>{msgEvent(p);softReload()}).subscribe()}
+function subscribeLive(){if(live||!sb)return;live=sb.channel('themap-live').on('postgres_changes',{event:'*',schema:'public',table:'checkins'},softReload).on('postgres_changes',{event:'*',schema:'public',table:'event_rsvps'},softReload).on('postgres_changes',{event:'*',schema:'public',table:'events'},softReload).on('postgres_changes',{event:'*',schema:'public',table:'members'},softReload).on('postgres_changes',{event:'*',schema:'public',table:'messages'},p=>{msgEvent(p);softReload()}).on('postgres_changes',{event:'*',schema:'public',table:'trips'},softReload).on('postgres_changes',{event:'*',schema:'public',table:'visits'},softReload).subscribe()}
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&me)softReload()});
 async function signOutLocal(msg){try{if(live){sb.removeChannel(live);live=null}await sb.auth.signOut()}catch(e){}me=null;myCheckin=null;CHECKINS=[];members=[];closeAll();refresh();$('#login').classList.remove('out');$('#codeForm').hidden=true;$('#emailForm').hidden=false;$('#email').value=store.get('lastEmail','');if(msg){$('#emailErr').textContent=msg;$('#emailErr').hidden=false}}
 
@@ -785,8 +795,9 @@ function openCity(id){
   const res=cks.filter(k=>byId(k.m).home===id),vis=cks.filter(k=>byId(k.m).home!==id);
   let h='';
   for(const {e,n} of evs)h+=`<button class="eventrow" data-ev="${e.id}"><span class="ic">${initials(e.n)}</span><span class="t"><b>${e.n}</b><small>${n} ${evWord(e,n)} · ${e.when}</small></span><span class="chev" style="margin-left:auto;color:var(--fg3)">›</span></button>`;
-  if(!cks.length&&!evs.length)h+=`<div class="empty"><b>Ninguém em ${esc(c.s==='SP'&&id==='sp'?'SP':c.n)} agora.</b>Seja o primeiro a avisar.<div style="margin-top:18px"><button class="secondary" data-checkin-city="${id}">Marcar ${esc(c.n)}</button></div></div>`;
+  if(!cks.length&&!evs.length&&!upcomingTrips().some(t=>t.place===id))h+=`<div class="empty"><b>Ninguém em ${esc(c.s==='SP'&&id==='sp'?'SP':c.n)} agora.</b>Seja o primeiro a avisar.<div style="margin-top:18px"><button class="secondary" data-checkin-city="${id}">Marcar ${esc(c.n)}</button></div></div>`;
   if(vis.length)h+=`<div class="sec">De passagem</div>`+vis.map(memberRow).join('');
+  const soon=upcomingTrips().filter(t=>t.place===id);if(soon.length)h+=`<div class="sec">Em breve</div>`+soon.map(t=>{const m=byId(t.m);return`<button class="row" data-prof="${m.id}" data-ck="trip:${id}"><span>${avatar(m)}</span><span class="t"><b>${esc(m.name)}${me&&t.m===me.id?' <span class="pill adm">você</span>':''}</b><small>${esc(m.co)} · ${esc(m.niche)}</small></span><span class="meta"><b>${rangeLabel(t.start,t.end)}</b></span><span class="chev">›</span></button>`}).join('');
   if(res.length)h+=`<div class="sec">Moram aqui</div>`+res.map(memberRow).join('');
   $('#cityBody').innerHTML=h;openSheet('shCity');centerOn(c.lng,c.lat,Math.max(z,2.6));
 }
@@ -819,6 +830,7 @@ function inviteMsg(m,ctx){const tag=m.wa?'@'+m.wa:'@'+m.name.split(' ')[0];
     const opts=(ck.open||[]).filter(o=>OPEN_PHRASE[o]);const ask=opts.length?`Bora marcar ${opts.slice(0,2).map(o=>OPEN_PHRASE[o]).join(' ou ')}?`:'Bora se encontrar?';
     return`${tag} vi que você tá em ${cn}${when}. ${ask}`}
   if(ctx&&ctx.type==='home')return`${tag} vi que você é de ${ctx.c.n}. Bora marcar um café?`;
+  if(ctx&&ctx.type==='trip')return`${tag} vi que você vai estar em ${ctx.c.n} ${rangeLabel(ctx.t.start,ctx.t.end)}. Bora marcar algo por lá?`;
   return`${tag} bora marcar um encontro?`}
 /* ---------- chat 1 a 1 ---------- */
 function msgRow(r){return{id:r.id,from:r.sender_id,to:r.recipient_id,body:r.body,at:r.created_at,read:r.read_at||null}}
@@ -897,10 +909,13 @@ $('#chatIn').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!('
 function openProfile(id,place){
   const m=byId(id);const ck=activeCheckins().find(k=>k.m===id&&!k.place.startsWith('ev:')&&!k.home);const mine=me&&id===me.id;
   const evsOf=upcomingEvents().filter(e=>RSVPS.some(r=>r.e===e.id&&r.m===id));
-  const ctx=place&&place.startsWith('ev:')?{type:'event',e:event(place.slice(3))}:ck?{type:'city',ck}:evsOf.length?{type:'event',e:evsOf[0]}:knownCity(m.home)?{type:'home',c:city(m.home)}:null;
+  const myTrips=upcomingTrips(id);const pp=passport(id);const trCtx=place&&place.startsWith('trip:')&&myTrips.find(t=>t.place===place.slice(5));
+  const ctx=trCtx?{type:'trip',t:trCtx,c:city(trCtx.place)}:place&&place.startsWith('ev:')?{type:'event',e:event(place.slice(3))}:ck?{type:'city',ck}:evsOf.length?{type:'event',e:evsOf[0]}:knownCity(m.home)?{type:'home',c:city(m.home)}:null;
   $('#profBody').innerHTML=`<div class="pf">${avatar(m,'big')}<h2>${esc(m.name)}</h2><div class="co">${esc(m.co)} · ${esc(m.niche)}${m.home?` · ${esc(city(m.home).n)}`:''}</div>
     ${ck||evsOf.length?`<div class="now">${ck?`<span>${placeName(ck.place)} · ${whenLabel(ck)}</span>${ck.open.map(o=>`<span>${esc(o)}</span>`).join('')}`:''}${evsOf.map(e=>`<span>${esc(e.n)} · ${e.short}</span>`).join('')}</div>`:''}
+    ${myTrips.length?`<div class="now" style="margin-top:10px">${myTrips.slice(0,3).map(t=>`<span>Em breve: ${esc(city(t.place).n)} · ${rangeLabel(t.start,t.end)}</span>`).join('')}</div>`:''}
     ${m.seek?`<div class="seek"><small>O que estou buscando</small>${esc(m.seek)}</div>`:''}
+    ${pp.cities?`<div class="seek"><small>Passaporte</small><b>${pp.cities} ${pp.cities===1?'cidade':'cidades'} · ${pp.countries} ${pp.countries===1?'país':'países'}</b><div class="chips" style="margin-top:10px;justify-content:flex-start">${pp.list.slice(0,12).map(v=>`<span class="chip" style="height:32px;font-size:13px;padding:0 12px">${esc(city(v.place).n)}${v.times>1?` · ${v.times}x`:''}</span>`).join('')}</div></div>`:''}
     </div>
     <div style="margin-top:8px">
     ${m.ig?`<a class="linkrow" href="https://instagram.com/${encodeURIComponent(m.ig.replace('@',''))}" target="_blank" rel="noopener" style="border:0"><span class="ic">◎</span><span class="t"><b>@${esc(m.ig.replace('@',''))}</b><small>Instagram</small></span><span class="chev">↗</span></a>`:''}
@@ -923,15 +938,15 @@ $('#btnEvents').onclick=()=>{haptic();openEvents()};
 function nextMyEvent(){return upcomingEvents().find(e=>iGo(e.id)&&e.start<=D(1))}
 
 /* ---------- check-in: one question per step ---------- */
-const ci={place:null,until:null,open:[]};let ciStep=1;
-const CI_TITLES={1:'Onde você está?',2:'Até quando?',3:'Aberto a quê?'};
+const ci={place:null,until:null,open:[],trip:false,from:null};let ciStep=1;
+const CI_TITLES={1:'Onde você está?',2:'Até quando?',3:'Aberto a quê?'};const CI_TRIP={1:'Para onde você vai?',2:'Quando?'};
 function openCheckin(pre={}){
-  Object.assign(ci,{place:pre.ev?'ev:'+pre.ev:(pre.city||null),until:pre.ev?event(pre.ev).end:null,open:[]});
-  if(myCheckin&&!pre.ev&&!pre.city){ci.place=myCheckin.place;ci.until=myCheckin.until;ci.open=[...myCheckin.open]}
+  Object.assign(ci,{place:pre.ev?'ev:'+pre.ev:(pre.city||null),until:pre.ev?event(pre.ev).end:null,open:[],trip:!!pre.trip,from:null});
+  if(myCheckin&&!pre.ev&&!pre.city&&!pre.trip){ci.place=myCheckin.place;ci.until=myCheckin.until;ci.open=[...myCheckin.open]}
   $('#citySearch').value='';renderSuggest();renderCityList();goStep(ci.place?(ci.place.startsWith('ev:')?3:2):1);openSheet('shCheckin');
   if(!ci.place)setTimeout(()=>{try{$('#citySearch').focus({preventScroll:true})}catch(e){}},450);
 }
-function goStep(n){ciStep=n;$('#ciTitle').textContent=n===1&&me&&!myCheckin&&knownCity(me.home)?'Para onde você vai?':CI_TITLES[n];[1,2,3].forEach(i=>{$('#cs'+i).hidden=i!==n});$('#ciDots').querySelectorAll('i').forEach((d,i)=>d.classList.toggle('on',i<n));$('#ciBack').hidden=n===1;$('#shCheckin .sb').scrollTop=0;renderCi()}
+function goStep(n){ciStep=n;$('#ciTitle').textContent=ci.trip&&CI_TRIP[n]?CI_TRIP[n]:n===1&&me&&!myCheckin&&knownCity(me.home)?'Para onde você vai?':CI_TITLES[n];[1,2,3].forEach(i=>{$('#cs'+i).hidden=i!==n});$('#ciDots').querySelectorAll('i').forEach((d,i)=>d.classList.toggle('on',i<n));$('#ciBack').hidden=n===1;$('#shCheckin .sb').scrollTop=0;renderCi()}
 function renderSuggest(){const home=me&&me.home?city(me.home):null;const evs=[];const recent=store.get('recent',[]).filter(id=>city(id)&&(!home||id!==home.id)).slice(0,2);
   let h='';if(home)h+=`<button type="button" class="chip" data-pick="${home.id}">${esc(home.n)} · sua cidade</button>`;
   for(const ev of evs)h+=`<button type="button" class="chip" data-pick="ev:${ev.id}">${esc(ev.n)} · ${ev.short}</button>`;
@@ -945,26 +960,31 @@ function renderCityList(){const q=norm($('#citySearch').value.trim());if(!q){$('
   $('#cityList').innerHTML=list.map(c=>`<button type="button" data-pick="${c.id}">${c.n}<small>${sub(c)}</small></button>`).join('')||`<p class="hint" style="color:var(--fg3);padding:10px 2px">Nenhuma cidade com esse nome. Peça ao admin para incluir.</p>`}
 function renderCi(){
   $('#shCheckin').querySelectorAll('[data-pick]').forEach(b=>b.classList.toggle('on',b.dataset.pick===ci.place));
-  const isDate=ci.until&&ci.until!==D(0)&&ci.until!==D(1);
-  $('#untilChips').querySelectorAll('.chip').forEach(b=>b.classList.toggle('on',b.dataset.until==='date'?!!isDate:ci.until===D(+b.dataset.until)));
+  const isDate=!ci.trip&&ci.until&&ci.until!==D(0)&&ci.until!==D(1);
+  $('#untilChips').querySelectorAll('.chip').forEach(b=>b.classList.toggle('on',b.dataset.until==='trip'?ci.trip:b.dataset.until==='date'?!!isDate:(!ci.trip&&ci.until===D(+b.dataset.until))));
   if(isDate){$('#untilDate').hidden=false;$('#untilDate').value=ci.until}
+  $('#tripDates').hidden=!ci.trip;if(ci.trip){$('#untilDate').hidden=true;if(ci.from)$('#tripFrom').value=ci.from;if(ci.until)$('#tripTo').value=ci.until}
   $('#openChips').querySelectorAll('.chip').forEach(b=>b.classList.toggle('on',ci.open.includes(b.dataset.open)));
-  const parts=[ci.place&&placeName(ci.place),ci.until&&untilLabel(ci.until),ci.open.length&&ci.open.join(' · ')].filter(Boolean);
+  const parts=[ci.place&&placeName(ci.place),ci.trip?(ci.from&&ci.until&&rangeLabel(ci.from,ci.until)):(ci.until&&untilLabel(ci.until)),ci.open.length&&ci.open.join(' · ')].filter(Boolean);
   $('#ciSummary').textContent=parts.join(' · ');
-  const ok=ciStep===1?!!ci.place:ciStep===2?!!ci.until:ci.open.length>0;
+  const ok=ciStep===1?!!ci.place:ciStep===2?(ci.trip?!!(ci.from&&ci.until&&ci.until>=ci.from&&ci.from>today()):!!ci.until):ci.open.length>0;
   $('#btnConfirm').disabled=!ok;$('#btnConfirm').textContent=ciStep===3?'Confirmar':'Continuar';
 }
 $('#citySearch').addEventListener('input',renderCityList);
 $('#shCheckin').addEventListener('click',async e=>{const b=e.target.closest('[data-pick]');if(!b)return;ci.place=b.dataset.pick;haptic();
   if(me&&ci.place===me.home){const back=!!myCheckin;if(back){const {error}=await sb.from('checkins').delete().eq('member_id',me.id);if(error){toast('Não foi possível salvar.');return}myCheckin=null;CHECKINS=CHECKINS.filter(k=>k.m!==me.id)}closeAll();refresh();toast(back?`Você voltou para ${city(me.home).n}.`:`Essa é a sua cidade. Você já aparece aqui.`);setTimeout(()=>openCity(me.home),380);return}
   if(ci.place.startsWith('ev:')){ci.until=event(ci.place.slice(3)).end;goStep(3)}else{if(ci.until&&ci.until<today())ci.until=null;goStep(2)}});
-$('#untilChips').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;haptic();if(b.dataset.until==='date'){$('#untilDate').hidden=false;$('#untilDate').min=D(0);if(!$('#untilDate').value)$('#untilDate').value=D(3);ci.until=$('#untilDate').value;renderCi();try{$('#untilDate').showPicker&&$('#untilDate').showPicker()}catch(x){}}else{$('#untilDate').hidden=true;ci.until=D(+b.dataset.until);goStep(3)}});
+$('#untilChips').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;haptic();if(b.dataset.until==='trip'){ci.trip=true;ci.until=null;ci.from=null;$('#tripFrom').min=D(1);$('#tripTo').min=D(1);if(!$('#tripFrom').value)$('#tripFrom').value=D(7);if(!$('#tripTo').value)$('#tripTo').value=D(10);ci.from=$('#tripFrom').value;ci.until=$('#tripTo').value;renderCi();return}ci.trip=false;if(b.dataset.until==='date'){$('#untilDate').hidden=false;$('#untilDate').min=D(0);if(!$('#untilDate').value)$('#untilDate').value=D(3);ci.until=$('#untilDate').value;renderCi();try{$('#untilDate').showPicker&&$('#untilDate').showPicker()}catch(x){}}else{$('#untilDate').hidden=true;ci.until=D(+b.dataset.until);goStep(3)}});
 $('#untilDate').addEventListener('change',()=>{if($('#untilDate').value){ci.until=$('#untilDate').value;goStep(3)}});
+$('#tripFrom').addEventListener('change',()=>{ci.from=$('#tripFrom').value;if(ci.until&&ci.until<ci.from){ci.until=ci.from;$('#tripTo').value=ci.until}renderCi()});$('#tripTo').addEventListener('change',()=>{ci.until=$('#tripTo').value;renderCi()});
 $('#openChips').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;const o=b.dataset.open;haptic();if(o==='só avisando')ci.open=ci.open.includes(o)?[]:[o];else{ci.open=ci.open.filter(x=>x!=='só avisando');ci.open.includes(o)?ci.open=ci.open.filter(x=>x!==o):ci.open.push(o)}renderCi()});
 $('#ciBack').onclick=()=>goStep(ciStep===3&&ci.place&&ci.place.startsWith('ev:')?1:ciStep-1);
 $('#btnConfirm').onclick=async()=>{if(ciStep<3){goStep(ciStep+1);return}
   const btn=$('#btnConfirm');btn.disabled=true;btn.textContent='Salvando…';
-  const {error}=await sb.from('checkins').upsert({member_id:me.id,place:ci.place,until:ci.until,open_to:[...ci.open]},{onConflict:'member_id'});
+  if(ci.trip){const {data,error}=await sb.from('trips').insert({member_id:me.id,place:ci.place,place_name:city(ci.place).n,starts_on:ci.from,ends_on:ci.until,open_to:[...ci.open]}).select().single();btn.disabled=false;btn.textContent='Confirmar';
+    if(error){toast(/6 viagens/.test(error.message||'')?'Você já tem 6 viagens marcadas.':'Não foi possível salvar. Verifique a conexão.');return}
+    if(data)TRIPS.push({id:data.id,m:me.id,place:data.place,start:data.starts_on,end:data.ends_on,open:data.open_to||[]});haptic();closeAll();refresh();toast(`Viagem marcada: ${city(ci.place).n} · ${rangeLabel(ci.from,ci.until)}`);setTimeout(()=>openCity(ci.place),380);return}
+  const {error}=await sb.from('checkins').upsert({member_id:me.id,place:ci.place,place_name:ci.place.startsWith('ev:')?null:city(ci.place).n,until:ci.until,open_to:[...ci.open]},{onConflict:'member_id'});
   btn.disabled=false;btn.textContent='Confirmar';
   if(error){toast('Não foi possível salvar. Verifique a conexão.');return}
   myCheckin={place:ci.place,until:ci.until,open:[...ci.open]};CHECKINS=CHECKINS.filter(k=>k.m!==me.id).concat([{m:me.id,...myCheckin}]);
@@ -975,7 +995,7 @@ $('#btnConfirm').onclick=async()=>{if(ciStep<3){goStep(ciStep+1);return}
   setTimeout(()=>ci.place.startsWith('ev:')?openEvent(ci.place.slice(3)):openCity(ci.place),380)};
 $('#btnCheckin').onclick=()=>openCheckin();
 $('#btnWorld').onclick=()=>{haptic();worldView=!worldView;worldView?fitWorld(true):fitBrazil(true);$('#worldLbl').textContent=worldView?'Brasil':'Mundo'};
-$('#stEnd').addEventListener('click',async e=>{e.stopPropagation();const {error}=await sb.from('checkins').delete().eq('member_id',me.id);if(error){toast('Não foi possível sair do mapa. Tente de novo.');return}myCheckin=null;CHECKINS=CHECKINS.filter(k=>k.m!==me.id);haptic();refresh();toast('Você saiu do mapa')});
+$('#stEnd').addEventListener('click',async e=>{e.stopPropagation();const {error}=await sb.from('checkins').delete().eq('member_id',me.id);const tr=TRIPS.find(t=>t.m===me.id&&t.start<=today()&&t.end>=today());if(tr){await sb.from('trips').delete().eq('id',tr.id);TRIPS=TRIPS.filter(t=>t.id!==tr.id)}if(error){toast('Não foi possível sair do mapa. Tente de novo.');return}myCheckin=null;CHECKINS=CHECKINS.filter(k=>k.m!==me.id);haptic();refresh();toast('Você saiu do mapa')});
 $('#myStatus').onclick=()=>openCheckin();
 
 /* ---------- me / admin / edit ---------- */
@@ -984,6 +1004,9 @@ function openMe(){
   $('#meSub').textContent=me.email;
   $('#meBody').innerHTML=`<button class="row" data-prof="${me.id}" style="border:0"><span>${avatar(me)}</span><span class="t"><b>${esc(me.name)}</b><small>${esc(me.co||'Complete seu perfil')}${me.niche?' · '+esc(me.niche):''}</small></span><span class="chev">›</span></button>
    ${me.wa?'':`<button class="linkrow" id="addWa" style="border:0"><span class="t"><b>Adicione seu WhatsApp</b><small>Para os membros te marcarem no grupo</small></span><span class="chev">›</span></button>`}
+   <div class="sec">Próximas viagens</div>
+   ${upcomingTrips(me.id).map(t=>`<div class="linkrow" style="padding:10px 0"><span class="t"><b>${esc(city(t.place).n)}</b><small>${rangeLabel(t.start,t.end)}${t.open.length?' · '+esc(t.open.join(' · ')):''}</small></span><button class="close" data-trip-del="${t.id}" aria-label="Cancelar viagem">✕</button></div>`).join('')}
+   <button class="linkrow" id="addTrip" style="border:0"><span class="ic">+</span><span class="t"><b>Marcar viagem</b><small>Quem estiver lá fica sabendo que você vai</small></span><span class="chev">›</span></button>
    <div class="sec">Privacidade</div>
    <div class="linkrow" style="padding:10px 0"><span class="t"><b>Modo invisível</b><small>Vê o mapa sem aparecer nele</small></span><button class="sw" role="switch" aria-checked="${invisible}" id="swInv" aria-label="Modo invisível"></button></div>
    <div class="linkrow" style="padding:10px 0"><span class="t"><b>Mensagens no app</b><small>Membros podem te escrever aqui</small></span><button class="sw" role="switch" aria-checked="${!me.dmOff}" id="swDm" aria-label="Mensagens no app"></button></div>
@@ -998,6 +1021,8 @@ function openMe(){
   $('#meBody').querySelectorAll('[data-pref]').forEach(b=>b.onclick=()=>{const v=!(b.getAttribute('aria-checked')==='true');b.setAttribute('aria-checked',v);store.set(b.dataset.pref,v);haptic()});
   if(me.admin){$('#goAdmin').onclick=openAdmin;$('#goAdmEvents').onclick=openAdmEvents}
   if($('#addWa'))$('#addWa').onclick=()=>openEdit(false);
+  $('#addTrip').onclick=()=>{haptic();openCheckin({trip:true})};
+  $('#meBody').querySelectorAll('[data-trip-del]').forEach(b=>b.onclick=async()=>{const {error}=await sb.from('trips').delete().eq('id',b.dataset.tripDel);if(error){toast('Não foi possível cancelar.');return}TRIPS=TRIPS.filter(t=>t.id!==b.dataset.tripDel);haptic();toast('Viagem cancelada');openMe();refresh()});
   $('#logout').onclick=()=>signOutLocal();
   openSheet('shMe');
 }
@@ -1121,6 +1146,7 @@ $('#codeForm').onsubmit=async e=>{e.preventDefault();if(entering)return;const c=
   finally{entering=false;btn.disabled=false;btn.textContent='Entrar'}};
 function enter(m){me=m;shownBubbles=new Set();bubbleFirst=true;subscribeLive();haptic();$('#login').classList.add('out');refresh();initPush();
   const qc=new URLSearchParams(location.search).get('chat');if(qc&&byId(qc)){history.replaceState(null,'',location.pathname);setTimeout(()=>openChat(qc),900)}
+  const qcity=new URLSearchParams(location.search).get('city');if(qcity&&knownCity(qcity)){history.replaceState(null,'',location.pathname);setTimeout(()=>openCity(qcity),900)}
   const c=city(me.home||'sp');const far=z<=zMin()*1.01;if(!far)fitWorld(false);setTimeout(()=>flyTo(c.lng,c.lat,2.4,2200),far?250:450)
   if(!me.complete)setTimeout(()=>openEdit(true),500)}
 const SHARE_ICON='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-label="Compartilhar"><path d="M12 15V3"/><path d="M8 7l4-4 4 4"/><path d="M6 11H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-1"/></svg>';
@@ -1142,11 +1168,11 @@ function refresh(){
   renderBubbles();
   if(!me)return;
   $('#meAv').outerHTML=avatar(me).replace('class="av"','class="av" id="meAv"');$('#eyeBadge').hidden=!invisible;
-  const has=myCheckin&&myCheckin.until>=today();
+  const has=myCheckin&&myCheckin.until>=today();const nextTrip=me&&upcomingTrips(me.id)[0];
   const abroad=Object.keys(cityCounts()).filter(id=>city(id).c!==BR).reduce((a,id)=>a+cityCounts()[id],0);$('#worldN').hidden=!abroad;$('#worldN').textContent=abroad;
   const atHome=!has&&knownCity(me.home);$('#myStatus').hidden=!(has||atHome);$('#btnCheckin').hidden=has||atHome;$('#stEnd').hidden=!has;$('#btnWorld').hidden=!abroad;
   if(has){$('#stCity').textContent=placeName(myCheckin.place);$('#stMeta').textContent='· '+whenLabel(myCheckin)+(invisible?' · invisível':'')}
-  else if(atHome){$('#stCity').textContent=city(me.home).n;$('#stMeta').textContent='· sua cidade'+(invisible?' · invisível':'');if(!invisible&&!store.get('homeNoticed',false)){store.set('homeNoticed',true);setTimeout(()=>toast(`Você aparece em ${city(me.home).n}. Para sumir do mapa, use o modo invisível.`),1200)}}
+  else if(atHome){$('#stCity').textContent=city(me.home).n;$('#stMeta').textContent=(nextTrip?`· ${city(nextTrip.place).n} em ${rangeLabel(nextTrip.start,nextTrip.start)}`:'· sua cidade')+(invisible?' · invisível':'');if(!invisible&&!store.get('homeNoticed',false)){store.set('homeNoticed',true);setTimeout(()=>toast(`Você aparece em ${city(me.home).n}. Para sumir do mapa, use o modo invisível.`),1200)}}
   const ev=nextMyEvent()||null;$('#eventcard').hidden=!ev;
   const nUp=upcomingEvents().length;$('#evN').hidden=!nUp;$('#evN').textContent=nUp;
   const nMsg=unreadCount();$('#msgN').hidden=!nMsg;$('#msgN').textContent=nMsg;
@@ -1155,7 +1181,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792769983';
+const APP_VERSION='1792770720';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
