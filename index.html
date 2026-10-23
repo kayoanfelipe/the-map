@@ -13,7 +13,7 @@
 <link rel="icon" type="image/png" sizes="48x48" href="favicon-48.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}</style>
+<style>html{background:#030305}[hidden]{display:none!important}</style>
 <title>The Map</title>
 <style>
 /* Layout: the map is the app. Everything else rises over it in bottom sheets. One accent, the rest in neutrals. */
@@ -356,7 +356,7 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
   <!-- Events list sheet -->
   <section class="sheet" id="shEvents" aria-label="Eventos">
     <div class="grab"><i></i></div>
-    <div class="sh gutter"><div><h2>Eventos</h2><p id="evsSub">Próximos encontros do The Group</p></div><button class="close" data-close aria-label="Fechar">✕</button></div>
+    <div class="sh gutter"><div><h2>Eventos</h2><p id="evsSub">Próximos encontros do The Group</p></div></div>
     <div class="sb gutter" id="evsBody"></div>
   </section>
 
@@ -371,13 +371,13 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
   <!-- Profile sheet -->
   <section class="sheet" id="shInbox" aria-label="Mensagens">
     <div class="grab"><i></i></div>
-    <div class="sh gutter"><div><h2>Mensagens</h2><p id="inboxSub">Conversas com membros</p></div><button class="close" data-close aria-label="Fechar">✕</button></div>
+    <div class="sh gutter"><div><h2>Mensagens</h2><p id="inboxSub">Conversas com membros</p></div></div>
     <div class="sb gutter" id="inboxBody"></div>
   </section>
 
   <section class="sheet" id="shChat" aria-label="Conversa">
     <div class="grab"><i></i></div>
-    <div class="sh gutter chathead"><button class="chatwho" id="chatWho"></button><button class="close" id="chatMore" aria-label="Mais opções">⋯</button><button class="close" data-close aria-label="Fechar">✕</button></div>
+    <div class="sh gutter chathead"><button class="chatwho" id="chatWho"></button><button class="close" id="chatMore" aria-label="Mais opções">⋯</button></div>
     <div class="sb gutter chatbody" id="chatBody"></div>
     <div class="sf gutter" id="chatFoot"><div class="chatmenu" id="chatMenu" hidden></div><div class="chatin"><textarea id="chatIn" rows="1" maxlength="2000" placeholder="Mensagem" aria-label="Mensagem"></textarea><button class="send" id="chatSend" aria-label="Enviar">↑</button></div><p class="chatnote" id="chatNote" hidden></p></div>
   </section>
@@ -392,7 +392,7 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
   <!-- Check-in sheet -->
   <section class="sheet" id="shCheckin" aria-label="Marcar local">
     <div class="grab"><i></i></div>
-    <div class="sh gutter"><div><div class="dots" id="ciDots"><i></i><i></i><i></i></div><h2 id="ciTitle">Onde você está?</h2></div><button class="close" data-close aria-label="Fechar">✕</button></div>
+    <div class="sh gutter"><div><div class="dots" id="ciDots"><i></i><i></i><i></i></div><h2 id="ciTitle">Onde você está?</h2></div></div>
     <div class="sb gutter">
       <div class="cstep" id="cs1">
         <input class="search big" id="citySearch" placeholder="Buscar cidade" autocomplete="off" autocorrect="off">
@@ -423,14 +423,14 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
   <!-- Me sheet -->
   <section class="sheet" id="shMe" aria-label="Meu perfil">
     <div class="grab"><i></i></div>
-    <div class="sh gutter"><div><h2>Meu perfil</h2><p id="meSub"></p></div><button class="close" data-close aria-label="Fechar">✕</button></div>
+    <div class="sh gutter"><div><h2>Meu perfil</h2><p id="meSub"></p></div></div>
     <div class="sb gutter" id="meBody"></div>
   </section>
 
   <!-- Edit profile sheet -->
   <section class="sheet" id="shEdit" aria-label="Editar perfil">
     <div class="grab"><i></i></div>
-    <div class="sh gutter"><div><h2 id="editTitle">Complete seu perfil</h2><p id="editSub">Para quem te vir no mapa saber em 3 segundos por que falar com você.</p></div><button class="close" data-close aria-label="Fechar" id="editClose">✕</button></div>
+    <div class="sh gutter"><div><h2 id="editTitle">Complete seu perfil</h2><p id="editSub">Para quem te vir no mapa saber em 3 segundos por que falar com você.</p></div></div>
     <form class="sb gutter" id="editForm" novalidate>
       <div id="editA">
       <div class="photo"><span class="av big" id="editAv" style="width:72px;height:72px;font-size:24px"></span><label class="btn" id="photoBtn">Escolher foto<input type="file" id="photoIn" accept="image/*"></label></div>
@@ -464,7 +464,7 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
   <!-- Admin: events list -->
   <section class="sheet" id="shAdmEvents" aria-label="Gerenciar eventos">
     <div class="grab"><i></i></div>
-    <div class="sh gutter"><div><h2>Eventos</h2></div><button class="close" data-close aria-label="Fechar">✕</button></div>
+    <div class="sh gutter"><div><h2>Eventos</h2></div></div>
     <div class="sb gutter" id="admEvBody"></div>
     <div class="sf gutter"><button class="primary" id="btnNewEvent" style="width:100%">Novo evento</button></div>
   </section>
@@ -472,7 +472,7 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
   <!-- Admin: event form -->
   <section class="sheet" id="shEvForm" aria-label="Evento">
     <div class="grab"><i></i></div>
-    <div class="sh gutter"><div><h2 id="evFormTitle">Novo evento</h2></div><button class="close" data-close aria-label="Fechar">✕</button></div>
+    <div class="sh gutter"><div><h2 id="evFormTitle">Novo evento</h2></div></div>
     <form class="sb gutter" id="evForm" novalidate>
       <div class="field" style="margin-top:0"><label for="eName">Nome do evento</label><input id="eName" placeholder="Ex.: The House" maxlength="80"></div>
       <div class="field"><label for="eCity">Cidade</label><select id="eCity"></select></div>
@@ -497,7 +497,7 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
   <!-- Admin sheet -->
   <section class="sheet" id="shAdmin" aria-label="Admin">
     <div class="grab"><i></i></div>
-    <div class="sh gutter"><div><h2>Membros</h2><p id="admSub">Só quem está aqui consegue entrar.</p></div><button class="close" data-close aria-label="Fechar">✕</button></div>
+    <div class="sh gutter"><div><h2>Membros</h2><p id="admSub">Só quem está aqui consegue entrar.</p></div></div>
     <div class="sb gutter">
       <form id="admForm" novalidate style="padding:14px;border-radius:16px;background:var(--surface2);margin-top:4px">
         <div class="field" style="margin-top:0"><label for="aName">Nome</label><input id="aName" required style="background:var(--surface)"></div>
@@ -505,7 +505,7 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
         <p class="err" id="admErr" hidden></p>
         <div style="margin-top:14px"><button class="primary wide" type="submit" style="height:48px;font-size:16px">Cadastrar membro</button></div>
       </form>
-      <div class="field"><label for="fGroup">Link do grupo de WhatsApp</label><input id="fGroup" placeholder="https://chat.whatsapp.com/…" autocapitalize="none"><p class="hint">Usado pelo botão "Chamar no grupo".</p></div>
+      <div class="field"><label for="fGroup">Link do grupo de WhatsApp</label><input id="fGroup" placeholder="https://chat.whatsapp.com/…" autocapitalize="none"><p class="hint">Usado pelo botão "Abrir o grupo no WhatsApp".</p></div>
       <div class="sec" style="margin-top:22px">Cadastrados <span id="admCount"></span></div>
       <div id="admList"></div>
     </div>
@@ -753,9 +753,11 @@ function renderBubbles(){
 }
 /* ---------- sheets ---------- */
 const stack=[];
-function openSheet(id){const el=$('#'+id);if(stack.includes(id)){closeTo(id);return}const prev=stack[stack.length-1];if(prev)$('#'+prev).classList.add('behind');stack.push(id);el.style.zIndex=10+stack.length;el.classList.add('open');el.querySelector('.sb').scrollTop=0;$('#scrim').classList.add('on');el.style.transform=''}
-function closeSheet(){const id=stack.pop();if(!id)return;const el=$('#'+id);el.classList.remove('open','dragging');el.style.transform='';setTimeout(()=>{if(!stack.includes(id))el.style.zIndex=''},500);const prev=stack[stack.length-1];if(prev)$('#'+prev).classList.remove('behind');else $('#scrim').classList.remove('on');if(id==='shEdit'&&me&&!me.complete){/* must finish profile */}}
+let ignorePop=0;
+function openSheet(id){const el=$('#'+id);if(stack.includes(id)){closeTo(id);return}try{history.pushState({sh:id},'')}catch(e){}const prev=stack[stack.length-1];if(prev)$('#'+prev).classList.add('behind');stack.push(id);el.style.zIndex=10+stack.length;el.classList.add('open');el.querySelector('.sb').scrollTop=0;$('#scrim').classList.add('on');el.style.transform=''}
+function closeSheet(fromPop){const id=stack.pop();if(!id)return;if(!fromPop&&history.state&&history.state.sh===id){ignorePop++;try{history.back()}catch(e){ignorePop--}}const el=$('#'+id);el.classList.remove('open','dragging');el.style.transform='';setTimeout(()=>{if(!stack.includes(id))el.style.zIndex=''},500);const prev=stack[stack.length-1];if(prev)$('#'+prev).classList.remove('behind');else $('#scrim').classList.remove('on');if(id==='shEdit'&&me&&!me.complete){/* must finish profile */}}
 function closeTo(id){while(stack.length&&stack[stack.length-1]!==id)closeSheet()}
+window.addEventListener('popstate',()=>{if(ignorePop>0){ignorePop--;return}if(stack.length){const top=stack[stack.length-1];if(top==='shEdit'&&me&&!me.complete){try{history.pushState({sh:top},'')}catch(e){}toast('Complete o perfil para entrar no mapa');return}closeSheet(true)}});
 function closeAll(){while(stack.length)closeSheet()}
 $('#scrim').addEventListener('click',()=>{if(stack[stack.length-1]==='shEdit'&&me&&!me.complete)return;closeAll()});
 document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>{if(b.id==='editClose'&&me&&!me.complete){toast('Complete o perfil para entrar no mapa');return}closeSheet()}));
@@ -843,7 +845,7 @@ async function enablePush(){if(!pushSupported()){toast(platform()==='ios'&&!isIn
     pushState='on';try{sb.functions.invoke('push',{body:{test:true}})}catch(e){}return true}
   catch(e){toast('Não foi possível ativar os avisos.');return false}}
 async function disablePush(){try{const sub=swReg&&await swReg.pushManager.getSubscription();if(sub){await sb.from('push_subscriptions').delete().eq('endpoint',sub.endpoint);await sub.unsubscribe()}}catch(e){}pushState='off'}
-function pushBanner(){if(!me||pushState==='on'||!pushSupported()||Notification.permission==='denied')return'';return`<button class="linkrow" id="pushAsk" style="border:0;border-bottom:1px solid var(--line)"><span class="ic">🔔</span><span class="t"><b>Ativar avisos no celular</b><small>Saiba na hora quando chegar mensagem</small></span><span class="chev">›</span></button>`}
+function pushBanner(){if(!me||pushState==='on'||!pushSupported()||Notification.permission==='denied')return'';return`<button class="linkrow" id="pushAsk" style="border:0;border-bottom:1px solid var(--line)"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg></span><span class="t"><b>Ativar avisos no celular</b><small>Saiba na hora quando chegar mensagem</small></span><span class="chev">›</span></button>`}
 function openInbox(){renderInbox();openSheet('shInbox')}
 function renderInbox(){const list=conversations();const el=$('#inboxBody');
   $('#inboxSub').textContent=list.length?`${list.length} ${list.length===1?'conversa':'conversas'}`:'Conversas com membros';
@@ -861,7 +863,10 @@ function renderChat(){const el=$('#chatBody');const th=threadWith(chatWith);let 
     h+=`<div class="msg ${out?'out':'in'}${x.tmp?' sending':''}" data-mid="${x.id}">${esc(x.body)}<time>${fmtTime(x.at)}${out&&x.read?' · lida':''}</time>${out&&!x.tmp?'<button class="del" data-del="'+x.id+'">Apagar</button>':''}</div>`}
   if(!th.length)h=`<div class="empty"><b>Comece a conversa com ${esc(m?m.name.split(' ')[0]:'')}.</b>Só vocês dois veem estas mensagens.</div>`;
   const atBottom=el.scrollHeight-el.scrollTop-el.clientHeight<80;el.innerHTML=h;if(atBottom)el.scrollTop=1e9;
-  el.querySelectorAll('.msg.out').forEach(b=>b.onclick=e=>{if(e.target.dataset.del)return;const on=b.classList.contains('sel');el.querySelectorAll('.msg.sel').forEach(x=>x.classList.remove('sel'));if(!on)b.classList.add('sel')});
+  el.querySelectorAll('.msg.out').forEach(b=>{let t=0,sx=0,sy=0;const clear=()=>{clearTimeout(t);t=0};
+    b.addEventListener('pointerdown',e=>{if(e.target.dataset.del)return;sx=e.clientX;sy=e.clientY;clear();t=setTimeout(()=>{t=0;el.querySelectorAll('.msg.sel').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');haptic()},450)});
+    b.addEventListener('pointermove',e=>{if(t&&Math.hypot(e.clientX-sx,e.clientY-sy)>8)clear()});b.addEventListener('pointerup',clear);b.addEventListener('pointercancel',clear);b.addEventListener('contextmenu',e=>e.preventDefault())});
+  el.addEventListener('pointerdown',e=>{if(!e.target.closest('.msg.sel'))el.querySelectorAll('.msg.sel').forEach(x=>x.classList.remove('sel'))},{once:false});
   el.querySelectorAll('[data-del]').forEach(b=>b.onclick=async e=>{e.stopPropagation();const id=+b.dataset.del;const {error}=await sb.from('messages').delete().eq('id',id);if(error){toast('Não foi possível apagar.');return}MSGS=MSGS.filter(x=>x.id!==id);haptic();renderChat()});
   const st=chatState();$('#chatIn').disabled=!st.ok;$('#chatSend').disabled=!st.ok||!$('#chatIn').value.trim();$('#chatNote').hidden=st.ok;$('#chatNote').textContent=st.note}
 async function markRead(id){const mine=MSGS.filter(x=>x.from===id&&x.to===me.id&&!x.read);if(!mine.length)return;const now=new Date().toISOString();mine.forEach(x=>x.read=now);refresh();
@@ -1138,7 +1143,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792720699';
+const APP_VERSION='1792722142';
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
   if(stack.includes('shEdit')||stack.includes('shEvForm')||stack.includes('shCrop'))return;location.replace(location.pathname+'?v='+v)}catch(e){}}
