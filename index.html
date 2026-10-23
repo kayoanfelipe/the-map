@@ -796,8 +796,8 @@ function renderBubbles(){
 }
 /* ---------- sheets ---------- */
 const stack=[];
-let ignorePop=0;
-function openSheet(id){const el=$('#'+id);if(stack.includes(id)){closeTo(id);return}if(platform()==='android'){try{history.pushState({sh:id},'')}catch(e){}}const prev=stack[stack.length-1];if(prev)$('#'+prev).classList.add('behind');stack.push(id);el.style.zIndex=10+stack.length;el.classList.add('open');el.querySelector('.sb').scrollTop=0;$('#scrim').classList.add('on');el.style.transform=''}
+let ignorePop=0,rerendering=false;
+function openSheet(id){const el=$('#'+id);if(stack.includes(id)){if(rerendering)return;closeTo(id);return}if(platform()==='android'){try{history.pushState({sh:id},'')}catch(e){}}const prev=stack[stack.length-1];if(prev)$('#'+prev).classList.add('behind');stack.push(id);el.style.zIndex=10+stack.length;el.classList.add('open');el.querySelector('.sb').scrollTop=0;$('#scrim').classList.add('on');el.style.transform=''}
 function closeSheet(fromPop){const id=stack.pop();if(!id)return;if(!fromPop&&history.state&&history.state.sh===id){ignorePop++;try{history.back()}catch(e){ignorePop--}}const el=$('#'+id);el.classList.remove('open','dragging');el.style.transform='';setTimeout(()=>{if(!stack.includes(id))el.style.zIndex=''},500);const prev=stack[stack.length-1];if(prev)$('#'+prev).classList.remove('behind');else $('#scrim').classList.remove('on');if(id==='shChat'){chatWith=null;if(me)refresh()}}
 function closeTo(id){while(stack.length&&stack[stack.length-1]!==id)closeSheet()}
 window.addEventListener('popstate',()=>{if(ignorePop>0){ignorePop--;return}if(stack.length){const top=stack[stack.length-1];if(top==='shEdit'&&me&&!me.complete){try{history.pushState({sh:top},'')}catch(e){}toast('Complete o perfil para entrar no mapa');return}closeSheet(true)}});
@@ -816,7 +816,7 @@ document.querySelectorAll('.sheet').forEach(sh=>{
 /* ---------- city / event / profile ---------- */
 function memberRow(ck){const m=byId(ck.m);return`<button class="row" data-prof="${m.id}" data-ck="${ck.place}"><span>${avatar(m)}</span><span class="t"><b>${esc(m.name)}${ck.mine?' <span class="pill adm">você</span>':''}</b><small>${esc(m.co)} · ${esc(m.niche)}</small></span><span class="meta"><b>${ck.home?'':whenLabel(ck)}</b></span><span class="chev">›</span></button>`}
 let curCity=null,curProf=null;
-function rerenderSheets(){if(stack.includes('shMe'))openMe();if(stack.includes('shProfile')&&curProf)openProfile(curProf);if(stack.includes('shCity')&&curCity)openCity(curCity);if(stack.includes('shInbox'))renderInbox()}
+function rerenderSheets(){rerendering=true;try{if(stack.includes('shMe'))openMe();if(stack.includes('shProfile')&&curProf)openProfile(curProf);if(stack.includes('shCity')&&curCity)openCity(curCity);if(stack.includes('shInbox'))renderInbox()}finally{rerendering=false}}
 function openCity(id){curCity=id;
   const c=city(id);const cks=activeCheckins().filter(k=>k.place===id);const evs=[];
   const total=cks.length+evs.reduce((a,b)=>a+b.n,0);
@@ -1249,7 +1249,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792773381';
+const APP_VERSION='1792773669';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
