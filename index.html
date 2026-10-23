@@ -96,7 +96,7 @@ svg[data-tier="c"] .lbl.state text{opacity:.8}
 .brand span{font-size:12px;color:var(--fg2);font-weight:600;letter-spacing:.06em;text-transform:uppercase}
 .glass,.avatarbtn,.worldbtn,.status,#eventcard button{background:var(--glass);box-shadow:var(--glass-shadow);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
 .avatarbtn{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;position:relative;background:none!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
-.avatarbtn .av{width:36px;height:36px;box-shadow:0 0 0 1px rgba(255,255,255,.18)}
+.avatarbtn .av{width:36px;height:36px}
 .evbtn{align-self:flex-start;height:40px;margin-top:2px;padding:0 14px 0 12px;border-radius:999px;font-size:14px;font-weight:700;display:inline-flex;align-items:center;gap:7px;background:var(--glass);box-shadow:var(--glass-shadow);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
 .evbtn .n{background:var(--fg);color:var(--accent-ink);border-radius:999px;min-width:20px;height:20px;padding:0 6px;display:grid;place-items:center;font-size:12px}
 .worldbtn{height:34px;padding:0 12px;border-radius:999px;font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:6px}
@@ -1249,7 +1249,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792773114';
+const APP_VERSION='1792773381';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
