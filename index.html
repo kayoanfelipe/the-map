@@ -257,6 +257,12 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
 .field textarea{height:auto;min-height:72px;padding:12px 14px;resize:none}
 .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--fg2);outline:none;background:var(--surface)}
 .field .hint{font-size:12.5px;color:var(--fg3);margin:6px 2px 0}
+.cropbox{position:relative;width:min(78vw,300px);aspect-ratio:1;max-width:100%;border-radius:20px;overflow:hidden;background:#000;touch-action:none;cursor:grab;margin-top:6px}
+.cropbox canvas{width:100%;height:100%;display:block}
+.cropmask{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at center,transparent 0,transparent calc(50% - 1px),rgba(0,0,0,.55) 50%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+.cropmask::after{content:"";position:absolute;inset:0;border-radius:50%;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.7)}
+.zoomrow{display:flex;align-items:center;gap:12px;width:min(78vw,300px);margin-top:18px;color:var(--fg2);font-weight:700}
+.zoomrow input{flex:1;accent-color:var(--fg)}
 .photo{display:flex;align-items:center;gap:14px;margin-top:6px}
 .photo label.btn{height:40px;padding:0 16px;border-radius:999px;background:var(--surface2);font-weight:600;display:inline-flex;align-items:center;cursor:pointer}
 .photo input{display:none}
@@ -400,7 +406,7 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
     <div class="sh gutter"><div><h2 id="editTitle">Complete seu perfil</h2><p id="editSub">Para quem te vir no mapa saber em 3 segundos por que falar com você.</p></div><button class="close" data-close aria-label="Fechar" id="editClose">✕</button></div>
     <form class="sb gutter" id="editForm" novalidate>
       <div id="editA">
-      <div class="photo"><span class="av big" id="editAv" style="width:72px;height:72px;font-size:24px"></span><label class="btn">Escolher foto<input type="file" id="photoIn" accept="image/*"></label></div>
+      <div class="photo"><span class="av big" id="editAv" style="width:72px;height:72px;font-size:24px"></span><label class="btn" id="photoBtn">Escolher foto<input type="file" id="photoIn" accept="image/*"></label></div>
       <div class="field"><label for="fName">Nome</label><input id="fName" required autocomplete="name"></div>
       <div class="field"><label for="fWa">WhatsApp</label><input id="fWa" type="tel" inputmode="tel" autocomplete="tel" placeholder="(11) 99999-9999" required><p class="hint">Não aparece no perfil. Serve para te marcarem no grupo.</p></div>
       <div class="field"><label for="fCo">Empresa</label><input id="fCo" required></div>
@@ -414,6 +420,49 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
       </div>
       <p class="err" id="editErr" hidden></p>
       <div class="row2" style="margin-top:20px"><button class="secondary" type="button" id="editSkip" hidden>Pular</button><button class="primary" type="submit" id="editSave" style="flex:1">Salvar</button></div>
+    </form>
+  </section>
+
+  <!-- Photo cropper -->
+  <section class="sheet" id="shCrop" aria-label="Ajustar foto">
+    <div class="grab"><i></i></div>
+    <div class="sh gutter"><div><h2>Ajustar foto</h2><p>Arraste para posicionar. Use o controle ou dois dedos para o zoom.</p></div></div>
+    <div class="sb gutter" style="display:flex;flex-direction:column;align-items:center">
+      <div class="cropbox" id="cropBox"><canvas id="cropCv" width="560" height="560"></canvas><div class="cropmask"></div></div>
+      <div class="zoomrow"><span>−</span><input type="range" id="cropZoom" min="1" max="4" step="0.01" value="1" aria-label="Zoom"><span>+</span></div>
+    </div>
+    <div class="sf gutter"><div class="row2"><button class="secondary" id="cropCancel">Cancelar</button><button class="primary" id="cropOk">Usar foto</button></div></div>
+  </section>
+
+  <!-- Admin: events list -->
+  <section class="sheet" id="shAdmEvents" aria-label="Gerenciar eventos">
+    <div class="grab"><i></i></div>
+    <div class="sh gutter"><div><h2>Eventos</h2><p>Aparecem para todos os membros na hora.</p></div><button class="close" data-close aria-label="Fechar">✕</button></div>
+    <div class="sb gutter" id="admEvBody"></div>
+    <div class="sf gutter"><button class="primary" id="btnNewEvent" style="width:100%">Novo evento</button></div>
+  </section>
+
+  <!-- Admin: event form -->
+  <section class="sheet" id="shEvForm" aria-label="Evento">
+    <div class="grab"><i></i></div>
+    <div class="sh gutter"><div><h2 id="evFormTitle">Novo evento</h2></div><button class="close" data-close aria-label="Fechar">✕</button></div>
+    <form class="sb gutter" id="evForm" novalidate>
+      <div class="field" style="margin-top:0"><label for="eName">Nome do evento</label><input id="eName" placeholder="Ex.: The House" maxlength="80"></div>
+      <div class="field"><label for="eCity">Cidade</label><select id="eCity"></select></div>
+      <div class="row2" style="margin-top:14px">
+        <div class="field" style="margin-top:0;flex:1;min-width:0"><label for="eStart">Começa</label><input id="eStart" type="date"></div>
+        <div class="field" style="margin-top:0;flex:1;min-width:0"><label for="eEnd">Termina</label><input id="eEnd" type="date"></div>
+      </div>
+      <div class="field"><label for="eTime">Horário (opcional)</label><input id="eTime" placeholder="Ex.: 18h" maxlength="20"></div>
+      <p class="err" id="evFormErr" hidden></p>
+      <div style="margin-top:20px"><button class="primary" type="submit" id="evSave" style="width:100%">Salvar evento</button></div>
+      <div id="evDangerZone" hidden style="margin-top:28px;padding-top:18px;border-top:1px solid var(--line)">
+        <button type="button" class="secondary danger" id="evDelete">Apagar evento</button>
+        <div id="evDeleteConfirm" hidden style="margin-top:12px;padding:14px;border-radius:16px;background:var(--surface2)">
+          <p style="margin:0 0 12px;font-size:14px;color:var(--fg2)" id="evDeleteText">Isso apaga o evento e as presenças confirmadas.</p>
+          <div class="row2"><button type="button" class="secondary" id="evDeleteNo">Manter</button><button type="button" class="primary" id="evDeleteYes" style="background:var(--danger);color:#fff">Apagar</button></div>
+        </div>
+      </div>
     </form>
   </section>
 
@@ -563,7 +612,7 @@ async function saveMember(id,patch){const row={};for(const k in patch)if(COLS[k]
 async function uploadPhoto(dataUrl){const blob=await (await fetch(dataUrl)).blob();const {data:{user}}=await sb.auth.getUser();const path=`${user.id}/avatar.jpg`;const {error}=await sb.storage.from('avatars').upload(path,blob,{upsert:true,contentType:'image/jpeg'});if(error)throw error;return sb.storage.from('avatars').getPublicUrl(path).data.publicUrl+'?v='+Date.now()}
 let live=null,srT=null;
 function softReload(){clearTimeout(srT);srT=setTimeout(async()=>{if(!me)return;try{await loadAll();if(!me||me.active===false){signOutLocal('Seu acesso foi desativado.');return}refresh()}catch(e){}},400)}
-function subscribeLive(){if(live||!sb)return;live=sb.channel('themap-live').on('postgres_changes',{event:'*',schema:'public',table:'checkins'},softReload).on('postgres_changes',{event:'*',schema:'public',table:'event_rsvps'},softReload).on('postgres_changes',{event:'*',schema:'public',table:'members'},softReload).subscribe()}
+function subscribeLive(){if(live||!sb)return;live=sb.channel('themap-live').on('postgres_changes',{event:'*',schema:'public',table:'checkins'},softReload).on('postgres_changes',{event:'*',schema:'public',table:'event_rsvps'},softReload).on('postgres_changes',{event:'*',schema:'public',table:'events'},softReload).on('postgres_changes',{event:'*',schema:'public',table:'members'},softReload).subscribe()}
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&me)softReload()});
 async function signOutLocal(msg){try{if(live){sb.removeChannel(live);live=null}await sb.auth.signOut()}catch(e){}me=null;myCheckin=null;CHECKINS=[];members=[];closeAll();refresh();$('#login').classList.remove('out');$('#codeForm').hidden=true;$('#emailForm').hidden=false;$('#email').value=store.get('lastEmail','');if(msg){$('#emailErr').textContent=msg;$('#emailErr').hidden=false}}
 
@@ -674,7 +723,7 @@ document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',
 /* drag to dismiss */
 document.querySelectorAll('.sheet').forEach(sh=>{
   let sy=null,dy=0,st=0,fromBody=false;const body=sh.querySelector('.sb');
-  sh.addEventListener('pointerdown',e=>{if(stack[stack.length-1]!==sh.id)return;if(e.target.closest('input,select,textarea,button,a,.chips'))return;fromBody=!!e.target.closest('.sb');if(fromBody&&body.scrollTop>0)return;sy=e.clientY;dy=0;st=Date.now()});
+  sh.addEventListener('pointerdown',e=>{if(stack[stack.length-1]!==sh.id)return;if(e.target.closest('input,select,textarea,button,a,.chips,.cropbox'))return;fromBody=!!e.target.closest('.sb');if(fromBody&&body.scrollTop>0)return;sy=e.clientY;dy=0;st=Date.now()});
   sh.addEventListener('pointermove',e=>{if(sy==null)return;dy=e.clientY-sy;if(dy<0){dy=0;return}if(fromBody&&body.scrollTop>0){sy=null;sh.classList.remove('dragging');sh.style.transform='';return}sh.classList.add('dragging');sh.style.transform=`translateY(${dy}px)`;if(dy>6)e.preventDefault()});
   const up=()=>{if(sy==null)return;const v=dy/Math.max(1,Date.now()-st);sh.classList.remove('dragging');const closing=dy>110||v>0.6;if(closing&&!(sh.id==='shEdit'&&me&&!me.complete)){closeSheet()}else sh.style.transform='';sy=null;dy=0};
   sh.addEventListener('pointerup',up);sh.addEventListener('pointercancel',up);
@@ -815,16 +864,46 @@ function openMe(){
    <div class="linkrow" style="padding:10px 0"><span class="t"><b>Modo invisível</b><small>Vê o mapa sem aparecer nele</small></span><button class="sw" role="switch" aria-checked="${invisible}" id="swInv" aria-label="Modo invisível"></button></div>
    <div class="sec">Avisos</div>
    ${[['nArr','Chegadas na minha cidade'],['nDay','Resumo do dia'],['nEv','Eventos']].map(([k,t])=>`<div class="linkrow" style="min-height:48px;padding:10px 0"><span class="t"><b>${t}</b></span><button class="sw" role="switch" aria-checked="${store.get(k,true)}" data-pref="${k}" aria-label="${t}"></button></div>`).join('')}
-   ${me.admin?`<div class="sec">Administração</div><button class="linkrow" id="goAdmin"><span class="ic">⚙</span><span class="t"><b>Membros</b><small>Cadastrar e desativar acessos</small></span><span class="chev">›</span></button>`:''}
+   ${me.admin?`<div class="sec">Administração</div><button class="linkrow" id="goAdmin"><span class="ic">⚙</span><span class="t"><b>Membros</b><small>Cadastrar e desativar acessos</small></span><span class="chev">›</span></button><button class="linkrow" id="goAdmEvents"><span class="ic">▦</span><span class="t"><b>Gerenciar eventos</b><small>Criar, editar e apagar eventos</small></span><span class="chev">›</span></button>`:''}
    <div style="margin-top:18px"><button class="secondary danger" id="logout">Sair</button></div>
 `;
   $('#swInv').onclick=async()=>{const v=!invisible;try{await saveMember(me.id,{invisible:v})}catch(e){toast('Não foi possível mudar agora.');return}invisible=v;$('#swInv').setAttribute('aria-checked',invisible);haptic();refresh();toast(invisible?'Você está invisível no mapa':'Você voltou a aparecer')};
   $('#meBody').querySelectorAll('[data-pref]').forEach(b=>b.onclick=()=>{const v=!(b.getAttribute('aria-checked')==='true');b.setAttribute('aria-checked',v);store.set(b.dataset.pref,v);haptic()});
-  if(me.admin)$('#goAdmin').onclick=openAdmin;
+  if(me.admin){$('#goAdmin').onclick=openAdmin;$('#goAdmEvents').onclick=openAdmEvents}
   if($('#addWa'))$('#addWa').onclick=()=>openEdit(false);
   $('#logout').onclick=()=>signOutLocal();
   openSheet('shMe');
 }
+let ALL_EVENTS=[],editingEv=null;
+async function loadAllEvents(){const {data,error}=await sb.from('events').select('*').order('starts_on',{ascending:false});if(error)throw error;ALL_EVENTS=data}
+async function openAdmEvents(){try{await loadAllEvents()}catch(e){toast('Não foi possível carregar os eventos.');return}renderAdmEvents();openSheet('shAdmEvents')}
+function renderAdmEvents(){const t=today();const up=ALL_EVENTS.filter(e=>e.ends_on>=t).sort((a,b)=>a.starts_on<b.starts_on?-1:1),past=ALL_EVENTS.filter(e=>e.ends_on<t);
+  const row=e=>{const ev=evFromRow(e);const n=RSVPS.filter(r=>r.e===e.id).length;return`<button class="row" data-admev="${esc(e.id)}"><span class="av" style="background:var(--surface2);color:var(--fg);font-size:13px">${ev.short}</span><span class="t"><b>${esc(e.name)}</b><small>${ev.when}${n?` · ${n} ${n===1?'confirmou':'confirmaram'}`:''}</small></span><span class="chev">›</span></button>`};
+  $('#admEvBody').innerHTML=(up.length?`<div class="sec">Próximos</div>`+up.map(row).join(''):`<div class="empty"><b>Nenhum evento agendado.</b>Toque em Novo evento para criar.</div>`)+(past.length?`<div class="sec">Já aconteceram</div>`+past.slice(0,10).map(row).join(''):'');
+  $('#admEvBody').querySelectorAll('[data-admev]').forEach(b=>b.onclick=()=>openEvForm(ALL_EVENTS.find(e=>e.id===b.dataset.admev)))}
+function citySelectHTML(){return`<option value="">Escolher</option><optgroup label="Brasil">`+CITIES.filter(c=>c.c===BR).map(c=>`<option value="${c.id}">${c.n}</option>`).join('')+`</optgroup><optgroup label="Outros países">`+CITIES.filter(c=>c.c!==BR).map(c=>`<option value="${c.id}">${c.n} · ${c.c}</option>`).join('')+`</optgroup>`}
+function openEvForm(ev){editingEv=ev||null;$('#evFormTitle').textContent=ev?'Editar evento':'Novo evento';$('#eCity').innerHTML=citySelectHTML();
+  $('#eName').value=ev?ev.name:'';$('#eCity').value=ev?ev.city:(me.home||'');$('#eStart').value=ev?ev.starts_on:'';$('#eEnd').value=ev?ev.ends_on:'';$('#eTime').value=ev?(ev.time_label||''):'';
+  $('#evFormErr').hidden=true;$('#evDangerZone').hidden=!ev;$('#evDeleteConfirm').hidden=true;
+  if(ev){const n=RSVPS.filter(r=>r.e===ev.id).length;$('#evDeleteText').textContent=n?`Isso apaga o evento e as ${n} ${n===1?'presença confirmada':'presenças confirmadas'}.`:'Isso apaga o evento.'}
+  openSheet('shEvForm')}
+$('#btnNewEvent').onclick=()=>openEvForm(null);
+$('#eStart').addEventListener('change',()=>{if(!$('#eEnd').value||$('#eEnd').value<$('#eStart').value)$('#eEnd').value=$('#eStart').value});
+function slugify(t){return norm(t).replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40)||'evento'}
+$('#evForm').onsubmit=async e=>{e.preventDefault();const err=$('#evFormErr');err.hidden=true;const v=id=>$('#'+id).value.trim();
+  const name=v('eName'),cityId=v('eCity'),start=v('eStart'),end=v('eEnd')||v('eStart'),time=v('eTime');
+  if(!name||!cityId||!start){err.textContent='Preencha nome, cidade e a data de início.';err.hidden=false;return}
+  if(end<start){err.textContent='A data de término não pode ser antes do início.';err.hidden=false;return}
+  const row={name,city:cityId,starts_on:start,ends_on:end,time_label:time||null,active:true};const btn=$('#evSave');btn.disabled=true;btn.textContent='Salvando…';
+  let res;if(editingEv)res=await sb.from('events').update(row).eq('id',editingEv.id);else{let id=slugify(name)+'-'+start.slice(5).replace('-','');if(ALL_EVENTS.some(x=>x.id===id))id+='-'+Date.now().toString(36).slice(-3);res=await sb.from('events').insert({id,...row})}
+  btn.disabled=false;btn.textContent='Salvar evento';
+  if(res.error){err.textContent='Não foi possível salvar. Tente de novo.';err.hidden=false;return}
+  haptic();toast(editingEv?'Evento atualizado':'Evento criado');await afterEventsChange()};
+$('#evDelete').onclick=()=>{$('#evDeleteConfirm').hidden=false};
+$('#evDeleteNo').onclick=()=>{$('#evDeleteConfirm').hidden=true};
+$('#evDeleteYes').onclick=async()=>{if(!editingEv)return;const b=$('#evDeleteYes');b.disabled=true;const {error}=await sb.from('events').delete().eq('id',editingEv.id);b.disabled=false;
+  if(error){toast('Não foi possível apagar.');return}haptic();toast('Evento apagado');await afterEventsChange()};
+async function afterEventsChange(){try{await loadAll();await loadAllEvents()}catch(e){}closeTo('shAdmEvents');renderAdmEvents();refresh()}
 function openAdmin(){
   $('#fGroup').value=SETTINGS.group_link||'';
   const list=members.filter(m=>m.id!==me.id);$('#admCount').textContent=list.length+1;
@@ -845,7 +924,25 @@ function openEdit(first){
   openSheet('shEdit');
 }
 $('#fWa').addEventListener('input',e=>{const el=e.target;if(el.value.trim().startsWith('+'))return;let d=el.value.replace(/\D/g,'').slice(0,11);let o=d;if(d.length>2)o=`(${d.slice(0,2)}) `+d.slice(2);if(d.length>7)o=`(${d.slice(0,2)}) ${d.slice(2,d.length-4)}-${d.slice(-4)}`;el.value=o});
-$('#photoIn').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const img=new Image();const url=URL.createObjectURL(f);img.onload=()=>{const s=256,cv=document.createElement('canvas');cv.width=cv.height=s;const x=cv.getContext('2d');const r=Math.max(s/img.width,s/img.height);x.drawImage(img,(s-img.width*r)/2,(s-img.height*r)/2,img.width*r,img.height*r);pendingPhoto=cv.toDataURL('image/jpeg',.82);URL.revokeObjectURL(url);$('#editAv').innerHTML=`<img src="${pendingPhoto}" alt="">`;$('#editAv').style.background=''};img.src=url});
+const crop={img:null,base:1,zoom:1,x:0,y:0};
+function cropDraw(){const cv=$('#cropCv'),x=cv.getContext('2d'),S=cv.width,im=crop.img;if(!im)return;const sc=crop.base*crop.zoom;const w=im.width*sc,h=im.height*sc;
+  crop.x=Math.min(0,Math.max(S-w,crop.x));crop.y=Math.min(0,Math.max(S-h,crop.y));x.fillStyle='#000';x.fillRect(0,0,S,S);x.drawImage(im,crop.x,crop.y,w,h)}
+function cropSetZoom(z,cx,cy){const S=$('#cropCv').width;cx=cx??S/2;cy=cy??S/2;const old=crop.base*crop.zoom;crop.zoom=Math.max(1,Math.min(4,z));const nw=crop.base*crop.zoom;crop.x=cx-(cx-crop.x)*nw/old;crop.y=cy-(cy-crop.y)*nw/old;$('#cropZoom').value=crop.zoom;cropDraw()}
+$('#photoIn').addEventListener('change',e=>{const f=e.target.files[0];e.target.value='';if(!f)return;const img=new Image();const url=URL.createObjectURL(f);
+  img.onload=()=>{URL.revokeObjectURL(url);const S=$('#cropCv').width;crop.img=img;crop.base=Math.max(S/img.width,S/img.height);crop.zoom=1;crop.x=(S-img.width*crop.base)/2;crop.y=(S-img.height*crop.base)/2;$('#cropZoom').value=1;cropDraw();openSheet('shCrop')};
+  img.onerror=()=>{URL.revokeObjectURL(url);toast('Não foi possível abrir essa imagem.')};img.src=url});
+$('#cropZoom').addEventListener('input',e=>cropSetZoom(+e.target.value));
+(function cropGestures(){const box=$('#cropBox');const pts=new Map();let last=null,lastD=0;
+  const toCv=(cx,cy)=>{const r=box.getBoundingClientRect(),S=$('#cropCv').width;return{x:(cx-r.left)*S/r.width,y:(cy-r.top)*S/r.height}};
+  box.addEventListener('pointerdown',e=>{box.setPointerCapture(e.pointerId);pts.set(e.pointerId,toCv(e.clientX,e.clientY));if(pts.size===1)last=pts.get(e.pointerId);if(pts.size===2){const[a,b]=[...pts.values()];lastD=Math.hypot(a.x-b.x,a.y-b.y)}});
+  box.addEventListener('pointermove',e=>{if(!pts.has(e.pointerId))return;e.preventDefault();pts.set(e.pointerId,toCv(e.clientX,e.clientY));
+    if(pts.size===1&&last){const p=pts.get(e.pointerId);crop.x+=p.x-last.x;crop.y+=p.y-last.y;last=p;cropDraw()}
+    else if(pts.size===2){const[a,b]=[...pts.values()];const d=Math.hypot(a.x-b.x,a.y-b.y);if(lastD)cropSetZoom(crop.zoom*d/lastD,(a.x+b.x)/2,(a.y+b.y)/2);lastD=d}});
+  const end=e=>{pts.delete(e.pointerId);last=pts.size===1?[...pts.values()][0]:null;lastD=0};box.addEventListener('pointerup',end);box.addEventListener('pointercancel',end);
+  box.addEventListener('wheel',e=>{e.preventDefault();const p=toCv(e.clientX,e.clientY);cropSetZoom(crop.zoom*Math.exp(-e.deltaY*0.002),p.x,p.y)},{passive:false})})();
+$('#cropCancel').onclick=()=>{crop.img=null;closeSheet()};
+$('#cropOk').onclick=()=>{const src=$('#cropCv'),out=document.createElement('canvas');out.width=out.height=512;out.getContext('2d').drawImage(src,0,0,512,512);
+  pendingPhoto=out.toDataURL('image/jpeg',.86);crop.img=null;closeSheet();const av=$('#editAv');av.innerHTML=`<img src="${pendingPhoto}" alt="">`;av.style.background='';haptic()};
 async function saveProfile(){const first=!me.complete;const v=id=>$('#'+id).value.trim();const btn=$('#editSave');const err=$('#editErr');btn.disabled=true;
   try{let photo=pendingPhoto;if(photo&&photo.startsWith('data:'))photo=await uploadPhoto(photo);
     await saveMember(me.id,{wa:waDigits(v('fWa')),name:v('fName'),co:v('fCo'),niche:v('fNiche'),ig:v('fIg').replace('@',''),home:v('fHome'),seek:v('fSeek'),photo,complete:true});me=byId(me.id)}
