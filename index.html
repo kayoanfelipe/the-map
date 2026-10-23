@@ -277,9 +277,10 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
 #toast.on div{transform:translateY(0);opacity:1}
 
 /* ---------- Login ---------- */
-#login{position:absolute;inset:0;background:var(--bg-grad);z-index:40;display:flex;flex-direction:column;overflow-y:auto;padding-top:env(safe-area-inset-top,0px);padding-bottom:calc(24px + env(safe-area-inset-bottom,0px));transition:opacity .5s,transform .6s cubic-bezier(.32,.72,0,1)}
+#login{position:absolute;inset:0;background:radial-gradient(120% 90% at 50% 40%,rgba(3,3,5,.62) 0%,rgba(3,3,5,.78) 60%,rgba(3,3,5,.9) 100%);z-index:40;display:flex;flex-direction:column;overflow-y:auto;padding-top:env(safe-area-inset-top,0px);padding-bottom:calc(24px + env(safe-area-inset-bottom,0px));transition:opacity .5s,transform .6s cubic-bezier(.32,.72,0,1)}
 #login.out{opacity:0;transform:scale(1.04);pointer-events:none}
 #login.boot{opacity:0;transition:none!important}
+#app:has(> #login:not(.out)) #top,#app:has(> #login:not(.out)) #dock,#app:has(> #login:not(.out)) #eventcard,#app:has(> #login:not(.out)) #bubbles{opacity:0!important;pointer-events:none!important}
 #login .wrap{margin:auto 0;width:100%;max-width:420px;align-self:center}
 #login .field input{text-align:center;height:54px;border-radius:16px}
 #login .field input::placeholder{color:var(--fg3)}
@@ -1212,7 +1213,8 @@ $('#codeForm').onsubmit=async e=>{e.preventDefault();if(entering)return;const c=
     enter(me);
   }catch(x){err.textContent='Sem conexão com o servidor. Tente de novo.';err.hidden=false}
   finally{entering=false;btn.disabled=false;btn.textContent='Entrar'}};
-function enter(m){me=m;shownBubbles=new Set();bubbleFirst=true;subscribeLive();startMsgPoll();haptic();$('#login').classList.add('out');refresh();initPush();try{if(!sessionStorage.getItem('themap.swept')){sessionStorage.setItem('themap.swept','1');sb.functions.invoke('push',{body:{sweep:true}}).catch(()=>{})}}catch(e){}
+let idleT=0;function idleSpin(on){cancelAnimationFrame(idleT);idleT=0;if(!on||matchMedia('(prefers-reduced-motion:reduce)').matches)return;const step=()=>{if(me){idleT=0;return}rot[0]-=0.045;applyTransform();idleT=requestAnimationFrame(step)};idleT=requestAnimationFrame(step)}
+function enter(m){idleSpin(false);me=m;shownBubbles=new Set();bubbleFirst=true;subscribeLive();startMsgPoll();haptic();$('#login').classList.add('out');refresh();initPush();try{if(!sessionStorage.getItem('themap.swept')){sessionStorage.setItem('themap.swept','1');sb.functions.invoke('push',{body:{sweep:true}}).catch(()=>{})}}catch(e){}
   const qc=new URLSearchParams(location.search).get('chat');if(qc&&byId(qc)){history.replaceState(null,'',location.pathname);setTimeout(()=>openChat(qc),900)}
   const qcity=new URLSearchParams(location.search).get('city');if(qcity&&knownCity(qcity)){history.replaceState(null,'',location.pathname);setTimeout(()=>openCity(qcity),900)}
   const c=city(me.home||'sp');const far=z<=zMin()*1.01;if(!far)fitWorld(false);setTimeout(()=>flyTo(c.lng,c.lat,2.4,2200),far?250:450)
@@ -1249,14 +1251,16 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792773669';
+const APP_VERSION='1792773899';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
   if(stack.includes('shEdit')||stack.includes('shEvForm')||stack.includes('shCrop'))return;location.replace(location.pathname+'?v='+v)}catch(e){}}
 checkUpdate();document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkUpdate()});setInterval(checkUpdate,5*60*1000);
 (async function boot(){fitWorld(false);renderBubbles();$('#email').value=store.get('lastEmail','');
-  const showLogin=()=>{const l=$('#login');l.classList.remove('out');requestAnimationFrame(()=>l.classList.remove('boot'))};
+  const showLogin=()=>{const l=$('#login');l.classList.remove('out');requestAnimationFrame(()=>l.classList.remove('boot'));idleSpin(true)};
+  let saved=false;try{saved=!!localStorage.getItem('themap.auth')}catch(e){}
+  if(!saved){const l=$('#login');l.style.transition='none';l.classList.remove('boot');requestAnimationFrame(()=>{l.style.transition=''});idleSpin(true)}
   if(!sb){showLogin();return}
   try{const {data:{session}}=await sb.auth.getSession();if(!session){showLogin();return}
     $('#login').classList.add('out');
