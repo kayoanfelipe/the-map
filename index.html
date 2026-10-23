@@ -37,7 +37,9 @@
 html,body{height:100%;margin:0}
 body{background:var(--water);color:var(--fg);font-family:var(--font);font-size:16px;line-height:1.35;overflow:clip;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}
 button,input,select,textarea{font:inherit;color:inherit}
-button{background:none;border:0;padding:0;cursor:pointer}
+button{background:none;border:0;padding:0;cursor:pointer;transition:transform .16s cubic-bezier(.34,1.56,.64,1),opacity .16s,background-color .2s}button:active{transform:scale(.96)}
+@keyframes pop{from{opacity:0;transform:translateY(8px) scale(.985)}to{opacity:1;transform:none}}
+.cstep:not([hidden]),#cardsDelAsk:not([hidden]),#chatMenu:not([hidden]),#tripDates:not([hidden]),#untilDate:not([hidden]),#codeForm:not([hidden]),#emailForm:not([hidden]),.chatnote:not([hidden]){animation:pop .24s cubic-bezier(.32,.72,0,1) both}
 button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--link);outline-offset:2px}
 input:focus,select:focus,textarea:focus{outline:none}
 .search:focus,.field input:focus,.field select:focus,.field textarea:focus{box-shadow:inset 0 0 0 1.5px rgba(245,245,245,.35)}
@@ -93,7 +95,7 @@ svg[data-tier="c"] .lbl.state text{opacity:.8}
 .brand b{font-size:20px;letter-spacing:-.02em;font-weight:700}
 .brand span{font-size:12px;color:var(--fg2);font-weight:600;letter-spacing:.06em;text-transform:uppercase}
 .glass,.avatarbtn,.worldbtn,.status,#eventcard button{background:var(--glass);box-shadow:var(--glass-shadow);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
-.avatarbtn{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;position:relative}
+.avatarbtn{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;position:relative;background:none!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
 .avatarbtn .av{width:36px;height:36px}
 .evbtn{align-self:flex-start;height:40px;margin-top:2px;padding:0 14px 0 12px;border-radius:999px;font-size:14px;font-weight:700;display:inline-flex;align-items:center;gap:7px;background:var(--glass);box-shadow:var(--glass-shadow);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
 .evbtn .n{background:var(--fg);color:var(--accent-ink);border-radius:999px;min-width:20px;height:20px;padding:0 6px;display:grid;place-items:center;font-size:12px}
@@ -988,7 +990,7 @@ function openProfile(id,place){curProf=id;
   $('#profFoot').innerHTML=mine?`<button class="secondary" id="profEdit">Editar meu perfil</button>`:`${canDm?`<button class="primary" id="btnMsg"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-8 8H7l-4 3V12a8 8 0 0 1 8-8h2a8 8 0 0 1 8 8z"/></svg>Mensagem</button>`:`<button class="secondary" id="btnMsg">${BLOCKS.includes(m.id)?'Você bloqueou este membro':'Prefere conversar pelo grupo'}</button>`}${SETTINGS.group_link?'<button class="resend" id="btnOpenGroup" style="margin-top:6px">Abrir o grupo no WhatsApp</button>':''}`;
   bindCardStrip($('#profBody'));openSheet('shProfile');
   if(mine)$('#profEdit').onclick=()=>openEdit(false);
-  else{$('#btnMsg').onclick=()=>{haptic();if(!canDm&&!BLOCKS.includes(m.id))return;const pre=canDm?dmMsg(m,ctx):undefined;closeAll();renderInbox();openSheet('shInbox');openChat(m.id,pre)};
+  else{$('#btnMsg').onclick=()=>{haptic();if(!canDm&&!BLOCKS.includes(m.id))return;closeAll();renderInbox();openSheet('shInbox');openChat(m.id)};
     const og=$('#btnOpenGroup');if(og)og.onclick=()=>{const link=SETTINGS.group_link||'';if(!link)return;const a=document.createElement('a');a.href=link;a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();a.remove()}}
 }
 document.addEventListener('click',e=>{
@@ -1247,7 +1249,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792772592';
+const APP_VERSION='1792772929';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
