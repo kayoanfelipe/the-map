@@ -180,6 +180,13 @@ svg[data-tier="c"] .lbl.state text{opacity:.8}
 .evcard .stack .av{width:24px;height:24px;font-size:9px;margin-left:-6px;box-shadow:0 0 0 2px var(--surface)}
 .evcard .stack .av:first-child{margin-left:0}
 .evcard .mine{font-size:11.5px;font-weight:700;background:var(--fg);color:var(--accent-ink);padding:3px 8px;border-radius:999px;margin-left:auto}
+.evcard .t small.venue{color:var(--fg3);margin-top:1px}
+.venuecard{display:flex;align-items:center;gap:12px;padding:14px;border-radius:16px;background:var(--surface2);text-decoration:none;color:var(--fg);margin-top:2px}
+.venuecard .pin{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.06);display:grid;place-items:center;flex:none;color:var(--fg)}
+.venuecard .t{flex:1;min-width:0}
+.venuecard b{display:block;font-size:15px}
+.venuecard small{display:block;font-size:13px;color:var(--fg2);margin-top:2px}
+.venuecard .go{font-size:12.5px;font-weight:700;color:var(--link);flex:none;white-space:nowrap}
 .evhead{display:flex;flex-direction:column;gap:4px;padding:6px 0 4px;color:var(--fg2);font-size:14px}
 .evhead span{display:flex;align-items:center;gap:8px}
 .eventrow{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px;border-radius:16px;background:var(--accent-soft);margin-top:6px}
@@ -423,7 +430,7 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
   <!-- Admin: events list -->
   <section class="sheet" id="shAdmEvents" aria-label="Gerenciar eventos">
     <div class="grab"><i></i></div>
-    <div class="sh gutter"><div><h2>Eventos</h2><p>Aparecem para todos os membros na hora.</p></div><button class="close" data-close aria-label="Fechar">✕</button></div>
+    <div class="sh gutter"><div><h2>Eventos</h2></div><button class="close" data-close aria-label="Fechar">✕</button></div>
     <div class="sb gutter" id="admEvBody"></div>
     <div class="sf gutter"><button class="primary" id="btnNewEvent" style="width:100%">Novo evento</button></div>
   </section>
@@ -435,6 +442,7 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
     <form class="sb gutter" id="evForm" novalidate>
       <div class="field" style="margin-top:0"><label for="eName">Nome do evento</label><input id="eName" placeholder="Ex.: The House" maxlength="80"></div>
       <div class="field"><label for="eCity">Cidade</label><select id="eCity"></select></div>
+      <div class="field"><label for="eVenue">Local (opcional)</label><input id="eVenue" placeholder="Ex.: Mitra Rooftop · Rua, número – Bairro" maxlength="140"></div>
       <div class="row2" style="margin-top:14px">
         <div class="field" style="margin-top:0;flex:1;min-width:0"><label for="eStart">Começa</label><input id="eStart" type="date"></div>
         <div class="field" style="margin-top:0;flex:1;min-width:0"><label for="eEnd">Termina</label><input id="eEnd" type="date"></div>
@@ -570,7 +578,7 @@ const event=id=>EVENTS.find(e=>e.id===id)||{id,n:'Evento',city:'sp',when:'',star
 let me=null,myCheckin=null,invisible=false;
 const today=()=>D(0);
 function fromRow(r){return{id:r.id,email:r.email,name:r.name||'',active:r.active,admin:r.is_admin,wa:r.wa||'',co:r.company||'',niche:r.niche||'',home:r.home_city||'',ig:r.instagram||'',seek:r.seeking||'',photo:r.photo_url||null,complete:r.complete,invisible:r.invisible,user_id:r.user_id}}
-function evFromRow(r){const d=new Date(r.starts_on+'T12:00:00');const c=city(r.city);return{id:r.id,n:r.name,city:r.city,start:r.starts_on,end:r.ends_on,when:`${WD[d.getDay()]} ${pad2(d.getDate())}/${pad2(d.getMonth()+1)}${r.time_label?' · '+r.time_label:''}${c?' · '+c.n:''}`,short:`${pad2(d.getDate())}/${pad2(d.getMonth()+1)}`,active:r.active&&r.ends_on>=today()}}
+function evFromRow(r){const d=new Date(r.starts_on+'T12:00:00');const c=city(r.city);return{id:r.id,n:r.name,city:r.city,venue:r.venue||'',start:r.starts_on,end:r.ends_on,when:`${WD[d.getDay()]} ${pad2(d.getDate())}/${pad2(d.getMonth()+1)}${r.time_label?' · '+r.time_label:''}${c?' · '+c.n:''}`,short:`${pad2(d.getDate())}/${pad2(d.getMonth()+1)}`,active:r.active&&r.ends_on>=today()}}
 function whenLabel(ck){return ck.place.startsWith('ev:')?event(ck.place.slice(3)).short:untilLabel(ck.until)}
 function upcomingEvents(){return EVENTS.filter(e=>e.active).sort((a,b)=>a.start<b.start?-1:1)}
 function rsvpsOf(evId){return RSVPS.filter(r=>r.e===evId&&byId(r.m)&&byId(r.m).active!==false&&(!byId(r.m).invisible||(me&&r.m===me.id)))}
@@ -722,13 +730,15 @@ function openEvents(){openEventsRender(upcomingEvents());openSheet('shEvents')}
 function openEventsRender(list){
   $('#evsBody').innerHTML=list.length?list.map(e=>{const d=new Date(e.start+'T12:00:00');const rs=rsvpsOf(e.id);const n=rs.length;
     const faces=rs.slice(0,4).map(r=>avatar(byId(r.m))).join('');
-    return`<button class="evcard" data-ev="${e.id}"><span class="date"><b>${d.getDate()}</b><small>${MO_SHORT[d.getMonth()]}</small></span><span class="t"><b>${esc(e.n)}</b><small>${e.when}</small>
+    return`<button class="evcard" data-ev="${e.id}"><span class="date"><b>${d.getDate()}</b><small>${MO_SHORT[d.getMonth()]}</small></span><span class="t"><b>${esc(e.n)}</b><small>${e.when}</small>${e.venue?`<small class="venue">${esc(e.venue.split(' · ')[0])}</small>`:''}
       <span class="who">${n?`<span class="stack">${faces}</span>`:''}<span>${n?`${n} ${n===1?'confirmou':'confirmaram'}`:'Seja o primeiro a confirmar'}</span>${iGo(e.id)?'<span class="mine">Você vai</span>':''}</span></span></button>`}).join('')
     :`<div class="empty"><b>Nenhum evento agendado.</b>Quando houver um encontro do The Group, ele aparece aqui.</div>`}
 function openEvent(id){const e=event(id);const rs=rsvpsOf(id);const n=rs.length;const future=e.start>today();const going=iGo(id);
   $('#evName').textContent=e.n;$('#evCount').textContent=e.when;
+  const c=city(e.city);const mapsQ=encodeURIComponent(e.venue+(c?', '+c.n:''));
+  const venueBlock=e.venue?`<a class="venuecard" href="https://maps.apple.com/?q=${mapsQ}" target="_blank" rel="noopener"><span class="pin"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-6.1 7-12a7 7 0 1 0-14 0c0 5.9 7 12 7 12z"/><circle cx="12" cy="10" r="2.6"/></svg></span><span class="t"><b>${esc(e.venue.split(' · ')[0])}</b>${e.venue.includes(' · ')?`<small>${esc(e.venue.split(' · ').slice(1).join(' · '))}${c?' · '+esc(c.n):''}</small>`:(c?`<small>${esc(c.n)}</small>`:'')}</span><span class="go">Abrir no Mapas ↗</span></a>`:'';
   const rows=rs.slice().sort((a,b)=>(b.m===(me&&me.id))-(a.m===(me&&me.id))).map(r=>{const m=byId(r.m);return`<button class="row" data-prof="${m.id}" data-ck="ev:${id}"><span>${avatar(m)}</span><span class="t"><b>${esc(m.name)}${me&&m.id===me.id?' <span class="pill adm">você</span>':''}</b><small>${esc(m.co)} · ${esc(m.niche)}</small></span><span class="chev">›</span></button>`}).join('');
-  $('#evBody').innerHTML=n?`<div class="sec">${future?'Confirmaram presença':'Membros presentes'} <span>${n}</span></div>${rows}`:`<div class="empty"><b>Ninguém confirmou ainda.</b>Seja o primeiro.</div>`;
+  $('#evBody').innerHTML=venueBlock+(n?`<div class="sec">${future?'Confirmaram presença':'Membros presentes'} <span>${n}</span></div>${rows}`:`<div class="empty"><b>Ninguém confirmou ainda.</b>Seja o primeiro.</div>`);
   $('#evFoot').innerHTML=going?`<button class="secondary" id="btnRsvp">Cancelar minha presença</button>`:`<button class="primary" id="btnRsvp">Confirmar presença</button>`;
   $('#btnRsvp').onclick=async()=>{const b=$('#btnRsvp');b.disabled=true;
     const res=going?await sb.from('event_rsvps').delete().eq('event_id',id).eq('member_id',me.id):await sb.from('event_rsvps').insert({event_id:id,member_id:me.id});
@@ -855,7 +865,7 @@ function renderAdmEvents(){const t=today();const up=ALL_EVENTS.filter(e=>e.ends_
   $('#admEvBody').querySelectorAll('[data-admev]').forEach(b=>b.onclick=()=>openEvForm(ALL_EVENTS.find(e=>e.id===b.dataset.admev)))}
 function citySelectHTML(){return`<option value="">Escolher</option><optgroup label="Brasil">`+CITIES.filter(c=>c.c===BR).map(c=>`<option value="${c.id}">${c.n}</option>`).join('')+`</optgroup><optgroup label="Outros países">`+CITIES.filter(c=>c.c!==BR).map(c=>`<option value="${c.id}">${c.n} · ${c.c}</option>`).join('')+`</optgroup>`}
 function openEvForm(ev){editingEv=ev||null;$('#evFormTitle').textContent=ev?'Editar evento':'Novo evento';$('#eCity').innerHTML=citySelectHTML();
-  $('#eName').value=ev?ev.name:'';$('#eCity').value=ev?ev.city:(me.home||'');$('#eStart').value=ev?ev.starts_on:'';$('#eEnd').value=ev?ev.ends_on:'';$('#eTime').value=ev?(ev.time_label||''):'';
+  $('#eName').value=ev?ev.name:'';$('#eCity').value=ev?ev.city:(me.home||'');$('#eStart').value=ev?ev.starts_on:'';$('#eEnd').value=ev?ev.ends_on:'';$('#eTime').value=ev?(ev.time_label||''):'';$('#eVenue').value=ev?(ev.venue||''):'';
   $('#evFormErr').hidden=true;$('#evDangerZone').hidden=!ev;$('#evDeleteConfirm').hidden=true;
   if(ev){const n=RSVPS.filter(r=>r.e===ev.id).length;$('#evDeleteText').textContent=n?`Isso apaga o evento e as ${n} ${n===1?'presença confirmada':'presenças confirmadas'}.`:'Isso apaga o evento.'}
   openSheet('shEvForm')}
@@ -863,10 +873,10 @@ $('#btnNewEvent').onclick=()=>openEvForm(null);
 $('#eStart').addEventListener('change',()=>{if(!$('#eEnd').value||$('#eEnd').value<$('#eStart').value)$('#eEnd').value=$('#eStart').value});
 function slugify(t){return norm(t).replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40)||'evento'}
 $('#evForm').onsubmit=async e=>{e.preventDefault();const err=$('#evFormErr');err.hidden=true;const v=id=>$('#'+id).value.trim();
-  const name=v('eName'),cityId=v('eCity'),start=v('eStart'),end=v('eEnd')||v('eStart'),time=v('eTime');
+  const name=v('eName'),cityId=v('eCity'),start=v('eStart'),end=v('eEnd')||v('eStart'),time=v('eTime'),venue=v('eVenue');
   if(!name||!cityId||!start){err.textContent='Preencha nome, cidade e a data de início.';err.hidden=false;return}
   if(end<start){err.textContent='A data de término não pode ser antes do início.';err.hidden=false;return}
-  const row={name,city:cityId,starts_on:start,ends_on:end,time_label:time||null,active:true};const btn=$('#evSave');btn.disabled=true;btn.textContent='Salvando…';
+  const row={name,city:cityId,starts_on:start,ends_on:end,time_label:time||null,venue:venue||null,active:true};const btn=$('#evSave');btn.disabled=true;btn.textContent='Salvando…';
   let res;if(editingEv)res=await sb.from('events').update(row).eq('id',editingEv.id);else{let id=slugify(name)+'-'+start.slice(5).replace('-','');if(ALL_EVENTS.some(x=>x.id===id))id+='-'+Date.now().toString(36).slice(-3);res=await sb.from('events').insert({id,...row})}
   btn.disabled=false;btn.textContent='Salvar evento';
   if(res.error){err.textContent='Não foi possível salvar. Tente de novo.';err.hidden=false;return}
@@ -996,7 +1006,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792716108';
+const APP_VERSION='1792716342';
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
   if(stack.includes('shEdit')||stack.includes('shEvForm')||stack.includes('shCrop'))return;location.replace(location.pathname+'?v='+v)}catch(e){}}
