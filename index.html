@@ -108,6 +108,8 @@ svg[data-tier="c"] .lbl.state text{opacity:.8}
 .glass,.avatarbtn,.worldbtn,.status,#eventcard button{background:var(--glass);box-shadow:var(--glass-shadow);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
 .avatarbtn{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;position:relative}
 .avatarbtn .av{width:36px;height:36px}
+.evbtn{align-self:flex-start;height:40px;margin-top:2px;padding:0 14px 0 12px;border-radius:999px;font-size:14px;font-weight:700;display:inline-flex;align-items:center;gap:7px;background:var(--glass);box-shadow:var(--glass-shadow);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.evbtn .n{background:var(--fg);color:var(--accent-ink);border-radius:999px;min-width:20px;height:20px;padding:0 6px;display:grid;place-items:center;font-size:12px}
 .worldbtn{height:34px;padding:0 12px;border-radius:999px;font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:6px}
 .worldbtn .n{background:var(--fg);color:var(--accent-ink);border-radius:999px;min-width:20px;height:20px;padding:0 6px;display:grid;place-items:center;font-size:12px}
 .avatarbtn .eye{position:absolute;right:-3px;bottom:-3px;width:20px;height:20px;border-radius:50%;background:var(--fg);color:var(--accent-ink);display:grid;place-items:center;font-size:11px;border:2px solid var(--bg)}
@@ -179,6 +181,20 @@ svg[data-tier="c"] .lbl.state text{opacity:.8}
 .av.big{width:96px;height:96px;font-size:32px;box-shadow:0 1px 2px rgba(0,0,0,.08),0 10px 30px rgba(0,0,0,.14)}
 .empty{text-align:center;padding:30px 12px 8px;color:var(--fg2)}
 .empty b{display:block;color:var(--fg);font-size:17px;margin-bottom:4px}
+.evcard{display:flex;gap:14px;align-items:center;width:100%;text-align:left;padding:14px;border-radius:18px;background:var(--surface2);margin-top:10px}
+.evcard .date{width:52px;flex:none;text-align:center;border-radius:12px;background:rgba(255,255,255,.06);padding:7px 0}
+.evcard .date b{display:block;font-size:20px;line-height:1.05;font-variant-numeric:tabular-nums}
+.evcard .date small{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--fg2)}
+.evcard .t{flex:1;min-width:0}
+.evcard .t b{display:block;font-size:16px;line-height:1.25}
+.evcard .t small{display:block;font-size:13px;color:var(--fg2);margin-top:2px}
+.evcard .who{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12.5px;color:var(--fg2)}
+.evcard .stack{display:flex}
+.evcard .stack .av{width:24px;height:24px;font-size:9px;margin-left:-6px;box-shadow:0 0 0 2px var(--surface)}
+.evcard .stack .av:first-child{margin-left:0}
+.evcard .mine{font-size:11.5px;font-weight:700;background:var(--fg);color:var(--accent-ink);padding:3px 8px;border-radius:999px;margin-left:auto}
+.evhead{display:flex;flex-direction:column;gap:4px;padding:6px 0 4px;color:var(--fg2);font-size:14px}
+.evhead span{display:flex;align-items:center;gap:8px}
 .eventrow{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px;border-radius:16px;background:var(--accent-soft);margin-top:6px}
 .eventrow .ic{width:40px;height:40px;border-radius:12px;background:var(--surface2);color:var(--fg);display:grid;place-items:center;font-weight:800;font-size:13px;flex:none}
 .eventrow b{display:block;font-size:15px}
@@ -292,7 +308,7 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
   <div id="map"><svg id="svg" aria-label="Mapa do Brasil com membros por cidade"><g id="world"><g id="countries"></g><g id="states"></g><g id="labels"></g><g id="cities"></g><g id="bubbles"></g></g></svg></div>
 
   <div id="top" class="gutter">
-    <div></div>
+    <button class="evbtn" id="btnEvents" aria-label="Eventos"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span>Eventos</span><span class="n" id="evN" hidden></span></button>
     <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px"><button class="avatarbtn" id="btnMe" aria-label="Meu perfil"><span class="av" id="meAv"></span><span class="eye" id="eyeBadge" hidden title="Modo invisível">◌</span></button><button class="worldbtn" id="btnWorld" aria-label="Ver o mundo"><span id="worldLbl">Mundo</span><span class="n" id="worldN" hidden></span></button></div>
   </div>
   <div id="eventcard" class="gutter" hidden><button id="eventBtn"><span class="ic" id="evIc">TH</span><span><b id="evTitle">Você está na The House</b><small id="evSub">38 presentes</small></span></button></div>
@@ -317,11 +333,19 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
     <div class="sb gutter" id="cityBody"></div>
   </section>
 
+  <!-- Events list sheet -->
+  <section class="sheet" id="shEvents" aria-label="Eventos">
+    <div class="grab"><i></i></div>
+    <div class="sh gutter"><div><h2>Eventos</h2><p id="evsSub">Próximos encontros do The Group</p></div><button class="close" data-close aria-label="Fechar">✕</button></div>
+    <div class="sb gutter" id="evsBody"></div>
+  </section>
+
   <!-- Event sheet -->
   <section class="sheet" id="shEvent" aria-label="Evento">
     <div class="grab"><i></i></div>
     <div class="sh gutter"><div><h2 id="evName">The House</h2><p id="evCount">12 presentes</p></div></div>
     <div class="sb gutter" id="evBody"></div>
+    <div class="sf gutter" id="evFoot"></div>
   </section>
 
   <!-- Profile sheet -->
@@ -504,7 +528,7 @@ const store={get(k,d){try{const v=localStorage.getItem('themap.'+k);return v==nu
 /* ---------- Supabase ---------- */
 const SB_URL='https://kqucpivagntlmukfghhg.supabase.co',SB_KEY='sb_publishable_yFxha4btvFg2bftRPaPhTA_kZgUNhAV';
 const sb=(window.supabase&&/^https:\/\//.test(SB_URL)&&SB_KEY.length>20)?window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true,storageKey:'themap.auth'}}):null;
-let members=[],CHECKINS=[],SETTINGS={};
+let members=[],CHECKINS=[],SETTINGS={},RSVPS=[];
 const byId=id=>members.find(m=>m.id===id);
 const city=id=>CITIES.find(c=>c.id===id);
 const event=id=>EVENTS.find(e=>e.id===id)||{id,n:'Evento',city:'sp',when:'',start:'',end:''};
@@ -513,10 +537,14 @@ const today=()=>D(0);
 function fromRow(r){return{id:r.id,email:r.email,name:r.name||'',active:r.active,admin:r.is_admin,wa:r.wa||'',co:r.company||'',niche:r.niche||'',home:r.home_city||'',ig:r.instagram||'',seek:r.seeking||'',photo:r.photo_url||null,complete:r.complete,invisible:r.invisible,user_id:r.user_id}}
 function evFromRow(r){const d=new Date(r.starts_on+'T12:00:00');const c=city(r.city);return{id:r.id,n:r.name,city:r.city,start:r.starts_on,end:r.ends_on,when:`${WD[d.getDay()]} ${pad2(d.getDate())}/${pad2(d.getMonth()+1)}${r.time_label?' · '+r.time_label:''}${c?' · '+c.n:''}`,short:`${pad2(d.getDate())}/${pad2(d.getMonth()+1)}`,active:r.active&&r.ends_on>=today()}}
 function whenLabel(ck){return ck.place.startsWith('ev:')?event(ck.place.slice(3)).short:untilLabel(ck.until)}
+function upcomingEvents(){return EVENTS.filter(e=>e.active).sort((a,b)=>a.start<b.start?-1:1)}
+function rsvpsOf(evId){return RSVPS.filter(r=>r.e===evId&&byId(r.m)&&byId(r.m).active!==false&&(!byId(r.m).invisible||(me&&r.m===me.id)))}
+function iGo(evId){return !!me&&RSVPS.some(r=>r.e===evId&&r.m===me.id)}
 function evWord(e,n){return e.start>today()?(n===1?'confirmou presença':'confirmaram presença'):(n===1?'presente':'presentes')}
 async function loadAll(){
-  const [m,c,e,s]=await Promise.all([sb.from('members').select('*').order('name'),sb.from('checkins').select('member_id,place,until,open_to'),sb.from('events').select('*').order('starts_on'),sb.from('settings').select('key,value')]);
-  const err=m.error||c.error||e.error||s.error;if(err)throw err;
+  const [m,c,e,s,r]=await Promise.all([sb.from('members').select('*').order('name'),sb.from('checkins').select('member_id,place,until,open_to'),sb.from('events').select('*').order('starts_on'),sb.from('settings').select('key,value'),sb.from('event_rsvps').select('event_id,member_id,created_at')]);
+  const err=m.error||c.error||e.error||s.error||r.error;if(err)throw err;
+  RSVPS=r.data.map(x=>({e:x.event_id,m:x.member_id,at:x.created_at}));
   members=m.data.map(fromRow);
   EVENTS=e.data.map(evFromRow).filter(x=>city(x.city));
   CHECKINS=c.data.filter(r=>r.until>=today()).map(r=>({m:r.member_id,place:r.place,until:r.until,open:r.open_to||[]})).filter(k=>!k.place.startsWith('ev:')||EVENTS.some(x=>'ev:'+x.id===k.place));
@@ -535,7 +563,7 @@ async function saveMember(id,patch){const row={};for(const k in patch)if(COLS[k]
 async function uploadPhoto(dataUrl){const blob=await (await fetch(dataUrl)).blob();const {data:{user}}=await sb.auth.getUser();const path=`${user.id}/avatar.jpg`;const {error}=await sb.storage.from('avatars').upload(path,blob,{upsert:true,contentType:'image/jpeg'});if(error)throw error;return sb.storage.from('avatars').getPublicUrl(path).data.publicUrl+'?v='+Date.now()}
 let live=null,srT=null;
 function softReload(){clearTimeout(srT);srT=setTimeout(async()=>{if(!me)return;try{await loadAll();if(!me||me.active===false){signOutLocal('Seu acesso foi desativado.');return}refresh()}catch(e){}},400)}
-function subscribeLive(){if(live||!sb)return;live=sb.channel('themap-live').on('postgres_changes',{event:'*',schema:'public',table:'checkins'},softReload).on('postgres_changes',{event:'*',schema:'public',table:'members'},softReload).subscribe()}
+function subscribeLive(){if(live||!sb)return;live=sb.channel('themap-live').on('postgres_changes',{event:'*',schema:'public',table:'checkins'},softReload).on('postgres_changes',{event:'*',schema:'public',table:'event_rsvps'},softReload).on('postgres_changes',{event:'*',schema:'public',table:'members'},softReload).subscribe()}
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&me)softReload()});
 async function signOutLocal(msg){try{if(live){sb.removeChannel(live);live=null}await sb.auth.signOut()}catch(e){}me=null;myCheckin=null;CHECKINS=[];members=[];closeAll();refresh();$('#login').classList.remove('out');$('#codeForm').hidden=true;$('#emailForm').hidden=false;$('#email').value=store.get('lastEmail','');if(msg){$('#emailErr').textContent=msg;$('#emailErr').hidden=false}}
 
@@ -655,7 +683,7 @@ document.querySelectorAll('.sheet').forEach(sh=>{
 /* ---------- city / event / profile ---------- */
 function memberRow(ck){const m=byId(ck.m);return`<button class="row" data-prof="${m.id}" data-ck="${ck.place}"><span>${avatar(m)}</span><span class="t"><b>${esc(m.name)}${ck.mine?' <span class="pill adm">você</span>':''}</b><small>${esc(m.co)} · ${esc(m.niche)}</small></span><span class="meta"><b>${whenLabel(ck)}</b></span><span class="chev">›</span></button>`}
 function openCity(id){
-  const c=city(id);const cks=activeCheckins().filter(k=>k.place===id);const evs=EVENTS.filter(e=>e.active&&e.city===id).map(e=>({e,n:activeCheckins().filter(k=>k.place==='ev:'+e.id).length}));
+  const c=city(id);const cks=activeCheckins().filter(k=>k.place===id);const evs=[];
   const total=cks.length+evs.reduce((a,b)=>a+b.n,0);
   $('#cityName').textContent=c.n;$('#cityCount').textContent=(c.c===BR?'':c.c+' · ')+(total?`${total} ${total>1?'membros':'membro'} agora`:'ninguém agora');
   const res=cks.filter(k=>byId(k.m).home===id),vis=cks.filter(k=>byId(k.m).home!==id);
@@ -666,24 +694,49 @@ function openCity(id){
   if(res.length)h+=`<div class="sec">Moram aqui</div>`+res.map(memberRow).join('');
   $('#cityBody').innerHTML=h;openSheet('shCity');centerOn(c.lng,c.lat,useTiles?Math.max(2.6,0.0711*Math.pow(2,lmap.getZoom()+1)):Math.max(z,2.6));
 }
-function openEvent(id){const e=event(id);const cks=activeCheckins().filter(k=>k.place==='ev:'+id);$('#evName').textContent=e.n;$('#evCount').textContent=`${cks.length} ${evWord(e,cks.length)} · ${e.when}`;
-  const future=e.start>today();
-  $('#evBody').innerHTML=(cks.length?`<div class="sec">${future?'Confirmaram presença':'Membros presentes'}</div>`+cks.map(memberRow).join(''):`<div class="empty"><b>${future?'Ninguém confirmou ainda.':'Ninguém marcou presença ainda.'}</b>Seja o primeiro.</div>`)+(me&&myCheckin&&myCheckin.place==='ev:'+id?'':`<div style="margin-top:18px"><button class="secondary" data-checkin-ev="${id}">${future?'Confirmar presença':'Estou aqui'}</button></div>`);
+const MO_SHORT=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+function openEvents(){openEventsRender(upcomingEvents());openSheet('shEvents')}
+function openEventsRender(list){
+  $('#evsBody').innerHTML=list.length?list.map(e=>{const d=new Date(e.start+'T12:00:00');const rs=rsvpsOf(e.id);const n=rs.length;
+    const faces=rs.slice(0,4).map(r=>avatar(byId(r.m))).join('');
+    return`<button class="evcard" data-ev="${e.id}"><span class="date"><b>${d.getDate()}</b><small>${MO_SHORT[d.getMonth()]}</small></span><span class="t"><b>${esc(e.n)}</b><small>${e.when}</small>
+      <span class="who">${n?`<span class="stack">${faces}</span>`:''}<span>${n?`${n} ${n===1?'confirmou':'confirmaram'}`:'Seja o primeiro a confirmar'}</span>${iGo(e.id)?'<span class="mine">Você vai</span>':''}</span></span></button>`}).join('')
+    :`<div class="empty"><b>Nenhum evento agendado.</b>Quando houver um encontro do The Group, ele aparece aqui.</div>`}
+function openEvent(id){const e=event(id);const rs=rsvpsOf(id);const n=rs.length;const future=e.start>today();const going=iGo(id);
+  $('#evName').textContent=e.n;$('#evCount').textContent=e.when;
+  const rows=rs.slice().sort((a,b)=>(b.m===(me&&me.id))-(a.m===(me&&me.id))).map(r=>{const m=byId(r.m);return`<button class="row" data-prof="${m.id}" data-ck="ev:${id}"><span>${avatar(m)}</span><span class="t"><b>${esc(m.name)}${me&&m.id===me.id?' <span class="pill adm">você</span>':''}</b><small>${esc(m.co)} · ${esc(m.niche)}</small></span><span class="chev">›</span></button>`}).join('');
+  $('#evBody').innerHTML=n?`<div class="sec">${future?'Confirmaram presença':'Membros presentes'} <span>${n}</span></div>${rows}`:`<div class="empty"><b>Ninguém confirmou ainda.</b>Seja o primeiro.</div>`;
+  $('#evFoot').innerHTML=going?`<button class="secondary" id="btnRsvp">Cancelar minha presença</button>`:`<button class="primary" id="btnRsvp">Confirmar presença</button>`;
+  $('#btnRsvp').onclick=async()=>{const b=$('#btnRsvp');b.disabled=true;
+    const res=going?await sb.from('event_rsvps').delete().eq('event_id',id).eq('member_id',me.id):await sb.from('event_rsvps').insert({event_id:id,member_id:me.id});
+    b.disabled=false;if(res.error){toast('Não foi possível salvar. Tente de novo.');return}
+    if(going)RSVPS=RSVPS.filter(r=>!(r.e===id&&r.m===me.id));else RSVPS.push({e:id,m:me.id,at:new Date().toISOString()});
+    haptic();toast(going?'Presença cancelada':'Presença confirmada');refresh();openEvent(id);if(stack.includes('shEvents'))renderEventsQuiet()};
   openSheet('shEvent')}
+function renderEventsQuiet(){openEventsRender(upcomingEvents())}
+const OPEN_PHRASE={'café':'um café','almoço':'um almoço','jantar':'um jantar','drink':'um drink'};
+function inviteMsg(m,ctx){const tag=m.wa?'@'+m.wa:'@'+m.name.split(' ')[0];
+  if(ctx&&ctx.type==='event'){const e=ctx.e;return e.start>today()?`${tag} vi que você confirmou presença na ${e.n}. Bora se encontrar lá?`:`${tag} tá na ${e.n}? Bora se encontrar aqui?`}
+  if(ctx&&ctx.type==='city'){const ck=ctx.ck;const c=city(ck.place);const cn=c?c.n:'';const when=ck.until===today()?' hoje':' '+untilLabel(ck.until);
+    const opts=(ck.open||[]).filter(o=>OPEN_PHRASE[o]);const ask=opts.length?`Bora marcar ${opts.slice(0,2).map(o=>OPEN_PHRASE[o]).join(' ou ')}?`:'Bora se encontrar?';
+    return`${tag} vi que você tá em ${cn}${when}. ${ask}`}
+  return`${tag} bora marcar um encontro?`}
 function openProfile(id,place){
-  const m=byId(id);const ck=activeCheckins().find(k=>k.m===id);const mine=me&&id===me.id;
+  const m=byId(id);const ck=activeCheckins().find(k=>k.m===id&&!k.place.startsWith('ev:'));const mine=me&&id===me.id;
+  const evsOf=upcomingEvents().filter(e=>RSVPS.some(r=>r.e===e.id&&r.m===id));
+  const ctx=place&&place.startsWith('ev:')?{type:'event',e:event(place.slice(3))}:ck?{type:'city',ck}:evsOf.length?{type:'event',e:evsOf[0]}:null;
   $('#profBody').innerHTML=`<div class="pf">${avatar(m,'big')}<h2>${esc(m.name)}</h2><div class="co">${esc(m.co)} · ${esc(m.niche)}${m.home?` · ${esc(city(m.home).n)}`:''}</div>
-    ${ck?`<div class="now"><span>${placeName(ck.place)} · ${whenLabel(ck)}</span>${ck.open.map(o=>`<span>${esc(o)}</span>`).join('')}</div>`:''}
+    ${ck||evsOf.length?`<div class="now">${ck?`<span>${placeName(ck.place)} · ${whenLabel(ck)}</span>${ck.open.map(o=>`<span>${esc(o)}</span>`).join('')}`:''}${evsOf.map(e=>`<span>${esc(e.n)} · ${e.short}</span>`).join('')}</div>`:''}
     ${m.seek?`<div class="seek"><small>O que estou buscando</small>${esc(m.seek)}</div>`:''}
     </div>
     <div style="margin-top:8px">
     ${m.ig?`<a class="linkrow" href="https://instagram.com/${encodeURIComponent(m.ig.replace('@',''))}" target="_blank" rel="noopener" style="border:0"><span class="ic">◎</span><span class="t"><b>@${esc(m.ig.replace('@',''))}</b><small>Instagram</small></span><span class="chev">↗</span></a>`:''}
     </div>`;
-  const first=m.name.split(' ')[0];const where=ck?(ck.place.startsWith('ev:')?'na '+placeName(ck.place):'em '+(ck.place==='sp'?'SP':placeName(ck.place))):'';
+
   $('#profFoot').innerHTML=mine?`<button class="secondary" id="profEdit">Editar meu perfil</button>`:`<button class="primary" id="btnCall"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.6 8.6 0 0 1-3.8-.9L3 21l2-4.6A8.4 8.4 0 1 1 21 11.5z"/></svg>Chamar no grupo</button>${SETTINGS.group_link?'<button class="resend" id="btnOpenGroup" style="margin-top:6px">Só abrir o grupo</button>':''}`;
   openSheet('shProfile');
   if(mine)$('#profEdit').onclick=()=>openEdit(false);
-  else{$('#btnCall').onclick=async()=>{const tag=m.wa?'@'+m.wa:'@'+first;const msg=`${tag} tá ${where||'por aí'}? Bora marcar?`;window.__lastCall=msg;try{await navigator.clipboard.writeText(msg)}catch(e){}haptic();
+  else{$('#btnCall').onclick=async()=>{const msg=inviteMsg(m,ctx);window.__lastCall=msg;try{await navigator.clipboard.writeText(msg)}catch(e){}haptic();
     toast('Escolha o grupo The Group e toque em enviar');const a=document.createElement('a');a.href='https://wa.me/?text='+encodeURIComponent(msg);a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();a.remove()};
     const og=$('#btnOpenGroup');if(og)og.onclick=()=>{const link=SETTINGS.group_link||'';if(!link)return;const a=document.createElement('a');a.href=link;a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();a.remove()}}
 }
@@ -691,9 +744,10 @@ document.addEventListener('click',e=>{
   const p=e.target.closest('[data-prof]');if(p){openProfile(p.dataset.prof,p.dataset.ck);return}
   const ev=e.target.closest('[data-ev]');if(ev){openEvent(ev.dataset.ev);return}
   const cc=e.target.closest('[data-checkin-city]');if(cc){openCheckin({city:cc.dataset.checkinCity});return}
-  const ce=e.target.closest('[data-checkin-ev]');if(ce){openCheckin({ev:ce.dataset.checkinEv});return}
 });
-$('#eventBtn').onclick=()=>{if(myCheckin&&myCheckin.place.startsWith('ev:'))openEvent(myCheckin.place.slice(3))};
+$('#eventBtn').onclick=()=>{const e=nextMyEvent();if(e)openEvent(e.id)};
+$('#btnEvents').onclick=()=>{haptic();openEvents()};
+function nextMyEvent(){return upcomingEvents().find(e=>iGo(e.id)&&e.start<=D(1))}
 
 /* ---------- check-in: one question per step ---------- */
 const ci={place:null,until:null,open:[]};let ciStep=1;
@@ -705,7 +759,7 @@ function openCheckin(pre={}){
   if(!ci.place)setTimeout(()=>{try{$('#citySearch').focus({preventScroll:true})}catch(e){}},450);
 }
 function goStep(n){ciStep=n;$('#ciTitle').textContent=CI_TITLES[n];[1,2,3].forEach(i=>{$('#cs'+i).hidden=i!==n});$('#ciDots').querySelectorAll('i').forEach((d,i)=>d.classList.toggle('on',i<n));$('#ciBack').hidden=n===1;$('#shCheckin .sb').scrollTop=0;renderCi()}
-function renderSuggest(){const home=me&&me.home?city(me.home):null;const evs=EVENTS.filter(e=>e.active&&e.start<=D(10));const recent=store.get('recent',[]).filter(id=>city(id)&&(!home||id!==home.id)).slice(0,2);
+function renderSuggest(){const home=me&&me.home?city(me.home):null;const evs=[];const recent=store.get('recent',[]).filter(id=>city(id)&&(!home||id!==home.id)).slice(0,2);
   let h='';if(home)h+=`<button type="button" class="chip" data-pick="${home.id}">${esc(home.n)}</button>`;
   for(const ev of evs)h+=`<button type="button" class="chip" data-pick="ev:${ev.id}">${esc(ev.n)} · ${ev.short}</button>`;
   for(const id of recent)h+=`<button type="button" class="chip" data-pick="${id}">${esc(city(id).n)}</button>`;
@@ -867,8 +921,9 @@ function refresh(){
   const abroad=Object.keys(cityCounts()).filter(id=>city(id).c!==BR).reduce((a,id)=>a+cityCounts()[id],0);$('#worldN').hidden=!abroad;$('#worldN').textContent=abroad;
   $('#myStatus').hidden=!has;$('#btnCheckin').hidden=has;$('#btnWorld').hidden=!abroad;
   if(has){$('#stCity').textContent=placeName(myCheckin.place);$('#stMeta').textContent='· '+whenLabel(myCheckin)+(invisible?' · invisível':'')}
-  const ev=has&&myCheckin.place.startsWith('ev:')?event(myCheckin.place.slice(3)):null;$('#eventcard').hidden=!ev;
-  if(ev){const n=activeCheckins().filter(k=>k.place==='ev:'+ev.id).length;$('#evTitle').textContent=ev.start>today()?ev.n:'Você está na '+ev.n;$('#evIc').textContent=initials(ev.n);$('#evSub').textContent=ev.start>today()?`Presença confirmada · ${n} ${n===1?'confirmado':'confirmados'}`:`${n} ${evWord(ev,n)} · toque para ver quem`}
+  const ev=nextMyEvent()||null;$('#eventcard').hidden=!ev;
+  const nUp=upcomingEvents().length;$('#evN').hidden=!nUp;$('#evN').textContent=nUp;
+  if(ev){const n=rsvpsOf(ev.id).length;$('#evTitle').textContent=ev.start>today()?ev.n:'Você está na '+ev.n;$('#evIc').textContent=initials(ev.n);$('#evSub').textContent=ev.start>today()?`Presença confirmada · ${n} ${n===1?'confirmado':'confirmados'}`:`${n} ${evWord(ev,n)} · toque para ver quem`}
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
