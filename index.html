@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-aTPQpPeD2opYdrLMNXjMjwKXiimufWPN1x7CDVQUo28='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co; connect-src 'self' https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-Nbgzm5Sp/9HM+ZPWtECxovgatUfTaWdZawfH8+qapVM='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co; connect-src 'self' https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -364,7 +364,7 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
   <div id="dock" class="gutter">
     <div id="installTip" class="tip glass" hidden role="note">
       <span class="tipic"><img src="apple-touch-icon.png" alt=""></span>
-      <span class="t"><b>Instale o The Group</b><small id="tipText"></small></span>
+      <span class="t"><b id="tipTitle">Instale o The Group</b><small id="tipText"></small></span>
       <button class="tipbtn" id="tipAction" hidden>Instalar</button>
       <button class="tipx" id="tipClose" aria-label="Fechar aviso">✕</button>
     </div>
@@ -635,7 +635,10 @@ const store={get(k,d){try{const v=localStorage.getItem('themap.'+k);return v==nu
 
 /* ---------- Supabase ---------- */
 const SB_URL='https://kqucpivagntlmukfghhg.supabase.co',SB_KEY='sb_publishable_yFxha4btvFg2bftRPaPhTA_kZgUNhAV';
-const sb=(window.supabase&&/^https:\/\//.test(SB_URL)&&SB_KEY.length>20)?window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true,storageKey:'themap.auth'}}):null;
+/* Celular e app instalado: acesso fica salvo. Navegador do computador: termina ao fechar o navegador. */
+const DESKTOP=platform()==='other'&&!isInstalled();
+const AUTH_STORE=(()=>{try{const st=DESKTOP?sessionStorage:localStorage;st.getItem('x');if(DESKTOP)localStorage.removeItem('themap.auth');return st}catch(e){return undefined}})();
+const sb=(window.supabase&&/^https:\/\//.test(SB_URL)&&SB_KEY.length>20)?window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true,storageKey:'themap.auth',storage:AUTH_STORE}}):null;
 let members=[],CHECKINS=[],SETTINGS={},RSVPS=[],MSGS=[],BLOCKS=[],chatWith=null,TRIPS=[],VISITS=[];
 const byId=id=>members.find(m=>m.id===id);
 const city=id=>CITIES.find(c=>c.id===id)||{id,n:'Cidade',s:'',c:BR,lat:0,lng:0};
@@ -1212,13 +1215,15 @@ window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvt=
 window.addEventListener('appinstalled',()=>{installEvt=null;updateInstallTip()});
 function isInstalled(){return navigator.standalone===true||matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: fullscreen)').matches}
 function platform(){const ua=navigator.userAgent;if(/iPhone|iPad|iPod/.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1))return'ios';if(/Android/.test(ua))return'android';return'other'}
-function updateInstallTip(){const tip=$('#installTip');let dismissed=false;try{dismissed=sessionStorage.getItem('themap.tipClosed')==='1'}catch(e){}
+function updateInstallTip(){const tip=$('#installTip');
+  if(DESKTOP){const show=!!me&&!store.get('desktopNoticed',false);tip.hidden=!show;if(!show)return;$('#tipTitle').textContent='Feito para o celular';$('#tipText').textContent='No computador, o acesso termina ao fechar o navegador. No celular, adicione o app à tela de início e fique sempre conectado.';$('#tipAction').hidden=true;return}
+  let dismissed=false;try{dismissed=sessionStorage.getItem('themap.tipClosed')==='1'}catch(e){}
   const pf=platform();const show=!!me&&!isInstalled()&&!dismissed&&(pf!=='other'||installEvt);
   tip.hidden=!show;if(!show)return;
   if(installEvt){$('#tipText').textContent='O app fica na tela de início e o acesso permanece salvo.';$('#tipAction').hidden=false}
   else if(pf==='ios'){$('#tipText').innerHTML=`Toque em ${SHARE_ICON} Compartilhar e depois em <b style="display:inline;font-size:13px">Adicionar à Tela de Início</b>. Assim você não precisa entrar de novo.`;$('#tipAction').hidden=true}
   else{$('#tipText').innerHTML=`Toque no menu <b style="display:inline;font-size:13px">⋮</b> do navegador e em <b style="display:inline;font-size:13px">Instalar app</b>. Assim você não precisa entrar de novo.`;$('#tipAction').hidden=true}}
-$('#tipClose').onclick=()=>{try{sessionStorage.setItem('themap.tipClosed','1')}catch(e){}$('#installTip').hidden=true};
+$('#tipClose').onclick=()=>{if(DESKTOP)store.set('desktopNoticed',true);try{sessionStorage.setItem('themap.tipClosed','1')}catch(e){}$('#installTip').hidden=true};
 $('#tipAction').onclick=async()=>{if(!installEvt)return;installEvt.prompt();try{await installEvt.userChoice}catch(e){}installEvt=null;updateInstallTip()};
 function refresh(){
   updateInstallTip();
@@ -1238,7 +1243,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792792876';
+const APP_VERSION='1792796263';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
@@ -1250,7 +1255,7 @@ async function loadCities(){try{const r=await fetch('cities.json?v='+APP_VERSION
 const citiesReady=loadCities();
 (async function boot(){fitWorld(false);renderBubbles();$('#email').value=store.get('lastEmail','');
   const showLogin=()=>{const l=$('#login');l.classList.remove('out');requestAnimationFrame(()=>l.classList.remove('boot'));idleSpin(true)};
-  let saved=false;try{saved=!!localStorage.getItem('themap.auth')}catch(e){}
+  let saved=false;try{saved=!!(AUTH_STORE||localStorage).getItem('themap.auth')}catch(e){}
   if(!saved){const l=$('#login');l.style.transition='none';l.classList.remove('boot');requestAnimationFrame(()=>{l.style.transition=''});idleSpin(true)}
   if(!sb){showLogin();return}
   try{const {data:{session}}=await sb.auth.getSession();if(!session){showLogin();return}
