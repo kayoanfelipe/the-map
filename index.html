@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-w7RSwBJ/p1+tCFpjyj6+JI0CUV40cXWzRqKjm62islQ='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co; connect-src 'self' https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-fGtNQ7qY3K06sem8qaoLF+LG9Fzvdm5MPVaF1hFKn8E='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co; connect-src 'self' https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -143,10 +143,10 @@ svg[data-tier="c"] .lbl.state text{opacity:.8}
 /* ---------- Sheets ---------- */
 #scrim{position:absolute;inset:0;background:var(--dim);opacity:0;pointer-events:none;transition:opacity .35s;z-index:8}
 #scrim.on{opacity:1;pointer-events:auto}
-.sheet{position:absolute;left:0;right:0;bottom:0;max-height:min(92%,calc(100% - env(safe-area-inset-top,0px) - 24px));background:var(--surface);border-radius:var(--radius) var(--radius) 0 0;box-shadow:var(--shadow);transform:translateY(105%);transition:transform .5s cubic-bezier(.32,.72,0,1),opacity .3s,visibility 0s .5s;visibility:hidden;z-index:10;display:flex;flex-direction:column;will-change:transform}
-.sheet.open,.sheet.behind{visibility:visible;transition:transform .5s cubic-bezier(.32,.72,0,1),opacity .3s,visibility 0s}
+.sheet{position:absolute;left:0;right:0;bottom:0;max-height:min(92%,calc(100% - env(safe-area-inset-top,0px) - 24px));background:var(--surface);border-radius:var(--radius) var(--radius) 0 0;box-shadow:var(--shadow);transform:translateY(105%);transition:transform .5s cubic-bezier(.32,.72,0,1),opacity .3s,filter .45s,visibility 0s .5s;visibility:hidden;z-index:10;display:flex;flex-direction:column;will-change:transform}
+.sheet.open,.sheet.behind{visibility:visible;transition:transform .5s cubic-bezier(.32,.72,0,1),opacity .3s,filter .45s,visibility 0s}
 .sheet.open{transform:translateY(0)}
-.sheet.behind{transform:translateY(0) scale(.96);opacity:.6;pointer-events:none;filter:saturate(.8)}
+.sheet.behind{transform:translateY(0) scale(.96);opacity:1;pointer-events:none;filter:brightness(.42)}
 .sheet.dragging{transition:none}
 @media (prefers-reduced-motion:reduce){ .sheet,#scrim,.primary{transition:none} }
 .grab{flex:none;padding:10px 0 4px;display:grid;place-items:center;cursor:grab;touch-action:none}
@@ -437,8 +437,9 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
     <div class="sf gutter" id="chatFoot"><div class="chatmenu" id="chatMenu" hidden></div><div class="chatin"><textarea id="chatIn" rows="1" maxlength="2000" placeholder="Mensagem" aria-label="Mensagem"></textarea><button class="send" id="chatSend" aria-label="Enviar">↑</button></div><p class="chatnote" id="chatNote" hidden></p></div>
   </section>
 
-  <section class="sheet page" id="shProfile" aria-label="Perfil">
-    <div class="sh gutter pagehead"><button class="chatback" data-close aria-label="Voltar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button></div>
+  <section class="sheet" id="shProfile" aria-label="Perfil">
+    <div class="grab"><i></i></div>
+    <div class="sh gutter" style="padding:0 0 0"><div></div></div>
     <div class="sb gutter" id="profBody"></div>
     <div class="sf gutter" id="profFoot"></div>
   </section>
@@ -1360,7 +1361,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792859210';
+const APP_VERSION='1792859537';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
