@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-fcg0FwPklMNziQffVwDVQ3PxqlP6XisXp+B8ezHN9Kg='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co; connect-src 'self' https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-NQ2zuiKGMonTIdUX0i7MzRrmU/ADhk8ElxEEWKVhu/E='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co; connect-src 'self' https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -895,7 +895,7 @@ function closeSheet(fromPop){const id=stack.pop();if(!id)return;if(!fromPop&&his
 function closeTo(id){while(stack.length&&stack[stack.length-1]!==id)closeSheet()}
 window.addEventListener('popstate',()=>{if(ignorePop>0){ignorePop--;return}if(stack.length){const top=stack[stack.length-1];if(top==='shEdit'&&me&&!me.complete){try{history.pushState({sh:top},'')}catch(e){}toast('Complete o perfil para entrar no mapa');return}closeSheet(true)}});
 function closeAll(){while(stack.length)closeSheet()}
-$('#scrim').addEventListener('click',()=>{if(stack[stack.length-1]==='shEdit'&&me&&!me.complete)return;closeAll()});
+$('#scrim').addEventListener('click',()=>{if(stack[stack.length-1]==='shEdit'&&me&&!me.complete)return;closeSheet()});
 document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>{if(b.id==='editClose'&&me&&!me.complete){toast('Complete o perfil para entrar no mapa');return}closeSheet()}));
 /* páginas inteiras: arrastar da borda esquerda para a direita volta */
 function edgeSwipe(sh){let sx=null,sy=0,dx=0,st=0,on=false;
@@ -1055,7 +1055,7 @@ function renderChat(){const el=$('#chatBody');const cid=cityChatId();const th=ci
     b.addEventListener('pointerup',up);b.addEventListener('pointercancel',up);b.addEventListener('contextmenu',e=>e.preventDefault())});
   el.addEventListener('pointerdown',e=>{if(!e.target.closest('.msg.sel'))el.querySelectorAll('.msg.sel').forEach(x=>x.classList.remove('sel'))},{once:false});
   el.querySelectorAll('[data-reply]').forEach(b=>b.onclick=e=>{e.stopPropagation();const id=+b.dataset.reply;const x=th.find(y=>y.id===id);if(!x)return;el.querySelectorAll('.msg.sel').forEach(y=>y.classList.remove('sel'));setReply(x);$('#chatIn').focus()});
-  el.querySelectorAll('[data-goto]').forEach(b=>b.onclick=e=>{e.stopPropagation();const t=el.querySelector(`.msg[data-mid="${b.dataset.goto}"]`);if(t){t.scrollIntoView({behavior:'smooth',block:'center'});t.classList.add('hl');setTimeout(()=>t.classList.remove('hl'),900)}});
+  el.querySelectorAll('[data-goto]').forEach(b=>b.onclick=e=>{e.stopPropagation();const t=el.querySelector(`.msg[data-mid="${b.dataset.goto}"]`);if(t)t.scrollIntoView({behavior:'smooth',block:'center'})});
   el.querySelectorAll('[data-del]').forEach(b=>b.onclick=e=>{e.stopPropagation();const id=+b.dataset.del;const acts=b.closest('.acts');if(!acts)return;acts.innerHTML=`<button class="ok" data-del-ok="${id}">Apagar mesmo</button><button data-del-no>Cancelar</button>`;
     acts.querySelector('[data-del-no]').onclick=ev=>{ev.stopPropagation();renderChat()};acts.querySelector('[data-del-ok]').onclick=ev=>{ev.stopPropagation();doDelete(id)}});
   async function doDelete(id){const {error}=await sb.from(cid?'city_messages':'messages').delete().eq('id',id);if(error){toast('Não foi possível apagar.');return}if(cid)CMSGS=CMSGS.filter(x=>x.id!==id);else MSGS=MSGS.filter(x=>x.id!==id);haptic();renderChat();refresh()}
@@ -1398,7 +1398,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792863159';
+const APP_VERSION='1792863399';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
