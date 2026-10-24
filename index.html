@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-XLmt+8IN654GXJ9/P1H403gNoxpfxDH0mkAco2wvwnY='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co; connect-src 'self' https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-4ktaNpjjauW1XGSq1ks53Q/dxLH3KqjQiuX14kmkE6E='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co; connect-src 'self' https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -162,8 +162,8 @@ svg[data-tier="c"] .lbl.state text{opacity:.8}
 /* lists */
 .sec{margin:14px 0 6px;font-size:12px;font-weight:700;color:var(--fg3);letter-spacing:.08em;text-transform:uppercase;display:flex;justify-content:space-between;align-items:baseline}
 .sec span{font-weight:600;letter-spacing:0;text-transform:none;font-variant-numeric:tabular-nums}
-.row{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:10px 0;border-bottom:1px solid var(--line);min-height:64px}
-.row:last-child{border-bottom:0}
+.row{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:8px 0;min-height:64px;border-radius:14px}
+.row:active{background:rgba(255,255,255,.04)}
 .row .t{flex:1;min-width:0}
 .row b{display:block;font-weight:600;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .row small{display:block;color:var(--fg2);font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -338,12 +338,16 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
 .more:active{background:var(--surface2)}
 .cityav{display:grid;place-items:center;background:var(--accent-soft);color:var(--fg)}
 .msg .who{display:block;font-size:12px;font-weight:700;color:var(--fg2);margin-bottom:2px}
-.mrow{display:flex;align-items:flex-start;gap:6px;max-width:85%;align-self:flex-start}.mrow .avbtn{margin-top:2px}
+.mrow{display:flex;align-items:flex-end;gap:6px;max-width:85%;align-self:flex-start}.mrow .avbtn{margin-bottom:1px}
+.msg.in.mid{border-bottom-left-radius:18px;border-top-left-radius:6px}.msg.out.mid{border-bottom-right-radius:18px;border-top-right-radius:6px}
+.msg a{color:var(--link);text-decoration:underline;text-underline-offset:2px;overflow-wrap:anywhere}
+.search{position:relative;margin:0 0 6px}.search input{width:100%;height:38px;border-radius:999px;padding:0 14px 0 38px;background:var(--glass);box-shadow:var(--glass-shadow);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:0;color:var(--fg);font:inherit;font-size:15px;outline:0}.search input::placeholder{color:var(--fg3)}.search svg{position:absolute;left:14px;top:11px;color:var(--fg3);pointer-events:none}
+.convrow .av{width:54px;height:54px;font-size:17px}
 .mrow .avbtn,.mrow .sp{width:28px;flex:none}.mrow .avbtn{display:block}.mrow .avbtn .av{width:28px;height:28px;font-size:10px}
 .mrow .msg{max-width:100%}
 .daysep.arr{text-transform:none;letter-spacing:0;font-size:12.5px;margin:6px 0 2px}
 .chatwho{flex:1;display:flex;align-items:center;gap:10px;min-width:0;text-align:left}.chatwho .av{width:38px;height:38px;font-size:13px}.chatwho b{font-size:17px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chatwho small{color:var(--fg3);font-size:12.5px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.chatbody{display:flex;flex-direction:column;gap:6px;padding-top:10px}
+.chatbody{display:flex;flex-direction:column;gap:4px;padding-top:10px;overscroll-behavior:contain;will-change:transform}
 .chatbody>.daysep:first-child{margin-top:auto}
 .msg{max-width:80%;padding:9px 13px;border-radius:18px;font-size:15.5px;line-height:1.35;white-space:pre-wrap;overflow-wrap:anywhere;position:relative;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 .chatbody{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
@@ -415,6 +419,7 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
   <section class="sheet" id="shInbox" aria-label="Mensagens">
     <div class="grab"><i></i></div>
     <div class="sh gutter"><div><h2>Mensagens</h2><p id="inboxSub">Conversas com membros</p></div></div>
+    <div class="gutter search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input type="search" id="inboxQ" placeholder="Buscar membro" autocomplete="off" aria-label="Buscar conversa"></div>
     <div class="sb gutter" id="inboxBody"></div>
   </section>
 
@@ -734,6 +739,7 @@ function placeName(p){return p.startsWith('ev:')?event(p.slice(3)).n:city(p).n}
 function haptic(){try{navigator.vibrate&&navigator.vibrate(12)}catch(e){}}
 let toastT;function toast(t){$('#toastTxt').textContent=t;$('#toast').classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>$('#toast').classList.remove('on'),2200)}
 function esc(s){return String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function linkify(s){return esc(s).replace(/(https?:\/\/[^\s<]+|www\.[^\s<]+)/g,m=>{const t=m.replace(/[.,;:!?)]+$/,'');const tail=m.slice(t.length);const href=/^https?:/.test(t)?t:'https://'+t;return`<a href="${href}" target="_blank" rel="noopener">${t}</a>${tail}`})}
 
 /* ---------- map: orthographic globe (rotate, pinch, inertia) ---------- */
 const mapEl=$('#map'),gcv=$('#globe'),gctx=gcv.getContext('2d');
@@ -903,9 +909,9 @@ function openEvent(id){const e=event(id);const rs=rsvpsOf(id);const n=rs.length;
 function renderEventsQuiet(){openEventsRender(upcomingEvents())}
 /* ---------- chat 1 a 1 ---------- */
 function msgRow(r){return{id:r.id,from:r.sender_id,to:r.recipient_id,body:r.body,at:r.created_at,read:r.read_at||null}}
-/* chat da cidade: só para quem está na cidade (o banco decide o que chega; aqui só a lista) */
+/* grupo da cidade: só para quem está na cidade (o banco decide o que chega; aqui só a lista) */
 function cmRow(r){return{id:r.id,place:r.place,from:r.sender_id,kind:r.kind||'text',body:r.body||'',at:r.created_at}}
-const CITY_ICON='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-8 8H7l-4 3V12a8 8 0 0 1 8-8h2a8 8 0 0 1 8 8z"/></svg>';
+const GROUP_AV='<span class="av"><img src="group.png" alt=""></span>';
 function myCities(){if(!me||invisible)return[];const s=[];if(myCheckin&&myCheckin.until>=today()&&!myCheckin.place.startsWith('ev:')&&knownCity(myCheckin.place))s.push(myCheckin.place);if(knownCity(me.home)&&!s.includes(me.home))s.push(me.home);return s}
 function inCity(id){return myCities().includes(id)}
 function cityChatId(){return typeof chatWith==='string'&&chatWith.startsWith('city:')?chatWith.slice(5):null}
@@ -914,10 +920,10 @@ function cityUnread(id){if(!me)return 0;const seen=store.get('cityseen.'+id,'');
 function markCitySeen(id){const th=cityThread(id);const last=th.length?th[th.length-1].at:new Date().toISOString();store.set('cityseen.'+id,last);refresh()}
 function cityConvRow(id){const c=city(id);const th=cityThread(id);const last=th[th.length-1];const n=cityUnread(id);
   let snip='Ninguém escreveu ainda';if(last){const s=byId(last.from);const f=s?s.name.split(' ')[0]:'';snip=last.kind==='arrival'?`${f} chegou`:`${last.from===me.id?'Você':f}: ${last.body}`}
-  return`<button class="row convrow cityconv${n?' unread':''}" data-citychat="${id}"><span class="av cityav">${CITY_ICON}</span><span class="t"><b><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Chat de ${esc(c.n)}</span>${last?`<small>${whenShort(last.at)}</small>`:''}</b><small class="snip">${esc(snip)}</small></span>${n?`<span class="dot" aria-label="${n} não lidas"></span>`:'<span class="chev">›</span>'}</button>`}
+  return`<button class="row convrow cityconv${n?' unread':''}" data-citychat="${id}">${GROUP_AV}<span class="t"><b><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Grupo de ${esc(c.n)}</span>${last?`<small>${whenShort(last.at)}</small>`:''}</b><small class="snip">${esc(snip)}</small></span>${n?`<span class="dot" aria-label="${n} não lidas"></span>`:''}</button>`}
 function openCityChat(id){if(!inCity(id)){openCity(id);return}const c=city(id);chatWith='city:'+id;$('#chatMenu').hidden=true;
   const n=activeCheckins().filter(k=>k.place===id).length;
-  $('#chatWho').innerHTML=`<span class="av cityav">${CITY_ICON}</span><span style="min-width:0"><b>${esc(c.n)}</b><small>Quem está na cidade${n?` · ${n} ${n===1?'membro':'membros'}`:''}</small></span>`;
+  $('#chatWho').innerHTML=`${GROUP_AV}<span style="min-width:0"><b>Grupo de ${esc(c.n)}</b><small>Quem está na cidade${n?` · ${n} ${n===1?'membro':'membros'}`:''}</small></span>`;
   const ta=$('#chatIn');ta.value='';ta.style.height='';
   openSheet('shChat');renderChat();markCitySeen(id);syncMessages();setTimeout(()=>{$('#chatBody').scrollTop=1e9},60)}
 function cmEvent(p){if(!me)return;const n=p&&p.new,o=p&&p.old;
@@ -966,11 +972,12 @@ async function syncMessages(){if(!me||!sb||msgSyncing||document.hidden)return;if
     if(changed)refresh()}
   catch(e){}finally{msgSyncing=false}}
 function startMsgPoll(){clearInterval(msgPollT);msgPollT=setInterval(()=>{if(stack.includes('shChat'))syncMessages();else if(++msgPollN%2===0)syncMessages()},4000)}let msgPollN=0;
-function openInbox(){renderInbox();openSheet('shInbox');syncMessages()}
-function renderInbox(){const list=conversations();const el=$('#inboxBody');
+function openInbox(){$('#inboxQ').value='';renderInbox();openSheet('shInbox');syncMessages()}
+$('#inboxQ').addEventListener('input',renderInbox);
+function renderInbox(){const q=($('#inboxQ').value||'').trim().toLowerCase();const list=conversations().filter(c=>!q||byId(c.id).name.toLowerCase().includes(q));const el=$('#inboxBody');
   const nConv=list.length+myCities().length;$('#inboxSub').textContent=nConv?`${nConv} ${nConv===1?'conversa':'conversas'}`:'Conversas com membros';
-  const cityRows=myCities().map(cityConvRow).join('');el.innerHTML=pushBanner()+cityRows+(list.length?list.map(c=>{const m=byId(c.id);const mineLast=c.last.from===me.id;return`<button class="row convrow${c.unread?' unread':''}" data-chat="${c.id}">${avatar(m)}<span class="t"><b><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(m.name)}</span><small>${whenShort(c.last.at)}</small></b><small class="snip">${mineLast?'Você: ':''}${esc(c.last.body)}</small></span>${c.unread?`<span class="dot" aria-label="${c.unread} não lidas"></span>`:'<span class="chev">›</span>'}</button>`}).join('')
-    :(cityRows?'':`<div class="empty"><b>Nenhuma conversa ainda.</b>Toque em um membro no mapa para enviar uma mensagem.</div>`));
+  const cityRows=myCities().map(cityConvRow).join('');el.innerHTML=pushBanner()+cityRows+(list.length?list.map(c=>{const m=byId(c.id);const mineLast=c.last.from===me.id;return`<button class="row convrow${c.unread?' unread':''}" data-chat="${c.id}">${avatar(m)}<span class="t"><b><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(m.name)}</span><small>${whenShort(c.last.at)}</small></b><small class="snip">${mineLast?'Você: ':''}${esc(c.last.body)}</small></span>${c.unread?`<span class="dot" aria-label="${c.unread} não lidas"></span>`:''}</button>`}).join('')
+    :(q?`<div class="empty"><b>Nenhum resultado.</b>Nenhuma conversa com esse nome.</div>`:cityRows?'':`<div class="empty"><b>Nenhuma conversa ainda.</b>Toque em um membro no mapa para enviar uma mensagem.</div>`));
   const pa=$('#pushAsk');if(pa)pa.onclick=async()=>{pa.disabled=true;if(await enablePush()){haptic();toast('Avisos ativados')}renderInbox()};
   el.querySelectorAll('[data-chat]').forEach(b=>b.onclick=()=>{haptic();openChat(b.dataset.chat)})}
 function openChat(id,prefill){const m=byId(id);if(!m)return;chatWith=id;$('#chatMenu').hidden=true;
@@ -979,13 +986,13 @@ function openChat(id,prefill){const m=byId(id);if(!m)return;chatWith=id;$('#chat
   openSheet('shChat');renderChat();markRead(id);setTimeout(()=>{$('#chatBody').scrollTop=1e9},60)}
 function chatState(){const cc=cityChatId();if(cc)return inCity(cc)?{ok:true,note:''}:{ok:false,note:'Você não está mais nesta cidade.'};const m=byId(chatWith);if(!m)return{ok:false,note:''};if(BLOCKS.includes(chatWith))return{ok:false,note:`Você bloqueou ${m.name.split(' ')[0]}. Nada chega de nenhum lado.`};if(m.active===false)return{ok:false,note:'Este membro não está mais no The Group.'};if(m.dmOff)return{ok:false,note:`${m.name.split(' ')[0]} prefere conversar pelo grupo do WhatsApp.`};return{ok:true,note:''}}
 function renderChat(){const el=$('#chatBody');const cid=cityChatId();const th=cid?cityThread(cid):threadWith(chatWith);let h='',day='';const m=cid?null:byId(chatWith);const c=cid?city(cid):null;
-  let prev=null;
-  for(const x of th){const k=dayKey(x.at);if(k!==day){day=k;prev=null;h+=`<div class="daysep">${dayLabel(x.at)}</div>`}
-    if(x.kind==='arrival'){const s=byId(x.from);prev=null;h+=`<div class="daysep arr">${esc(s?s.name.split(' ')[0]:'Alguém')} chegou</div>`;continue}
-    const out=x.from===me.id;const can=out||(cid&&me.admin);const who=cid&&!out?byId(x.from):null;const first=!prev||prev!==x.from;prev=x.from;
-    const bubble=`<div class="msg ${out?'out':'in'}${x.tmp?' sending':''}${can&&!x.tmp?' can':''}" data-mid="${x.id}">${who&&first?`<small class="who">${esc(who.name.split(' ')[0])}</small>`:''}${esc(x.body)}<time>${fmtTime(x.at)}${!cid&&out&&x.read?' · lida':''}</time>${can&&!x.tmp?'<button class="del" data-del="'+x.id+'">Apagar</button>':''}</div>`;
-    h+=who?`<div class="mrow">${first?`<button class="avbtn" data-prof="${who.id}" aria-label="${esc(who.name)}">${avatar(who)}</button>`:'<span class="sp"></span>'}${bubble}</div>`:bubble}
-  if(!th.length)h=cid?`<div class="empty"><b>Ninguém escreveu ainda.</b>Quem está em ${esc(c.n)} vê este chat.</div>`:`<div class="empty"><b>Comece a conversa com ${esc(m?m.name.split(' ')[0]:'')}.</b>Só vocês dois veem estas mensagens.</div>`;
+  const runKey=x=>x.kind==='arrival'?'~':x.from+'|'+dayKey(x.at);
+  for(let i=0;i<th.length;i++){const x=th[i];const k=dayKey(x.at);if(k!==day){day=k;h+=`<div class="daysep">${dayLabel(x.at)}</div>`}
+    if(x.kind==='arrival'){const s=byId(x.from);h+=`<div class="daysep arr">${esc(s?s.name.split(' ')[0]:'Alguém')} chegou</div>`;continue}
+    const out=x.from===me.id;const can=out||(cid&&me.admin);const who=cid&&!out?byId(x.from):null;const first=i===0||runKey(th[i-1])!==runKey(x);const last=i===th.length-1||runKey(th[i+1])!==runKey(x);
+    const bubble=`<div class="msg ${out?'out':'in'}${x.tmp?' sending':''}${can&&!x.tmp?' can':''}${last?'':' mid'}" data-mid="${x.id}">${who&&first?`<small class="who">${esc(who.name.split(' ')[0])}</small>`:''}${linkify(x.body)}<time>${fmtTime(x.at)}${!cid&&out&&x.read?' · lida':''}</time>${can&&!x.tmp?'<button class="del" data-del="'+x.id+'">Apagar</button>':''}</div>`;
+    h+=who?`<div class="mrow">${last?`<button class="avbtn" data-prof="${who.id}" aria-label="${esc(who.name)}">${avatar(who)}</button>`:'<span class="sp"></span>'}${bubble}</div>`:bubble}
+  if(!th.length)h=cid?`<div class="empty"><b>Ninguém escreveu ainda.</b>Quem está em ${esc(c.n)} vê este grupo.</div>`:`<div class="empty"><b>Comece a conversa com ${esc(m?m.name.split(' ')[0]:'')}.</b>Só vocês dois veem estas mensagens.</div>`;
   const atBottom=el.scrollHeight-el.scrollTop-el.clientHeight<80;el.innerHTML=h;if(atBottom)el.scrollTop=1e9;
   el.querySelectorAll('.msg.can').forEach(b=>{let t=0,sx=0,sy=0;const clear=()=>{clearTimeout(t);t=0};
     b.addEventListener('pointerdown',e=>{if(e.target.dataset.del)return;sx=e.clientX;sy=e.clientY;clear();t=setTimeout(()=>{t=0;el.querySelectorAll('.msg.sel').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');haptic()},450)});
@@ -1007,6 +1014,13 @@ $('#btnMsgs').onclick=()=>{haptic();openInbox()};
 $('#chatWho').onclick=()=>{const c=cityChatId();if(c)openCity(c);else if(chatWith)openProfile(chatWith)};
 $('#chatMore').onclick=()=>{const mn=$('#chatMenu');if(!mn.hidden){mn.hidden=true;return}const cc=cityChatId();if(cc){mn.innerHTML='<button id="cmCity">Ver cidade</button>';mn.hidden=false;$('#cmCity').onclick=()=>{mn.hidden=true;openCity(cc)};return}const on=BLOCKS.includes(chatWith);mn.innerHTML=`<button id="cmProf">Ver perfil</button><button class="danger" id="cmBlock">${on?'Desbloquear':'Bloquear'}</button>`;mn.hidden=false;$('#cmProf').onclick=()=>{mn.hidden=true;openProfile(chatWith)};$('#cmBlock').onclick=toggleBlock};
 $('#chatSend').onclick=sendMsg;
+/* elástico: puxar além do início ou do fim da conversa */
+(function(){const el=$('#chatBody');let y0=null,on=false;
+  el.addEventListener('touchstart',e=>{if(e.touches.length!==1)return;y0=e.touches[0].clientY;on=false;el.style.transition=''},{passive:true});
+  el.addEventListener('touchmove',e=>{if(y0==null||e.touches.length!==1)return;const d=e.touches[0].clientY-y0;const atTop=el.scrollTop<=0,atBot=el.scrollTop+el.clientHeight>=el.scrollHeight-1;
+    if((d>0&&atTop)||(d<0&&atBot)){on=true;const k=Math.sign(d)*Math.min(80,Math.pow(Math.abs(d),0.8)*1.4);el.style.transform=`translateY(${k}px)`;if(e.cancelable)e.preventDefault()}else if(on){on=false;el.style.transform=''}},{passive:false});
+  const end=()=>{if(y0==null)return;y0=null;if(on){on=false;el.style.transition='transform .5s cubic-bezier(.22,1.3,.36,1)';el.style.transform=''}};
+  el.addEventListener('touchend',end);el.addEventListener('touchcancel',end)})();
 $('#chatIn').addEventListener('input',e=>{const t=e.target;t.style.height='';t.style.height=Math.min(120,t.scrollHeight)+'px';$('#chatSend').disabled=!t.value.trim()||!chatState().ok});
 $('#chatIn').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!('ontouchstart' in window)){e.preventDefault();sendMsg()}});
 function openProfile(id,place){curProf=id;
@@ -1301,7 +1315,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792856697';
+const APP_VERSION='1792857410';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
