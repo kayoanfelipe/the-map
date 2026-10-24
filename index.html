@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-/KoQuonU1WDLbISOUh4EEa0KRycNTJttKk+MCa/duS0='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co; connect-src 'self' https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-yIVZfCZxHS1QJmJWAopbvID0M6DO4dfZ4IeqDmKUkKU='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co; connect-src 'self' https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1042,7 +1042,7 @@ function renderChat(){const el=$('#chatBody');const cid=cityChatId();const th=ci
     b.addEventListener('pointerdown',e=>{if(e.target.closest('.acts,.q,a,.sw'))return;if(e.clientX-el.getBoundingClientRect().left<28)return;sx=e.clientX;sy=e.clientY;dx=0;mode=null;held=false;pid=e.pointerId;clear();t=setTimeout(()=>{t=0;held=true;el.querySelectorAll('.msg.sel').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');haptic()},420)});
     b.addEventListener('pointermove',e=>{if(pid!==e.pointerId||held)return;const ddx=e.clientX-sx,ddy=e.clientY-sy;
       if(!mode){if(Math.hypot(ddx,ddy)>8)clear();if(ddx>18&&Math.abs(ddx)>Math.abs(ddy)*1.6){mode='swipe';b.classList.add('drag');try{b.setPointerCapture(e.pointerId)}catch(_){}}else if(Math.abs(ddy)>12||ddx<-18)mode='scroll'}
-      if(mode!=='swipe')return;dx=ddx;const x=Math.min(76,Math.max(0,dx-18)*0.6);b.style.setProperty('--sx',x+'px');const r=b.querySelector('.sw.rep');if(r)r.style.opacity=Math.min(1,Math.max(0,(dx-18)/60));if(e.cancelable)e.preventDefault()});
+      if(mode!=='swipe')return;dx=ddx;const d=Math.max(0,dx-18);const x=d<=100?d*0.6:60+14*Math.log(1+(d-100)/30);b.style.setProperty('--sx',x+'px');const r=b.querySelector('.sw.rep');if(r)r.style.opacity=Math.min(1,Math.max(0,(dx-18)/60));if(e.cancelable)e.preventDefault()});
     const up=()=>{clear();if(mode==='swipe'){if(dx>78){haptic();const x=th.find(y=>String(y.id)===mid);if(x){setReply(x);$('#chatIn').focus()}}settle()}mode=null;pid=null;held=false};
     b.addEventListener('pointerup',up);b.addEventListener('pointercancel',up);b.addEventListener('contextmenu',e=>e.preventDefault())});
   el.addEventListener('pointerdown',e=>{if(!e.target.closest('.msg.sel'))el.querySelectorAll('.msg.sel').forEach(x=>x.classList.remove('sel'))},{once:false});
@@ -1383,7 +1383,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792860484';
+const APP_VERSION='1792860901';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
