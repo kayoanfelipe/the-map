@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-RCND8muKH5Vh/7CoAP1HGPFns/LMJqWOc4Wb1QWf8wE='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co; connect-src 'self' https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-JT1DKyJBif/BJeilgj4ewcQgzK6SPg/uaZihy1gMWcc='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co; connect-src 'self' https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -334,7 +334,8 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
 .sheet.page.open{transform:translateX(0)}
 .sheet.page.behind{transform:scale(.96)}
 .sheet.page .chathead{padding-top:calc(10px + env(safe-area-inset-top,0px));border-bottom:1px solid var(--line);gap:6px}
-.sheet.page .pagehead{padding-top:calc(12px + env(safe-area-inset-top,0px));align-items:center;justify-content:flex-start;gap:6px;padding-bottom:8px}
+.sheet.page .pagehead{position:relative;padding-top:calc(12px + env(safe-area-inset-top,0px));align-items:center;justify-content:flex-start;gap:6px;padding-bottom:8px;min-height:calc(56px + env(safe-area-inset-top,0px))}
+.pagehead h2.ctr{position:absolute;left:0;right:0;top:calc(12px + env(safe-area-inset-top,0px));text-align:center;font-size:20px;line-height:40px;pointer-events:none}
 .chatback{width:36px;height:40px;margin-left:-8px;display:grid;place-items:center;color:var(--fg);flex:none;border-radius:12px}
 .chatback:active{background:var(--surface2)}
 .close.xs{width:34px;height:34px;font-size:16px;color:var(--fg2);background:transparent}
@@ -421,9 +422,8 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
 
   <!-- Profile sheet -->
   <section class="sheet page" id="shInbox" aria-label="Mensagens">
-    <div class="sh gutter pagehead"><button class="chatback" data-close aria-label="Voltar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button><div style="min-width:0"><h2>Mensagens</h2><p id="inboxSub">Conversas com membros</p></div></div>
-    <div class="gutter srch"><input type="search" id="inboxQ" placeholder="Pesquisar" autocomplete="off" aria-label="Pesquisar conversa"></div>
-    <div class="sb gutter" id="inboxBody"></div>
+    <div class="sh gutter pagehead"><button class="chatback" data-close aria-label="Voltar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button><h2 class="ctr">Mensagens</h2></div>
+    <div class="sb gutter"><div class="srch"><input type="search" id="inboxQ" placeholder="Pesquisar" autocomplete="off" aria-label="Pesquisar conversa"></div><div id="inboxBody"></div></div>
   </section>
 
   <section class="sheet page" id="shChat" aria-label="Conversa">
@@ -1004,7 +1004,6 @@ function startMsgPoll(){clearInterval(msgPollT);msgPollT=setInterval(()=>{if(sta
 function openInbox(){$('#inboxQ').value='';renderInbox();openSheet('shInbox');syncMessages()}
 $('#inboxQ').addEventListener('input',renderInbox);
 function renderInbox(){const q=($('#inboxQ').value||'').trim().toLowerCase();const list=conversations().filter(c=>!q||byId(c.id).name.toLowerCase().includes(q));const el=$('#inboxBody');
-  const nConv=list.length+myCities().length;$('#inboxSub').textContent=nConv?`${nConv} ${nConv===1?'conversa':'conversas'}`:'Conversas com membros';
   const cityRows=myCities().map(cityConvRow).join('');el.innerHTML=pushBanner()+cityRows+(list.length?list.map(c=>{const m=byId(c.id);const mineLast=c.last.from===me.id;return`<button class="row convrow${c.unread?' unread':''}" data-chat="${c.id}">${avatar(m)}<span class="t"><b><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(m.name)}</span><small>${whenShort(c.last.at)}</small></b><small class="snip">${mineLast?'Você: ':''}${esc(c.last.body)}</small></span>${c.unread?`<span class="dot" aria-label="${c.unread} não lidas"></span>`:''}</button>`}).join('')
     :(q?`<div class="empty"><b>Nenhum resultado.</b>Nenhuma conversa com esse nome.</div>`:cityRows?'':`<div class="empty"><b>Nenhuma conversa ainda.</b>Toque em um membro no mapa para enviar uma mensagem.</div>`));
   const pa=$('#pushAsk');if(pa)pa.onclick=async()=>{pa.disabled=true;if(await enablePush()){haptic();toast('Avisos ativados')}renderInbox()};
@@ -1357,7 +1356,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792858816';
+const APP_VERSION='1792858954';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
