@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-4ktaNpjjauW1XGSq1ks53Q/dxLH3KqjQiuX14kmkE6E='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co; connect-src 'self' https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-/blNElDlqp24HdyOvj4JG8KPvBCzt1kztRxNe4jmLlo='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co; connect-src 'self' https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -45,6 +45,7 @@ button{background:none;border:0;padding:0;cursor:pointer;transition:transform .1
 @keyframes pop{from{opacity:0;transform:translateY(8px) scale(.985)}to{opacity:1;transform:none}}
 .cstep:not([hidden]),#cardsDelAsk:not([hidden]),#chatMenu:not([hidden]),#tripDates:not([hidden]),#untilDate:not([hidden]),#codeForm:not([hidden]),#emailForm:not([hidden]),.chatnote:not([hidden]){animation:pop .24s cubic-bezier(.32,.72,0,1) both}
 button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+body:not(.kb) :focus-visible{outline:none}
 input:focus,select:focus,textarea:focus{outline:none}
 .search:focus,.field input:focus,.field select:focus,.field textarea:focus{box-shadow:inset 0 0 0 1.5px rgba(245,245,245,.35)}
 a{color:var(--link)}
@@ -720,6 +721,7 @@ async function uploadPhoto(dataUrl){const blob=dataUrlToBlob(dataUrl);const {dat
 let live=null,srT=null;
 function softReload(){clearTimeout(srT);srT=setTimeout(async()=>{if(!me)return;try{await loadAll();if(!me||me.active===false){signOutLocal('Seu acesso foi desativado.');return}refresh()}catch(e){}},400)}
 function subscribeLive(){if(live||!sb)return;live=sb.channel('themap-live').on('postgres_changes',{event:'*',schema:'public',table:'checkins'},softReload).on('postgres_changes',{event:'*',schema:'public',table:'event_rsvps'},softReload).on('postgres_changes',{event:'*',schema:'public',table:'events'},softReload).on('postgres_changes',{event:'*',schema:'public',table:'members'},softReload).on('postgres_changes',{event:'*',schema:'public',table:'messages'},p=>{msgEvent(p);softReload()}).on('postgres_changes',{event:'*',schema:'public',table:'trips'},softReload).on('postgres_changes',{event:'*',schema:'public',table:'city_messages'},p=>{cmEvent(p);softReload()}).subscribe()}
+document.addEventListener('keydown',e=>{if(e.key==='Tab')document.body.classList.add('kb')});document.addEventListener('pointerdown',()=>document.body.classList.remove('kb'),{capture:true});
 document.addEventListener('visibilitychange',()=>{if(document.hidden||!me)return;if(live&&live.state!=='joined'){try{sb.removeChannel(live)}catch(e){}live=null;subscribeLive()}syncMessages();softReload()});
 async function signOutLocal(msg){try{if(live){sb.removeChannel(live);live=null}await sb.auth.signOut()}catch(e){}me=null;myCheckin=null;CHECKINS=[];members=[];closeAll();refresh();$('#login').classList.remove('out');$('#codeForm').hidden=true;$('#emailForm').hidden=false;$('#email').value=store.get('lastEmail','');if(msg){$('#emailErr').textContent=msg;$('#emailErr').hidden=false}}
 
@@ -815,7 +817,15 @@ function endPtr(e){if(!ptrs.has(e.pointerId))return;ptrs.delete(e.pointerId);if(
   if(ptrs.size===1){const[a]=[...ptrs.values()];lastP={x:a.x,y:a.y};lastDist=0}down=null}
 window.addEventListener('pointerup',endPtr);window.addEventListener('pointercancel',endPtr);
 function tapBubble(g){const bin=g.querySelector('.bin');if(!bin)return;bin.classList.remove('enter','tap');void bin.getBBox();bin.classList.add('tap');setTimeout(()=>bin.classList.remove('tap'),450)}
-mapEl.addEventListener('wheel',e=>{e.preventDefault();stopMotion();zoomBy(Math.exp(-e.deltaY*0.0018));clearTimeout(overWheelT);overWheelT=setTimeout(releaseOver,260);applyTransform()},{passive:false});
+/* roda e pinça do trackpad: acumula e aplica aos poucos, para o zoom ficar fluido no computador */
+let wheelL=0,wheelAnim=0;
+function wheelStep(){const take=wheelL*0.32;wheelL-=take;if(Math.abs(take)>1e-5)zoomBy(Math.exp(take));applyTransform();wheelAnim=Math.abs(wheelL)>1e-4?requestAnimationFrame(wheelStep):0;if(!wheelAnim)wheelL=0}
+mapEl.addEventListener('wheel',e=>{e.preventDefault();stopMotion();const dy=e.deltaMode===1?e.deltaY*16:e.deltaMode===2?e.deltaY*400:e.deltaY;wheelL+=e.ctrlKey?-dy*0.012:-dy*0.0018;clearTimeout(overWheelT);overWheelT=setTimeout(releaseOver,260);if(!wheelAnim)wheelAnim=requestAnimationFrame(wheelStep)},{passive:false});
+/* Safari no Mac manda a pinça como gesto */
+let pinchScale=1;
+mapEl.addEventListener('gesturestart',e=>{e.preventDefault();stopMotion();pinchScale=1},{passive:false});
+mapEl.addEventListener('gesturechange',e=>{e.preventDefault();const k=e.scale/pinchScale;pinchScale=e.scale;zoomBy(k);clearTimeout(overWheelT);applyTransform()},{passive:false});
+mapEl.addEventListener('gestureend',e=>{e.preventDefault();releaseOver()},{passive:false});
 mapEl.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.dataset&&e.target.dataset.city)openCity(e.target.dataset.city)});
 window.addEventListener('resize',()=>{sizeCanvas();z=Math.max(zMin(),z);applyTransform()});
 sizeCanvas();
@@ -1315,7 +1325,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792857410';
+const APP_VERSION='1792857805';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
