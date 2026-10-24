@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-bZL0pNJFqEvl5opkU/D0uIVtANAm/GT3PPnV21poG1Q='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co; connect-src 'self' https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-x0Q9p8+lwxgyK44AH39Mb4N3q1R6dO/nUbDh3kp7E1Q='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co; connect-src 'self' https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -906,7 +906,8 @@ document.querySelectorAll('.sheet').forEach(sh=>{
 function memberRow(ck){const m=byId(ck.m);const f=freeOf(m);const host=m.host&&m.home===ck.place;return`<button class="row" data-prof="${m.id}" data-ck="${ck.place}"><span class="avw">${avatar(m)}${f?'<i class="fdot"></i>':''}</span><span class="t"><b>${esc(m.name)}${ck.mine?' <span class="pill adm">você</span>':''}</b><small>${esc(m.co)} · ${esc(m.niche)}</small>${f||host?`<span class="tags">${f?`<i class="free">${esc(freeLabel(f))}</i>`:''}${host?'<i>Anfitrião</i>':''}</span>`:''}</span><span class="meta"><b>${ck.home?'':whenLabel(ck)}</b></span><span class="chev">›</span></button>`}
 let curCity=null,curProf=null;
 function rerenderSheets(){rerendering=true;try{if(stack.includes('shMe'))openMe();if(stack.includes('shProfile')&&curProf)openProfile(curProf);if(stack.includes('shCity')&&curCity)openCity(curCity);if(stack.includes('shInbox'))renderInbox()}finally{rerendering=false}}
-function openCity(id){curCity=id;
+function openCity(id){curCity=id;renderCity(id);openSheet('shCity');const c=city(id);centerOn(c.lng,c.lat,Math.max(z,2.6))}
+function renderCity(id){
   const c=city(id);const cks=activeCheckins().filter(k=>k.place===id);const evs=[];
   const total=cks.length+evs.reduce((a,b)=>a+b.n,0);
   const fr=cks.filter(k=>freeOf(byId(k.m))).sort((a,b)=>(freeOf(byId(a.m)).time||'99')<(freeOf(byId(b.m)).time||'99')?-1:1);const frIds=new Set(fr.map(k=>k.m));
@@ -920,7 +921,7 @@ function openCity(id){curCity=id;
   if(vis.length)h+=`<div class="sec">De passagem</div>`+vis.map(memberRow).join('');
   const soon=upcomingTrips().filter(t=>t.place===id);if(soon.length)h+=`<div class="sec">Em breve</div>`+soon.map(t=>{const m=byId(t.m);return`<button class="row" data-prof="${m.id}" data-ck="trip:${id}"><span>${avatar(m)}</span><span class="t"><b>${esc(m.name)}${me&&t.m===me.id?' <span class="pill adm">você</span>':''}</b><small>${esc(m.co)} · ${esc(m.niche)}</small></span><span class="meta"><b>${rangeLabel(t.start,t.end)}</b></span><span class="chev">›</span></button>`}).join('');
   if(res.length)h+=`<div class="sec">Moram aqui</div>`+res.map(memberRow).join('');
-  $('#cityBody').innerHTML=h;openSheet('shCity');centerOn(c.lng,c.lat,Math.max(z,2.6));
+  $('#cityBody').innerHTML=h;
 }
 const MO_SHORT=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
 function openEvents(){openEventsRender(upcomingEvents());openSheet('shEvents')}
@@ -1365,12 +1366,12 @@ function refresh(){
   const ev=nextMyEvent()||null;$('#eventcard').hidden=!ev;
   const nUp=upcomingEvents().length;$('#evN').hidden=!nUp;$('#evN').textContent=nUp;
   const nMsg=unreadCount();$('#msgN').hidden=!nMsg;$('#msgN').textContent=nMsg;
-  if(stack.includes('shInbox'))renderInbox();if(stack.includes('shChat')&&chatWith)renderChat();
+  if(stack.includes('shInbox'))renderInbox();if(stack.includes('shChat')&&chatWith)renderChat();if(stack.includes('shCity')&&curCity)renderCity(curCity);
   if(ev){const n=rsvpsOf(ev.id).length;$('#evTitle').textContent=ev.start>today()?ev.n:'Você está na '+ev.n;$('#evIc').textContent=initials(ev.n);$('#evSub').textContent=ev.start>today()?`Presença confirmada · ${n} ${n===1?'confirmado':'confirmados'}`:`${n} ${evWord(ev,n)} · toque para ver quem`}
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792859801';
+const APP_VERSION='1792859984';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
