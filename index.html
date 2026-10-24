@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-NQ2zuiKGMonTIdUX0i7MzRrmU/ADhk8ElxEEWKVhu/E='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co; connect-src 'self' https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-i+c4D1zQCSzmdRAA5Alg3bxvRhbJArHV8D0eBYciUhY='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co; connect-src 'self' https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -360,7 +360,9 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
 .mrow .msg{max-width:100%}
 .daysep.arr{text-transform:none;letter-spacing:0;font-size:12.5px;margin:6px 0 2px}
 .chatwho{flex:1;display:flex;align-items:center;gap:10px;min-width:0;text-align:left}.chatwho .av{width:38px;height:38px;font-size:13px}.chatwho b{font-size:17px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chatwho small{color:var(--fg3);font-size:12.5px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.chatbody{display:flex;flex-direction:column;gap:2px;padding-top:10px;overscroll-behavior:contain;will-change:transform;touch-action:pan-y}
+.chatbody{display:flex;flex-direction:column;gap:2px;padding-top:10px;padding-bottom:6px;overscroll-behavior:contain;will-change:transform;touch-action:pan-y}
+body.kb-open .chatbody{padding-bottom:6px}
+#chatFoot{padding-top:6px;border-top:0}
 .chatbody>.msg.nb,.chatbody>.mrow:has(>.msg.nb),.chatbody>.daysep{margin-top:10px}.chatbody>.daysep+.msg.nb,.chatbody>.daysep+.mrow{margin-top:4px}
 .chatbody>.daysep:first-child{margin-top:auto}
 .msg{max-width:80%;padding:9px 13px;border-radius:18px;font-size:15.5px;line-height:1.35;white-space:pre-wrap;overflow-wrap:anywhere;position:relative;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:pan-y;transform:translateX(var(--sx,0px)) scale(var(--sc,1));transition:transform .3s cubic-bezier(.34,1.45,.64,1)}
@@ -1398,7 +1400,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792863399';
+const APP_VERSION='1792863528';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
