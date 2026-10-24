@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-9Jsz+zAhTTFyJDVZuGTpgnsFN6l2TjCmdy9XlV+O8+M='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co; connect-src 'self' https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-za72ABaVSkGoBkaua752NY4D/TCHbVWAUEHxrGcI1s0='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co; connect-src 'self' https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -370,15 +370,15 @@ body.kb-open .chatbody{padding-bottom:6px}
 .msg .acts button.ok{background:var(--danger);color:#fff;border-color:transparent}
 .chatbody{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 .msg.in{align-self:flex-start;background:var(--surface2)}
-.msg.out{align-self:flex-end;background:var(--accent);color:var(--accent-ink)}
+.msg.out{align-self:flex-end;background:#121212;color:var(--fg);box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)}
 .msg time{display:block;font-size:11px;opacity:.55;margin-top:3px;text-align:right}
 .msg.sending{opacity:.55}.msg.hl{outline:2px solid var(--link);outline-offset:2px}
 .msg .acts{display:none;position:absolute;top:-36px;gap:6px;z-index:2}.msg.in .acts{left:0}.msg.out .acts{right:0}.msg.sel .acts{display:flex}
 .msg .acts button{font-size:12.5px;font-weight:700;padding:6px 12px;border-radius:999px;background:var(--surface);color:var(--fg);box-shadow:var(--shadow);border:1px solid var(--line);white-space:nowrap}.msg .acts button.del{color:var(--danger)}
-.msg .q{display:block;margin:0 0 6px;padding:6px 10px;border-left:3px solid var(--link);border-radius:8px;background:rgba(0,0,0,.14);font-size:13px;line-height:1.3;text-align:left;cursor:pointer}.msg.out .q{background:rgba(0,0,0,.07)}.msg .q b{display:block;font-size:12px;color:var(--link);margin-bottom:1px}.msg .q span{display:block;color:inherit;opacity:.85;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.msg .q{display:block;margin:0 0 6px;padding:6px 10px;border-left:3px solid var(--link);border-radius:8px;background:rgba(0,0,0,.14);font-size:13px;line-height:1.3;text-align:left;cursor:pointer}.msg.out .q{background:rgba(255,255,255,.07)}.msg .q b{display:block;font-size:12px;color:var(--link);margin-bottom:1px}.msg .q span{display:block;color:inherit;opacity:.85;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .replybar{display:flex;align-items:center;gap:10px;margin:0 -4px 10px;padding:10px 8px 10px 14px;border-left:4px solid var(--link);border-radius:10px;background:var(--surface2)}.replybar .t{flex:1;min-width:0}.replybar b{display:block;font-size:14px;font-weight:700;color:var(--link);margin-bottom:2px}.replybar small{display:block;font-size:14px;color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.replybar .close.xs{width:38px;height:38px;font-size:18px;color:var(--fg)}
 .mentions{max-height:220px;overflow-y:auto;margin-bottom:8px;border-radius:14px;background:var(--surface2);padding:4px;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}.mentions [data-mention]{display:flex;align-items:center;gap:10px;width:100%;padding:8px 10px;text-align:left;border-radius:10px;font-size:15.5px;font-weight:400;cursor:pointer;user-select:none;-webkit-user-select:none}.mentions b{font-weight:500}.mentions .av{width:32px;height:32px;font-size:11px}.mentions small{display:block;font-weight:400;color:var(--fg2);font-size:13px}
-.msg .mn{color:var(--link);font-weight:inherit;cursor:pointer}.msg.out .mn{color:#1d4ed8}
+.msg .mn{color:var(--link);font-weight:inherit;cursor:pointer}.msg.out .mn{color:var(--link)}
 .daysep{align-self:center;font-size:11.5px;color:var(--fg3);margin:10px 0 2px;letter-spacing:.06em;text-transform:uppercase}
 .chatin{display:flex;align-items:flex-end;gap:8px}
 .chatin textarea{flex:1;min-height:44px;max-height:120px;padding:11px 14px;border-radius:22px;background:var(--surface2);color:var(--fg);font:inherit;font-size:16px;line-height:1.35;resize:none;border:0;outline:0}
@@ -1407,7 +1407,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792863784';
+const APP_VERSION='1792863902';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
