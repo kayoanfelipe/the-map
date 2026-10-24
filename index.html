@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-yBawsRYx9GFiUE5D03e8C/1gvPXfFt1DafIZKsByVGc='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co; connect-src 'self' https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-9qvMgB52AGM+BtlYHoHcHoDeRJlQZtaLbMZWFSWGJYo='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co; connect-src 'self' https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -327,6 +327,12 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
 .demo .chips .chip{height:38px;font-size:14px}
 .back{color:var(--fg2);font-weight:600;font-size:15px;display:inline-flex;align-items:center;gap:6px;height:44px;margin-bottom:8px}
 .chathead{align-items:center;padding-bottom:10px}
+.sheet.page{top:0;max-height:none;border-radius:0;transform:translateX(100%);box-shadow:-8px 0 24px rgba(0,0,0,.35);touch-action:pan-y}
+.sheet.page.open{transform:translateX(0)}
+.sheet.page.behind{transform:scale(.96)}
+.sheet.page .chathead{padding-top:calc(10px + env(safe-area-inset-top,0px));border-bottom:1px solid var(--line);gap:6px}
+.chatback{width:36px;height:40px;margin-left:-8px;display:grid;place-items:center;color:var(--fg);flex:none;border-radius:12px}
+.chatback:active{background:var(--surface2)}
 .close.xs{width:34px;height:34px;font-size:16px;color:var(--fg2);background:transparent}
 .chatwho{flex:1;display:flex;align-items:center;gap:10px;min-width:0;text-align:left}.chatwho .av{width:38px;height:38px;font-size:13px}.chatwho b{font-size:17px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chatwho small{color:var(--fg3);font-size:12.5px}
 .chatbody{display:flex;flex-direction:column;gap:6px;padding-top:10px}
@@ -403,9 +409,8 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
     <div class="sb gutter" id="inboxBody"></div>
   </section>
 
-  <section class="sheet" id="shChat" aria-label="Conversa">
-    <div class="grab"><i></i></div>
-    <div class="sh gutter chathead"><button class="chatwho" id="chatWho"></button><button class="close" id="chatMore" aria-label="Mais opções">⋯</button></div>
+  <section class="sheet page" id="shChat" aria-label="Conversa">
+    <div class="sh gutter chathead"><button class="chatback" data-close aria-label="Voltar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button><button class="chatwho" id="chatWho"></button><button class="close" id="chatMore" aria-label="Mais opções">⋯</button></div>
     <div class="sb gutter chatbody" id="chatBody"></div>
     <div class="sf gutter" id="chatFoot"><div class="chatmenu" id="chatMenu" hidden></div><div class="chatin"><textarea id="chatIn" rows="1" maxlength="2000" placeholder="Mensagem" aria-label="Mensagem"></textarea><button class="send" id="chatSend" aria-label="Enviar">↑</button></div><p class="chatnote" id="chatNote" hidden></p></div>
   </section>
@@ -828,9 +833,17 @@ window.addEventListener('popstate',()=>{if(ignorePop>0){ignorePop--;return}if(st
 function closeAll(){while(stack.length)closeSheet()}
 $('#scrim').addEventListener('click',()=>{if(stack[stack.length-1]==='shEdit'&&me&&!me.complete)return;closeAll()});
 document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>{if(b.id==='editClose'&&me&&!me.complete){toast('Complete o perfil para entrar no mapa');return}closeSheet()}));
+/* páginas inteiras: arrastar da borda esquerda para a direita volta */
+function edgeSwipe(sh){let sx=null,sy=0,dx=0,st=0,on=false;
+  sh.addEventListener('pointerdown',e=>{if(stack[stack.length-1]!==sh.id)return;if(e.clientX-sh.getBoundingClientRect().left>36)return;sx=e.clientX;sy=e.clientY;dx=0;on=false;st=Date.now()});
+  sh.addEventListener('pointermove',e=>{if(sx==null)return;dx=e.clientX-sx;const dyy=Math.abs(e.clientY-sy);if(!on){if(dyy>12&&dyy>Math.abs(dx)){sx=null;return}if(dx<8)return;on=true;try{sh.setPointerCapture(e.pointerId)}catch(_){}}
+    dx=Math.max(0,dx);sh.classList.add('dragging');sh.style.transform=`translateX(${dx}px)`;e.preventDefault()});
+  const up=()=>{if(sx==null)return;const v=dx/Math.max(1,Date.now()-st);sh.classList.remove('dragging');if(on&&(dx>sh.clientWidth*0.33||v>0.5))closeSheet();else sh.style.transform='';sx=null;dx=0;on=false};
+  sh.addEventListener('pointerup',up);sh.addEventListener('pointercancel',up)}
 /* drag to dismiss */
 document.querySelectorAll('.sheet').forEach(sh=>{
   let sy=null,dy=0,st=0,fromBody=false;const body=sh.querySelector('.sb');
+  if(sh.classList.contains('page')){edgeSwipe(sh);return}
   sh.addEventListener('pointerdown',e=>{if(stack[stack.length-1]!==sh.id)return;if(e.target.closest('input,select,textarea,button,a,.chips,.cropbox'))return;fromBody=!!e.target.closest('.sb');if(fromBody&&body.scrollTop>0)return;sy=e.clientY;dy=0;st=Date.now()});
   sh.addEventListener('pointermove',e=>{if(sy==null)return;dy=e.clientY-sy;if(dy<0){dy=0;return}if(fromBody&&body.scrollTop>0){sy=null;sh.classList.remove('dragging');sh.style.transform='';return}sh.classList.add('dragging');sh.style.transform=`translateY(${dy}px)`;if(dy>6)e.preventDefault()});
   const up=()=>{if(sy==null)return;const v=dy/Math.max(1,Date.now()-st);sh.classList.remove('dragging');const closing=dy>110||v>0.6;if(closing&&!(sh.id==='shEdit'&&me&&!me.complete)){closeSheet()}else sh.style.transform='';sy=null;dy=0};
@@ -1247,7 +1260,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792801238';
+const APP_VERSION='1792801480';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
