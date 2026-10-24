@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-/blNElDlqp24HdyOvj4JG8KPvBCzt1kztRxNe4jmLlo='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co; connect-src 'self' https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-oQ1+JoqlLg4/IGBhwSuHv/s3AMb/eVbfk8PBOowG3aI='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co; connect-src 'self' https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -163,8 +163,8 @@ svg[data-tier="c"] .lbl.state text{opacity:.8}
 /* lists */
 .sec{margin:14px 0 6px;font-size:12px;font-weight:700;color:var(--fg3);letter-spacing:.08em;text-transform:uppercase;display:flex;justify-content:space-between;align-items:baseline}
 .sec span{font-weight:600;letter-spacing:0;text-transform:none;font-variant-numeric:tabular-nums}
-.row{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:8px 0;min-height:64px;border-radius:14px}
-.row:active{background:rgba(255,255,255,.04)}
+.row{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:8px 0;min-height:64px;border-radius:14px;transition:none}
+.row:active{transform:none;background:none}
 .row .t{flex:1;min-width:0}
 .row b{display:block;font-weight:600;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .row small{display:block;color:var(--fg2);font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -342,7 +342,7 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
 .mrow{display:flex;align-items:flex-end;gap:6px;max-width:85%;align-self:flex-start}.mrow .avbtn{margin-bottom:1px}
 .msg.in.mid{border-bottom-left-radius:18px;border-top-left-radius:6px}.msg.out.mid{border-bottom-right-radius:18px;border-top-right-radius:6px}
 .msg a{color:var(--link);text-decoration:underline;text-underline-offset:2px;overflow-wrap:anywhere}
-.search{position:relative;margin:0 0 6px}.search input{width:100%;height:38px;border-radius:999px;padding:0 14px 0 38px;background:var(--glass);box-shadow:var(--glass-shadow);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:0;color:var(--fg);font:inherit;font-size:15px;outline:0}.search input::placeholder{color:var(--fg3)}.search svg{position:absolute;left:14px;top:11px;color:var(--fg3);pointer-events:none}
+.search{position:relative;margin:0 0 6px}.search input{width:100%;height:38px;border-radius:999px;padding:0 16px;background:var(--surface2);border:0;color:var(--fg);font:inherit;font-size:15px;text-align:center;outline:0;-webkit-appearance:none;appearance:none}.search input::placeholder{color:var(--fg3)}.search input::-webkit-search-cancel-button{-webkit-appearance:none}.search svg{display:none}
 .convrow .av{width:54px;height:54px;font-size:17px}
 .mrow .avbtn,.mrow .sp{width:28px;flex:none}.mrow .avbtn{display:block}.mrow .avbtn .av{width:28px;height:28px;font-size:10px}
 .mrow .msg{max-width:100%}
@@ -420,7 +420,7 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
   <section class="sheet" id="shInbox" aria-label="Mensagens">
     <div class="grab"><i></i></div>
     <div class="sh gutter"><div><h2>Mensagens</h2><p id="inboxSub">Conversas com membros</p></div></div>
-    <div class="gutter search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input type="search" id="inboxQ" placeholder="Buscar membro" autocomplete="off" aria-label="Buscar conversa"></div>
+    <div class="gutter search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input type="search" id="inboxQ" placeholder="Pesquisar" autocomplete="off" aria-label="Buscar conversa"></div>
     <div class="sb gutter" id="inboxBody"></div>
   </section>
 
@@ -1325,7 +1325,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792857805';
+const APP_VERSION='1792857978';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
