@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-qgR/V0gax3PmcZkuqauq0FIne8R08lmUG3iEj9SW6vs='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co; connect-src 'self' https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-XLmt+8IN654GXJ9/P1H403gNoxpfxDH0mkAco2wvwnY='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co; connect-src 'self' https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -338,6 +338,9 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
 .more:active{background:var(--surface2)}
 .cityav{display:grid;place-items:center;background:var(--accent-soft);color:var(--fg)}
 .msg .who{display:block;font-size:12px;font-weight:700;color:var(--fg2);margin-bottom:2px}
+.mrow{display:flex;align-items:flex-start;gap:6px;max-width:85%;align-self:flex-start}.mrow .avbtn{margin-top:2px}
+.mrow .avbtn,.mrow .sp{width:28px;flex:none}.mrow .avbtn{display:block}.mrow .avbtn .av{width:28px;height:28px;font-size:10px}
+.mrow .msg{max-width:100%}
 .daysep.arr{text-transform:none;letter-spacing:0;font-size:12.5px;margin:6px 0 2px}
 .chatwho{flex:1;display:flex;align-items:center;gap:10px;min-width:0;text-align:left}.chatwho .av{width:38px;height:38px;font-size:13px}.chatwho b{font-size:17px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chatwho small{color:var(--fg3);font-size:12.5px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .chatbody{display:flex;flex-direction:column;gap:6px;padding-top:10px}
@@ -712,7 +715,7 @@ async function uploadPhoto(dataUrl){const blob=dataUrlToBlob(dataUrl);const {dat
 let live=null,srT=null;
 function softReload(){clearTimeout(srT);srT=setTimeout(async()=>{if(!me)return;try{await loadAll();if(!me||me.active===false){signOutLocal('Seu acesso foi desativado.');return}refresh()}catch(e){}},400)}
 function subscribeLive(){if(live||!sb)return;live=sb.channel('themap-live').on('postgres_changes',{event:'*',schema:'public',table:'checkins'},softReload).on('postgres_changes',{event:'*',schema:'public',table:'event_rsvps'},softReload).on('postgres_changes',{event:'*',schema:'public',table:'events'},softReload).on('postgres_changes',{event:'*',schema:'public',table:'members'},softReload).on('postgres_changes',{event:'*',schema:'public',table:'messages'},p=>{msgEvent(p);softReload()}).on('postgres_changes',{event:'*',schema:'public',table:'trips'},softReload).on('postgres_changes',{event:'*',schema:'public',table:'city_messages'},p=>{cmEvent(p);softReload()}).subscribe()}
-document.addEventListener('visibilitychange',()=>{if(!document.hidden&&me)softReload()});
+document.addEventListener('visibilitychange',()=>{if(document.hidden||!me)return;if(live&&live.state!=='joined'){try{sb.removeChannel(live)}catch(e){}live=null;subscribeLive()}syncMessages();softReload()});
 async function signOutLocal(msg){try{if(live){sb.removeChannel(live);live=null}await sb.auth.signOut()}catch(e){}me=null;myCheckin=null;CHECKINS=[];members=[];closeAll();refresh();$('#login').classList.remove('out');$('#codeForm').hidden=true;$('#emailForm').hidden=false;$('#email').value=store.get('lastEmail','');if(msg){$('#emailErr').textContent=msg;$('#emailErr').hidden=false}}
 
 /* ---------- helpers ---------- */
@@ -900,7 +903,7 @@ function openEvent(id){const e=event(id);const rs=rsvpsOf(id);const n=rs.length;
 function renderEventsQuiet(){openEventsRender(upcomingEvents())}
 /* ---------- chat 1 a 1 ---------- */
 function msgRow(r){return{id:r.id,from:r.sender_id,to:r.recipient_id,body:r.body,at:r.created_at,read:r.read_at||null}}
-/* conversa da cidade: só para quem está na cidade (o banco decide o que chega; aqui só a lista) */
+/* chat da cidade: só para quem está na cidade (o banco decide o que chega; aqui só a lista) */
 function cmRow(r){return{id:r.id,place:r.place,from:r.sender_id,kind:r.kind||'text',body:r.body||'',at:r.created_at}}
 const CITY_ICON='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-8 8H7l-4 3V12a8 8 0 0 1 8-8h2a8 8 0 0 1 8 8z"/></svg>';
 function myCities(){if(!me||invisible)return[];const s=[];if(myCheckin&&myCheckin.until>=today()&&!myCheckin.place.startsWith('ev:')&&knownCity(myCheckin.place))s.push(myCheckin.place);if(knownCity(me.home)&&!s.includes(me.home))s.push(me.home);return s}
@@ -911,12 +914,12 @@ function cityUnread(id){if(!me)return 0;const seen=store.get('cityseen.'+id,'');
 function markCitySeen(id){const th=cityThread(id);const last=th.length?th[th.length-1].at:new Date().toISOString();store.set('cityseen.'+id,last);refresh()}
 function cityConvRow(id){const c=city(id);const th=cityThread(id);const last=th[th.length-1];const n=cityUnread(id);
   let snip='Ninguém escreveu ainda';if(last){const s=byId(last.from);const f=s?s.name.split(' ')[0]:'';snip=last.kind==='arrival'?`${f} chegou`:`${last.from===me.id?'Você':f}: ${last.body}`}
-  return`<button class="row convrow cityconv${n?' unread':''}" data-citychat="${id}"><span class="av cityav">${CITY_ICON}</span><span class="t"><b><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Conversa de ${esc(c.n)}</span>${last?`<small>${whenShort(last.at)}</small>`:''}</b><small class="snip">${esc(snip)}</small></span>${n?`<span class="dot" aria-label="${n} não lidas"></span>`:'<span class="chev">›</span>'}</button>`}
+  return`<button class="row convrow cityconv${n?' unread':''}" data-citychat="${id}"><span class="av cityav">${CITY_ICON}</span><span class="t"><b><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Chat de ${esc(c.n)}</span>${last?`<small>${whenShort(last.at)}</small>`:''}</b><small class="snip">${esc(snip)}</small></span>${n?`<span class="dot" aria-label="${n} não lidas"></span>`:'<span class="chev">›</span>'}</button>`}
 function openCityChat(id){if(!inCity(id)){openCity(id);return}const c=city(id);chatWith='city:'+id;$('#chatMenu').hidden=true;
   const n=activeCheckins().filter(k=>k.place===id).length;
   $('#chatWho').innerHTML=`<span class="av cityav">${CITY_ICON}</span><span style="min-width:0"><b>${esc(c.n)}</b><small>Quem está na cidade${n?` · ${n} ${n===1?'membro':'membros'}`:''}</small></span>`;
   const ta=$('#chatIn');ta.value='';ta.style.height='';
-  openSheet('shChat');renderChat();markCitySeen(id);setTimeout(()=>{$('#chatBody').scrollTop=1e9},60)}
+  openSheet('shChat');renderChat();markCitySeen(id);syncMessages();setTimeout(()=>{$('#chatBody').scrollTop=1e9},60)}
 function cmEvent(p){if(!me)return;const n=p&&p.new,o=p&&p.old;
   if(p.eventType==='INSERT'&&n){if(!CMSGS.some(x=>x.id===n.id)){CMSGS=CMSGS.filter(x=>!(x.tmp&&x.place===n.place&&x.from===n.sender_id&&x.body===n.body));CMSGS.push(cmRow(n))}if(stack.includes('shChat')&&cityChatId()===n.place&&!document.hidden)markCitySeen(n.place)}
   else if(p.eventType==='DELETE'&&o){CMSGS=CMSGS.filter(x=>x.id!==o.id)}
@@ -955,10 +958,14 @@ async function disablePush(){store.set('pushOn',false);try{const sub=swReg&&awai
 function pushBanner(){if(!me||pushState==='on'||store.get('pushOn',false)||!pushSupported()||Notification.permission==='denied')return'';return`<button class="linkrow" id="pushAsk" style="border:0;border-bottom:1px solid var(--line)"><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg></span><span class="t"><b>Ativar avisos no celular</b><small>Receba um aviso a cada nova mensagem</small></span><span class="chev">›</span></button>`}
 let msgPollT=0,msgSyncing=false;
 async function syncMessages(){if(!me||!sb||msgSyncing||document.hidden)return;if(!(stack.includes('shInbox')||stack.includes('shChat')))return;msgSyncing=true;
-  try{const {data,error}=await sb.from('messages').select('*').order('created_at');if(error||!data)return;const fresh=data.map(msgRow);const key=l=>l.map(x=>x.id+':'+(x.read?1:0)).sort().join(',');
-    if(key(fresh)!==key(MSGS.filter(x=>!x.tmp))){const tmp=MSGS.filter(x=>x.tmp);MSGS=fresh.concat(tmp);if(stack.includes('shChat')&&chatWith)markRead(chatWith);refresh()}}
+  try{const [r1,r2]=await Promise.all([sb.from('messages').select('*').order('created_at'),sb.from('city_messages').select('*').order('created_at')]);let changed=false;
+    if(!r1.error&&r1.data){const fresh=r1.data.map(msgRow);const key=l=>l.map(x=>x.id+':'+(x.read?1:0)).sort().join(',');
+      if(key(fresh)!==key(MSGS.filter(x=>!x.tmp))){const tmp=MSGS.filter(x=>x.tmp);MSGS=fresh.concat(tmp);if(stack.includes('shChat')&&chatWith&&!cityChatId())markRead(chatWith);changed=true}}
+    if(!r2.error&&r2.data){const fresh=r2.data.map(cmRow);const key=l=>l.map(x=>x.id).sort().join(',');
+      if(key(fresh)!==key(CMSGS.filter(x=>!x.tmp))){const tmp=CMSGS.filter(x=>x.tmp);CMSGS=fresh.concat(tmp);const cc=cityChatId();if(cc&&stack.includes('shChat'))markCitySeen(cc);changed=true}}
+    if(changed)refresh()}
   catch(e){}finally{msgSyncing=false}}
-function startMsgPoll(){clearInterval(msgPollT);msgPollT=setInterval(syncMessages,8000)}
+function startMsgPoll(){clearInterval(msgPollT);msgPollT=setInterval(()=>{if(stack.includes('shChat'))syncMessages();else if(++msgPollN%2===0)syncMessages()},4000)}let msgPollN=0;
 function openInbox(){renderInbox();openSheet('shInbox');syncMessages()}
 function renderInbox(){const list=conversations();const el=$('#inboxBody');
   const nConv=list.length+myCities().length;$('#inboxSub').textContent=nConv?`${nConv} ${nConv===1?'conversa':'conversas'}`:'Conversas com membros';
@@ -972,11 +979,13 @@ function openChat(id,prefill){const m=byId(id);if(!m)return;chatWith=id;$('#chat
   openSheet('shChat');renderChat();markRead(id);setTimeout(()=>{$('#chatBody').scrollTop=1e9},60)}
 function chatState(){const cc=cityChatId();if(cc)return inCity(cc)?{ok:true,note:''}:{ok:false,note:'Você não está mais nesta cidade.'};const m=byId(chatWith);if(!m)return{ok:false,note:''};if(BLOCKS.includes(chatWith))return{ok:false,note:`Você bloqueou ${m.name.split(' ')[0]}. Nada chega de nenhum lado.`};if(m.active===false)return{ok:false,note:'Este membro não está mais no The Group.'};if(m.dmOff)return{ok:false,note:`${m.name.split(' ')[0]} prefere conversar pelo grupo do WhatsApp.`};return{ok:true,note:''}}
 function renderChat(){const el=$('#chatBody');const cid=cityChatId();const th=cid?cityThread(cid):threadWith(chatWith);let h='',day='';const m=cid?null:byId(chatWith);const c=cid?city(cid):null;
-  for(const x of th){const k=dayKey(x.at);if(k!==day){day=k;h+=`<div class="daysep">${dayLabel(x.at)}</div>`}
-    if(x.kind==='arrival'){const s=byId(x.from);h+=`<div class="daysep arr">${esc(s?s.name.split(' ')[0]:'Alguém')} chegou</div>`;continue}
-    const out=x.from===me.id;const can=out||(cid&&me.admin);const who=cid&&!out?byId(x.from):null;
-    h+=`<div class="msg ${out?'out':'in'}${x.tmp?' sending':''}${can&&!x.tmp?' can':''}" data-mid="${x.id}">${who?`<small class="who">${esc(who.name.split(' ')[0])}</small>`:''}${esc(x.body)}<time>${fmtTime(x.at)}${!cid&&out&&x.read?' · lida':''}</time>${can&&!x.tmp?'<button class="del" data-del="'+x.id+'">Apagar</button>':''}</div>`}
-  if(!th.length)h=cid?`<div class="empty"><b>Ninguém escreveu ainda.</b>Quem está em ${esc(c.n)} vê esta conversa.</div>`:`<div class="empty"><b>Comece a conversa com ${esc(m?m.name.split(' ')[0]:'')}.</b>Só vocês dois veem estas mensagens.</div>`;
+  let prev=null;
+  for(const x of th){const k=dayKey(x.at);if(k!==day){day=k;prev=null;h+=`<div class="daysep">${dayLabel(x.at)}</div>`}
+    if(x.kind==='arrival'){const s=byId(x.from);prev=null;h+=`<div class="daysep arr">${esc(s?s.name.split(' ')[0]:'Alguém')} chegou</div>`;continue}
+    const out=x.from===me.id;const can=out||(cid&&me.admin);const who=cid&&!out?byId(x.from):null;const first=!prev||prev!==x.from;prev=x.from;
+    const bubble=`<div class="msg ${out?'out':'in'}${x.tmp?' sending':''}${can&&!x.tmp?' can':''}" data-mid="${x.id}">${who&&first?`<small class="who">${esc(who.name.split(' ')[0])}</small>`:''}${esc(x.body)}<time>${fmtTime(x.at)}${!cid&&out&&x.read?' · lida':''}</time>${can&&!x.tmp?'<button class="del" data-del="'+x.id+'">Apagar</button>':''}</div>`;
+    h+=who?`<div class="mrow">${first?`<button class="avbtn" data-prof="${who.id}" aria-label="${esc(who.name)}">${avatar(who)}</button>`:'<span class="sp"></span>'}${bubble}</div>`:bubble}
+  if(!th.length)h=cid?`<div class="empty"><b>Ninguém escreveu ainda.</b>Quem está em ${esc(c.n)} vê este chat.</div>`:`<div class="empty"><b>Comece a conversa com ${esc(m?m.name.split(' ')[0]:'')}.</b>Só vocês dois veem estas mensagens.</div>`;
   const atBottom=el.scrollHeight-el.scrollTop-el.clientHeight<80;el.innerHTML=h;if(atBottom)el.scrollTop=1e9;
   el.querySelectorAll('.msg.can').forEach(b=>{let t=0,sx=0,sy=0;const clear=()=>{clearTimeout(t);t=0};
     b.addEventListener('pointerdown',e=>{if(e.target.dataset.del)return;sx=e.clientX;sy=e.clientY;clear();t=setTimeout(()=>{t=0;el.querySelectorAll('.msg.sel').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');haptic()},450)});
@@ -1292,7 +1301,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792855051';
+const APP_VERSION='1792856697';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
