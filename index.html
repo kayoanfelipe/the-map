@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-0cwXnkzrH2rHfiYAmFzM6GPznx4aapKxR69wCx7r0kg='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co; connect-src 'self' https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-sm+dwPXiBfyLsSL63/4G1lBeuJB/dBoisQpGu1Eytdc='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co; connect-src 'self' https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -359,7 +359,8 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
 .mrow .msg{max-width:100%}
 .daysep.arr{text-transform:none;letter-spacing:0;font-size:12.5px;margin:6px 0 2px}
 .chatwho{flex:1;display:flex;align-items:center;gap:10px;min-width:0;text-align:left}.chatwho .av{width:38px;height:38px;font-size:13px}.chatwho b{font-size:17px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chatwho small{color:var(--fg3);font-size:12.5px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.chatbody{display:flex;flex-direction:column;gap:4px;padding-top:10px;overscroll-behavior:contain;will-change:transform;touch-action:pan-y}
+.chatbody{display:flex;flex-direction:column;gap:2px;padding-top:10px;overscroll-behavior:contain;will-change:transform;touch-action:pan-y}
+.chatbody>.msg.nb,.chatbody>.mrow:has(>.msg.nb),.chatbody>.daysep{margin-top:10px}.chatbody>.daysep+.msg.nb,.chatbody>.daysep+.mrow{margin-top:4px}
 .chatbody>.daysep:first-child{margin-top:auto}
 .msg{max-width:80%;padding:9px 13px;border-radius:18px;font-size:15.5px;line-height:1.35;white-space:pre-wrap;overflow-wrap:anywhere;position:relative;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:pan-y;transform:translateX(var(--sx,0px)) scale(var(--sc,1));transition:transform .3s cubic-bezier(.34,1.45,.64,1)}
 .msg.drag{transition:none}.msg.sel{--sc:1.03;z-index:3;box-shadow:0 6px 20px rgba(0,0,0,.3)}
@@ -771,7 +772,8 @@ function hue(s){let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))%360;return h}
 function avatar(m,cls=''){const h=hue(m.id||m.name);const k=cls?'av '+cls:'av';return m.photo&&/^https:\/\//.test(m.photo)?`<span class="${k}"><img src="${esc(m.photo)}" alt=""></span>`:`<span class="${k}" style="background:linear-gradient(135deg,hsl(${h} 38% 46%),hsl(${(h+40)%360} 42% 36%))">${initials(m.name||'?')}</span>`}
 function openStr(open){return open.join(' · ')}
 function placeName(p){return p.startsWith('ev:')?event(p.slice(3)).n:city(p).n}
-function haptic(){try{navigator.vibrate&&navigator.vibrate(12)}catch(e){}}
+let hapEl=null;
+function haptic(){try{if(navigator.vibrate){navigator.vibrate(12);return}if(!hapEl){hapEl=document.createElement('label');hapEl.setAttribute('aria-hidden','true');hapEl.style.cssText='position:fixed;left:-9999px;top:0;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none';hapEl.innerHTML='<input type="checkbox" switch tabindex="-1">';document.body.appendChild(hapEl)}hapEl.click()}catch(e){}}
 let toastT;function toast(t){$('#toastTxt').textContent=t;$('#toast').classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>$('#toast').classList.remove('on'),2200)}
 function esc(s){return String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
 function withMentions(h,ids){for(const id of ids||[]){const m=byId(id);if(!m)continue;const n=esc(m.name);h=h.split('@'+n).join('<b class="mn">@'+n+'</b>')}return h}
@@ -1039,7 +1041,7 @@ function renderChat(){const el=$('#chatBody');const cid=cityChatId();const th=ci
     if(x.kind==='arrival'){const s=byId(x.from);h+=`<div class="daysep arr">${esc(s?s.name.split(' ')[0]:'Alguém')} chegou</div>`;continue}
     const out=x.from===me.id;const can=out||(cid&&me.admin);const who=cid&&!out?byId(x.from):null;const first=i===0||runKey(th[i-1])!==runKey(x);const last=i===th.length-1||runKey(th[i+1])!==runKey(x);
     const q=x.replyTo?th.find(y=>y.id===x.replyTo):null;const qWho=q?(q.from===me.id?'Você':(byId(q.from)||{name:'Membro'}).name.split(' ')[0]):'';
-    const bubble=`<div class="msg ${out?'out':'in'}${x.tmp?' sending':''}${x.tmp?'':' can'}${last?'':' mid'}" data-mid="${x.id}">${who&&first?`<small class="who">${esc(who.name.split(' ')[0])}</small>`:''}${q?`<span class="q" data-goto="${q.id}"><b>${esc(qWho)}</b><span>${esc(q.body)}</span></span>`:''}${withMentions(linkify(x.body),x.mentions)}<time>${fmtTime(x.at)}${!cid&&out&&x.read?' · lida':''}</time>${x.tmp?'':`<span class="acts"><button data-reply="${x.id}">Responder</button>${can?`<button class="del" data-del="${x.id}">Apagar</button>`:''}</span><span class="sw rep" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg></span>`}</div>`;
+    const bubble=`<div class="msg ${out?'out':'in'}${x.tmp?' sending':''}${x.tmp?'':' can'}${last?'':' mid'}${first?' nb':''}" data-mid="${x.id}">${who&&first?`<small class="who">${esc(who.name.split(' ')[0])}</small>`:''}${q?`<span class="q" data-goto="${q.id}"><b>${esc(qWho)}</b><span>${esc(q.body)}</span></span>`:''}${withMentions(linkify(x.body),x.mentions)}<time>${fmtTime(x.at)}${!cid&&out&&x.read?' · lida':''}</time>${x.tmp?'':`<span class="acts"><button data-reply="${x.id}">Responder</button>${can?`<button class="del" data-del="${x.id}">Apagar</button>`:''}</span><span class="sw rep" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg></span>`}</div>`;
     h+=who?`<div class="mrow">${last?`<button class="avbtn" data-prof="${who.id}" aria-label="${esc(who.name)}">${avatar(who)}</button>`:'<span class="sp"></span>'}${bubble}</div>`:bubble}
   if(!th.length)h=cid?`<div class="empty"><b>Ninguém escreveu ainda.</b>Quem está em ${esc(c.n)} vê este grupo.</div>`:`<div class="empty"><b>Comece a conversa com ${esc(m?m.name.split(' ')[0]:'')}.</b>Só vocês dois veem estas mensagens.</div>`;
   const atBottom=el.scrollHeight-el.scrollTop-el.clientHeight<80;el.innerHTML=h;if(atBottom)el.scrollTop=1e9;
@@ -1062,7 +1064,7 @@ async function markRead(id){const mine=MSGS.filter(x=>x.from===id&&x.to===me.id&
   try{await sb.from('messages').update({read_at:now}).eq('sender_id',id).eq('recipient_id',me.id).is('read_at',null)}catch(e){}}
 let replyTo=null;
 function setReply(x){replyTo=x?{id:x.id,from:x.from,body:x.body}:null;const bar=$('#replyBar');bar.hidden=!replyTo;if(replyTo){$('#rbWho').textContent=replyTo.from===me.id?'Você':(byId(replyTo.from)||{name:'Membro'}).name.split(' ')[0];$('#rbText').textContent=replyTo.body}}
-$('#rbX').onclick=()=>setReply(null);$('#rbX').addEventListener('mousedown',e=>e.preventDefault());
+$('#rbX').onclick=()=>{setReply(null);haptic()};$('#rbX').addEventListener('mousedown',e=>e.preventDefault());
 /* menções: @ no grupo lista quem está na cidade */
 function mentionCandidates(q){const cid=cityChatId();if(!cid)return[];const ids=new Set(activeCheckins().filter(k=>k.place===cid&&k.m!==me.id).map(k=>k.m));return members.filter(m=>ids.has(m.id)&&m.name.toLowerCase().includes(q)).slice(0,6)}
 function updateMentions(){const ta=$('#chatIn'),list=$('#mentionList');if(!cityChatId()){list.hidden=true;return}const pos=ta.selectionStart;const before=ta.value.slice(0,pos);const m=before.match(/(?:^|\s)@([^\s@]*)$/);if(!m){list.hidden=true;return}const c=mentionCandidates(m[1].toLowerCase());if(!c.length){list.hidden=true;return}
@@ -1395,7 +1397,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792861126';
+const APP_VERSION='1792861491';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
