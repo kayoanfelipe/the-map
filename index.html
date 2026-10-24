@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-oQ1+JoqlLg4/IGBhwSuHv/s3AMb/eVbfk8PBOowG3aI='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co; connect-src 'self' https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-zzQRJ3aPev+HYq7l0fq8HMI6O2FyGRPpGaM8Vos0mrA='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co; connect-src 'self' https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -256,7 +256,7 @@ input[type=date].search{appearance:none;-webkit-appearance:none}
 .freecard .chips{gap:6px}.freecard .chip{height:34px;font-size:13.5px;padding:0 13px}
 .freecard .chips.sm{margin-top:9px;padding-top:9px;border-top:1px solid var(--line)}.freecard .chips.sm .chip{height:30px;font-size:12.5px;padding:0 11px}
 .bubble .fd{fill:var(--accent);stroke:#0b0b0d;stroke-width:2}
-.linkrow{display:flex;align-items:center;gap:12px;width:100%;padding:14px 0;border-bottom:1px solid var(--line);text-decoration:none;color:inherit;min-height:52px;text-align:left}
+.linkrow{display:flex;align-items:center;gap:12px;width:100%;padding:13px 0;text-decoration:none;color:inherit;min-height:52px;text-align:left}
 .linkrow .ic{width:36px;height:36px;border-radius:10px;background:var(--surface2);display:grid;place-items:center;color:var(--fg2);font-size:16px;flex:none}
 a.linkrow b,a.linkrow .chev{color:var(--link)}
 .linkrow .t{flex:1;min-width:0}
@@ -270,7 +270,7 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
 .sw[aria-checked="true"]::after{transform:translateX(20px)}
 
 /* forms */
-.field{margin-top:14px}
+.field{margin-top:12px}
 .field label{display:block;font-size:12.5px;font-weight:700;color:var(--fg2);margin:0 0 6px 2px;letter-spacing:.02em}
 .field input,.field select,.field textarea{width:100%;height:48px;border-radius:14px;background:var(--surface2);border:1.5px solid transparent;padding:0 14px;font-size:16px}
 .field textarea{height:auto;min-height:72px;padding:12px 14px;resize:none}
@@ -298,6 +298,8 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
 #toast{position:absolute;left:0;right:0;bottom:calc(96px + env(safe-area-inset-bottom,0px));display:flex;justify-content:center;pointer-events:none;z-index:30}
 #toast div{background:var(--fg);color:var(--accent-ink);padding:12px 18px;border-radius:999px;font-size:14.5px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.2);transform:translateY(20px);opacity:0;transition:transform .45s cubic-bezier(.34,1.4,.64,1),opacity .25s;max-width:calc(100% - 32px);text-align:center}
 #toast.on div{transform:translateY(0);opacity:1}
+#app:has(.sheet.open) #toast{bottom:calc(22px + env(safe-area-inset-bottom,0px))}
+.secondary.danger{color:var(--danger)}
 
 /* ---------- Login ---------- */
 #login{position:absolute;inset:0;background:radial-gradient(120% 90% at 50% 40%,rgba(3,3,5,.62) 0%,rgba(3,3,5,.78) 60%,rgba(3,3,5,.9) 100%);z-index:40;display:flex;flex-direction:column;overflow-y:auto;padding-top:env(safe-area-inset-top,0px);padding-bottom:calc(24px + env(safe-area-inset-bottom,0px));transition:opacity .5s,transform .6s cubic-bezier(.32,.72,0,1)}
@@ -342,7 +344,7 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
 .mrow{display:flex;align-items:flex-end;gap:6px;max-width:85%;align-self:flex-start}.mrow .avbtn{margin-bottom:1px}
 .msg.in.mid{border-bottom-left-radius:18px;border-top-left-radius:6px}.msg.out.mid{border-bottom-right-radius:18px;border-top-right-radius:6px}
 .msg a{color:var(--link);text-decoration:underline;text-underline-offset:2px;overflow-wrap:anywhere}
-.search{position:relative;margin:0 0 6px}.search input{width:100%;height:38px;border-radius:999px;padding:0 16px;background:var(--surface2);border:0;color:var(--fg);font:inherit;font-size:15px;text-align:center;outline:0;-webkit-appearance:none;appearance:none}.search input::placeholder{color:var(--fg3)}.search input::-webkit-search-cancel-button{-webkit-appearance:none}.search svg{display:none}
+.srch{margin:2px 0 8px}.srch input{display:block;width:100%;height:27px;border-radius:9px;padding:0 12px;background:#1D1D1D;box-shadow:1px 1px .5px -2px rgba(255,255,255,.2) inset,-1px -1px .5px -2px rgba(255,255,255,.2) inset,0 0 8px 0 rgba(160,160,160,.5) inset,0 2px 8px 2px rgba(0,0,0,.1);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:0;color:var(--fg);font:inherit;font-size:13.5px;text-align:center;outline:0;-webkit-appearance:none;appearance:none}.srch input::placeholder{color:var(--fg3)}.srch input::-webkit-search-cancel-button{-webkit-appearance:none}
 .convrow .av{width:54px;height:54px;font-size:17px}
 .mrow .avbtn,.mrow .sp{width:28px;flex:none}.mrow .avbtn{display:block}.mrow .avbtn .av{width:28px;height:28px;font-size:10px}
 .mrow .msg{max-width:100%}
@@ -420,7 +422,7 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
   <section class="sheet" id="shInbox" aria-label="Mensagens">
     <div class="grab"><i></i></div>
     <div class="sh gutter"><div><h2>Mensagens</h2><p id="inboxSub">Conversas com membros</p></div></div>
-    <div class="gutter search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input type="search" id="inboxQ" placeholder="Pesquisar" autocomplete="off" aria-label="Buscar conversa"></div>
+    <div class="gutter srch"><input type="search" id="inboxQ" placeholder="Pesquisar" autocomplete="off" aria-label="Pesquisar conversa"></div>
     <div class="sb gutter" id="inboxBody"></div>
   </section>
 
@@ -559,8 +561,23 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
       </form>
       <div class="field"><label for="fGroup">Link do grupo de WhatsApp</label><input id="fGroup" placeholder="https://chat.whatsapp.com/…" autocapitalize="none"><p class="hint">Usado pelo botão "Abrir o grupo no WhatsApp".</p></div>
       <div class="sec" style="margin-top:22px">Cadastrados <span id="admCount"></span></div>
+      <div class="srch"><input type="search" id="admQ" placeholder="Pesquisar" autocomplete="off" aria-label="Pesquisar membro"></div>
       <div id="admList"></div>
     </div>
+  </section>
+
+  <section class="sheet" id="shAdmMember" aria-label="Editar membro">
+    <div class="grab"><i></i></div>
+    <div class="sh gutter"><div><h2 id="amTitle">Membro</h2><p id="amSub"></p></div></div>
+    <form class="sb gutter" id="amForm" novalidate>
+      <div class="field" style="margin-top:4px"><label for="amName">Nome</label><input id="amName" required autocomplete="off"></div>
+      <div class="field"><label for="amEmail">E-mail de acesso</label><input id="amEmail" type="email" required autocapitalize="none" autocomplete="off"><p class="hint">Se mudar, o membro passa a entrar com o e-mail novo.</p></div>
+      <div class="field"><label for="amCo">Empresa</label><input id="amCo" autocomplete="off"></div>
+      <div class="field"><label for="amNiche">Nicho</label><input id="amNiche" autocomplete="off"></div>
+      <div class="field"><label for="amIg">Instagram</label><input id="amIg" placeholder="@perfil" autocapitalize="none" autocomplete="off"></div>
+      <p class="err" id="amErr" hidden></p>
+      <div class="row2" style="margin-top:20px"><button class="secondary" type="button" id="amToggle">Desativar</button><button class="primary" type="submit" style="flex:1">Salvar</button></div>
+    </form>
   </section>
 
   <div id="toast"><div id="toastTxt"></div></div>
@@ -1199,11 +1216,24 @@ async function afterEventsChange(){try{await loadAll();await loadAllEvents()}cat
 async function openAdmin(){
   $('#fGroup').value=SETTINGS.group_link||'';
   try{const {data}=await sb.rpc('admin_emails');for(const r of data||[]){const m=byId(r.id);if(m)m.email=r.email}}catch(e){}
-  const list=members.filter(m=>m.id!==me.id);$('#admCount').textContent=list.length+1;
-  $('#admList').innerHTML=list.map(m=>`<div class="row"><span>${avatar(m)}</span><span class="t"><b>${esc(m.name)} ${m.active===false?'<span class="pill off">desativado</span>':m.complete?'':'<span class="pill">sem perfil</span>'}</b><small>${esc(m.email)}</small></span><button class="chip ghost" style="height:34px;font-size:13px" data-toggle="${m.id}">${m.active===false?'Reativar':'Desativar'}</button></div>`).join('');
-  $('#admList').querySelectorAll('[data-toggle]').forEach(b=>b.onclick=async()=>{const m=byId(b.dataset.toggle);const was=m.active!==false;try{await saveMember(m.id,{active:!was})}catch(e){toast('Não foi possível alterar.');return}haptic();toast(was?`Acesso de ${m.name.split(' ')[0]} desativado`:`Acesso de ${m.name.split(' ')[0]} reativado`);openAdmin();refresh()});
+  $('#admCount').textContent=members.length;renderAdmList();
   openSheet('shAdmin');
 }
+function renderAdmList(){const q=($('#admQ').value||'').trim().toLowerCase();const list=members.filter(m=>m.id!==me.id&&(!q||(m.name||'').toLowerCase().includes(q)||(m.email||'').toLowerCase().includes(q))).sort((a,b)=>a.name.localeCompare(b.name));
+  $('#admList').innerHTML=list.length?list.map(m=>`<button class="row" type="button" data-adm="${m.id}"><span>${avatar(m)}</span><span class="t"><b>${esc(m.name)} ${m.active===false?'<span class="pill off">desativado</span>':m.complete?'':'<span class="pill">sem perfil</span>'}</b><small>${esc(m.email||'')}</small></span><span class="chev">›</span></button>`).join(''):`<div class="empty"><b>Nenhum membro.</b>${q?'Nenhum cadastro com esse nome ou e-mail.':'Cadastre o primeiro membro acima.'}</div>`;
+  $('#admList').querySelectorAll('[data-adm]').forEach(b=>b.onclick=()=>{haptic();openAdmMember(b.dataset.adm)})}
+$('#admQ').addEventListener('input',renderAdmList);
+let admEditId=null;
+function openAdmMember(id){const m=byId(id);if(!m)return;admEditId=id;$('#amTitle').textContent=m.name;$('#amSub').textContent=m.active===false?'Acesso desativado':m.complete?'Perfil completo':'Ainda não completou o perfil';
+  $('#amName').value=m.name||'';$('#amEmail').value=m.email||'';$('#amCo').value=m.co||'';$('#amNiche').value=m.niche||'';$('#amIg').value=m.ig?'@'+m.ig.replace('@',''):'';$('#amErr').hidden=true;
+  const t=$('#amToggle');t.textContent=m.active===false?'Reativar':'Desativar';t.classList.toggle('danger',m.active!==false);openSheet('shAdmMember')}
+$('#amForm').onsubmit=async e=>{e.preventDefault();const m=byId(admEditId);if(!m)return;const name=$('#amName').value.trim(),email=$('#amEmail').value.trim().toLowerCase();const err=$('#amErr');err.hidden=true;
+  if(!name||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){err.textContent='Preencha nome e um e-mail válido.';err.hidden=false;return}
+  if(members.some(x=>x.id!==m.id&&(x.email||'').toLowerCase()===email)){err.textContent='Esse e-mail já é de outro membro.';err.hidden=false;return}
+  const row={name,company:$('#amCo').value.trim(),niche:$('#amNiche').value.trim(),instagram:$('#amIg').value.trim().replace(/^@/,'')};const emailChanged=email!==(m.email||'').toLowerCase();if(emailChanged){row.email=email;row.user_id=null}
+  const {error}=await sb.from('members').update(row).eq('id',m.id);if(error){err.textContent='Não foi possível salvar. Tente de novo.';err.hidden=false;return}
+  Object.assign(m,{name,co:row.company,niche:row.niche,ig:row.instagram,email});haptic();closeSheet();toast(emailChanged?`Salvo. ${name.split(' ')[0]} agora entra com o e-mail novo.`:'Alterações salvas');renderAdmList();refresh()};
+$('#amToggle').onclick=async()=>{const m=byId(admEditId);if(!m)return;const was=m.active!==false;try{await saveMember(m.id,{active:!was})}catch(e){toast('Não foi possível alterar.');return}haptic();closeSheet();toast(was?`Acesso de ${m.name.split(' ')[0]} desativado`:`Acesso de ${m.name.split(' ')[0]} reativado`);renderAdmList();refresh()};
 $('#fGroup').addEventListener('change',async()=>{const v=$('#fGroup').value.trim();const {error}=await sb.from('settings').upsert({key:'group_link',value:v});if(error){toast('Não foi possível salvar o link.');return}SETTINGS.group_link=v;toast('Link do grupo salvo')});
 $('#admForm').onsubmit=async e=>{e.preventDefault();const name=$('#aName').value.trim(),email=$('#aEmail').value.trim().toLowerCase();const err=$('#admErr');err.hidden=true;
   if(!name||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){err.textContent='Preencha nome e um e-mail válido.';err.hidden=false;return}
@@ -1325,7 +1355,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792857978';
+const APP_VERSION='1792858271';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
