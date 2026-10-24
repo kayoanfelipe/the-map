@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-Nbgzm5Sp/9HM+ZPWtECxovgatUfTaWdZawfH8+qapVM='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co; connect-src 'self' https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-PC2UKXNz28i00HKSRllF0dq3DmeAOci18brlQbJ8Xq0='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co; connect-src 'self' https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -99,13 +99,15 @@ svg[data-tier="c"] .lbl.state text{opacity:.8}
 .brand{display:flex;align-items:baseline;gap:8px;padding:8px 2px}
 .brand b{font-size:20px;letter-spacing:-.02em;font-weight:700}
 .brand span{font-size:12px;color:var(--fg2);font-weight:600;letter-spacing:.06em;text-transform:uppercase}
-.glass,.avatarbtn,.worldbtn,.status,#eventcard button{background:var(--glass);box-shadow:var(--glass-shadow);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.glass,.avatarbtn,.status,#eventcard button{background:var(--glass);box-shadow:var(--glass-shadow);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
 .avatarbtn{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;position:relative;background:none!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
 .avatarbtn .av{width:36px;height:36px}
-.evbtn{align-self:flex-start;height:40px;margin-top:2px;padding:0 14px 0 12px;border-radius:999px;font-size:14px;font-weight:700;display:inline-flex;align-items:center;gap:7px;background:var(--glass);box-shadow:var(--glass-shadow);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
-.evbtn .n{background:var(--fg);color:var(--accent-ink);border-radius:999px;min-width:20px;height:20px;padding:0 6px;display:grid;place-items:center;font-size:12px}
-.worldbtn{height:34px;padding:0 12px;border-radius:999px;font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:6px}
-.worldbtn .n{background:var(--fg);color:var(--accent-ink);border-radius:999px;min-width:20px;height:20px;padding:0 6px;display:grid;place-items:center;font-size:12px}
+.tabbar{display:flex;width:min(100%,420px);height:62px;padding:5px;border-radius:999px;margin-top:4px}
+.tab{flex:1;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:999px;font-size:11.5px;font-weight:700;letter-spacing:.01em;color:var(--fg2);position:relative;transition:color .2s,background-color .2s}
+.tab svg{width:22px;height:22px}
+.tab.on,.tab:active{color:var(--fg)}
+.tab.on{background:rgba(255,255,255,.08)}
+.tab .n{position:absolute;top:5px;left:calc(50% + 6px);background:var(--fg);color:var(--accent-ink);border-radius:999px;min-width:18px;height:18px;padding:0 5px;display:grid;place-items:center;font-size:11px;line-height:1}
 .avatarbtn .eye{position:absolute;right:-3px;bottom:-3px;width:20px;height:20px;border-radius:50%;background:var(--fg);color:var(--accent-ink);display:grid;place-items:center;font-size:11px;border:2px solid var(--bg)}
 #eventcard{position:absolute;left:0;right:0;top:calc(66px + env(safe-area-inset-top,0px));z-index:5;display:flex;justify-content:center;pointer-events:none}
 #eventcard button{pointer-events:auto;display:flex;align-items:center;gap:10px;border-radius:16px;padding:10px 14px 10px 10px;max-width:min(100% - 32px,420px);text-align:left}
@@ -294,7 +296,7 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
 .pill.adm{background:var(--accent-soft);color:var(--fg)}
 
 /* toast */
-#toast{position:absolute;left:0;right:0;bottom:calc(96px + env(safe-area-inset-bottom,0px));display:flex;justify-content:center;pointer-events:none;z-index:30}
+#toast{position:absolute;left:0;right:0;bottom:calc(170px + env(safe-area-inset-bottom,0px));display:flex;justify-content:center;pointer-events:none;z-index:30}
 #toast div{background:var(--fg);color:var(--accent-ink);padding:12px 18px;border-radius:999px;font-size:14.5px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.2);transform:translateY(20px);opacity:0;transition:transform .45s cubic-bezier(.34,1.4,.64,1),opacity .25s;max-width:calc(100% - 32px);text-align:center}
 #toast.on div{transform:translateY(0);opacity:1}
 
@@ -353,11 +355,8 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
   <div id="map"><canvas id="globe" aria-hidden="true"></canvas><svg id="svg" aria-label="Globo com membros por cidade"><g id="bubbles"></g></svg></div>
 
   <div id="top" class="gutter">
-    <div style="display:flex;flex-direction:column;align-items:flex-start;gap:8px">
-    <button class="evbtn" id="btnEvents" aria-label="Eventos"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span>Eventos</span><span class="n" id="evN" hidden></span></button>
-    <button class="evbtn" id="btnMsgs" aria-label="Mensagens"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-8 8H7l-4 3V12a8 8 0 0 1 8-8h2a8 8 0 0 1 8 8z"/></svg><span>Mensagens</span><span class="n" id="msgN" hidden></span></button>
-    </div>
-    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px"><button class="avatarbtn" id="btnMe" aria-label="Meu perfil"><span class="av" id="meAv"></span><span class="eye" id="eyeBadge" hidden title="Modo invisível">◌</span><i class="fdot top" id="freeBadge" hidden></i></button><button class="worldbtn" id="btnWorld" aria-label="Ver o mundo"><span id="worldLbl">Mundo</span><span class="n" id="worldN" hidden></span></button></div>
+    <span></span>
+    <button class="avatarbtn" id="btnMe" aria-label="Meu perfil"><span class="av" id="meAv"></span><span class="eye" id="eyeBadge" hidden title="Modo invisível">◌</span><i class="fdot top" id="freeBadge" hidden></i></button>
   </div>
   <div id="eventcard" class="gutter" hidden><button id="eventBtn"><span class="ic" id="evIc">TH</span><span><b id="evTitle">Você está na The House</b><small id="evSub">38 presentes</small></span></button></div>
 
@@ -370,6 +369,11 @@ a.linkrow b,a.linkrow .chev{color:var(--link)}
     </div>
     <button class="status" id="myStatus" hidden><span class="dot"></span><span><b id="stCity">São Paulo</b> <span id="stMeta">· até sexta</span></span><span style="color:var(--fg3);font-size:18px">›</span><span class="x" id="stEnd" role="button" aria-label="Encerrar check-in">✕</span></button>
     <button class="estou" id="btnCheckin"><span id="btnCheckinLbl">Marcar local</span></button>
+    <nav class="tabbar glass" aria-label="Navegação">
+      <button class="tab" id="btnEvents" aria-label="Eventos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span>Eventos</span><span class="n" id="evN" hidden></span></button>
+      <button class="tab" id="btnWorld" aria-label="Ver o mundo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg><span id="worldLbl">Mundo</span><span class="n" id="worldN" hidden></span></button>
+      <button class="tab" id="btnMsgs" aria-label="Mensagens"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-8 8H7l-4 3V12a8 8 0 0 1 8-8h2a8 8 0 0 1 8 8z"/></svg><span>Mensagens</span><span class="n" id="msgN" hidden></span></button>
+    </nav>
   </div>
 
   <div id="scrim"></div>
@@ -786,7 +790,7 @@ window.addEventListener('pointermove',e=>{if(!ptrs.has(e.pointerId))return;ptrs.
 function spin(){const k=degPerPx();const cap=v=>Math.max(-14,Math.min(14,v));let v=[cap(vel[0]*9),cap(vel[1]*9)];const step=()=>{rot[0]+=v[0]*k;rot[1]=clampLat(rot[1]-v[1]*k);v=[v[0]*0.955,v[1]*0.955];applyTransform();if(Math.hypot(v[0],v[1])>0.15)spinAnim=requestAnimationFrame(step);else spinAnim=0};spinAnim=requestAnimationFrame(step)}
 function endPtr(e){if(!ptrs.has(e.pointerId))return;ptrs.delete(e.pointerId);if(ptrs.size<2&&over>0)releaseOver();
   if(ptrs.size===0&&down&&Date.now()-down.t<500){const b=down.target.closest&&down.target.closest('[data-city]');if(b){tapBubble(b);haptic();setTimeout(()=>openCity(b.dataset.city),140)}
-    const cb=down.target.closest&&down.target.closest('[data-country]');if(cb){haptic();tapBubble(cb);worldView=false;$('#worldLbl').textContent='Mundo';if(cb.dataset.country===BR)fitBrazil(true);else{const a=city(cb.dataset.anchor);flyTo(a.lng,a.lat,2.4)}}}
+    const cb=down.target.closest&&down.target.closest('[data-country]');if(cb){haptic();tapBubble(cb);worldView=false;$('#worldLbl').textContent='Mundo';$('#btnWorld').classList.remove('on');if(cb.dataset.country===BR)fitBrazil(true);else{const a=city(cb.dataset.anchor);flyTo(a.lng,a.lat,2.4)}}}
   else if(ptrs.size===0&&!down&&performance.now()-lastT<80&&Math.hypot(vel[0],vel[1])>0.15&&!matchMedia('(prefers-reduced-motion:reduce)').matches)spin();
   if(ptrs.size===1){const[a]=[...ptrs.values()];lastP={x:a.x,y:a.y};lastDist=0}down=null}
 window.addEventListener('pointerup',endPtr);window.addEventListener('pointercancel',endPtr);
@@ -1046,7 +1050,7 @@ $('#btnConfirm').onclick=async()=>{if(ciStep<3){goStep(ciStep+1);return}
   toast(invisible?'Salvo · você está invisível':hs.length?`${hs.length>1?'Anfitriões':'Anfitrião'} em ${placeName(ci.place)}: ${hs.slice(0,2).map(h=>h.name.split(' ')[0]).join(' e ')}. Envie uma mensagem para combinar.`:n>0?`${n} ${n>1?'membros':'membro'} ${ci.place.startsWith('ev:')?'na':'em'} ${placeName(ci.place)} agora`:'Você é o primeiro membro aqui. Quem chegar será avisado.');
   setTimeout(()=>ci.place.startsWith('ev:')?openEvent(ci.place.slice(3)):openCity(ci.place),380)};
 $('#btnCheckin').onclick=()=>openCheckin();
-$('#btnWorld').onclick=()=>{haptic();worldView=!worldView;worldView?fitWorld(true):fitBrazil(true);$('#worldLbl').textContent=worldView?'Brasil':'Mundo'};
+$('#btnWorld').onclick=()=>{haptic();worldView=!worldView;worldView?fitWorld(true):fitBrazil(true);$('#worldLbl').textContent=worldView?'Brasil':'Mundo';$('#btnWorld').classList.toggle('on',worldView)};
 $('#stEnd').addEventListener('click',async e=>{e.stopPropagation();const {error}=await sb.from('checkins').delete().eq('member_id',me.id);const tr=TRIPS.find(t=>t.m===me.id&&t.start<=today()&&t.end>=today());if(tr){await sb.from('trips').delete().eq('id',tr.id);TRIPS=TRIPS.filter(t=>t.id!==tr.id)}if(error){toast('Não foi possível sair do mapa. Tente de novo.');return}myCheckin=null;CHECKINS=CHECKINS.filter(k=>k.m!==me.id);haptic();refresh();toast('Você saiu do mapa')});
 $('#myStatus').onclick=()=>openCheckin();
 
@@ -1232,7 +1236,7 @@ function refresh(){
   $('#meAv').outerHTML=avatar(me).replace('class="av"','class="av" id="meAv"');$('#eyeBadge').hidden=!invisible;$('#freeBadge').hidden=invisible||!freeOf(me);
   const has=myCheckin&&myCheckin.until>=today();const nextTrip=me&&upcomingTrips(me.id)[0];
   const abroad=Object.keys(cityCounts()).filter(id=>city(id).c!==BR).reduce((a,id)=>a+cityCounts()[id],0);$('#worldN').hidden=!abroad;$('#worldN').textContent=abroad;
-  const atHome=!has&&knownCity(me.home);$('#myStatus').hidden=!(has||atHome);$('#btnCheckin').hidden=has||atHome;$('#stEnd').hidden=!has;$('#btnWorld').hidden=!abroad;
+  const atHome=!has&&knownCity(me.home);$('#myStatus').hidden=!(has||atHome);$('#btnCheckin').hidden=has||atHome;$('#stEnd').hidden=!has;
   if(has){$('#stCity').textContent=placeName(myCheckin.place);$('#stMeta').textContent='· '+whenLabel(myCheckin)+(invisible?' · invisível':'')}
   else if(atHome){$('#stCity').textContent=city(me.home).n;$('#stMeta').textContent='· sua cidade'+(invisible?' · invisível':'');if(!invisible&&!store.get('homeNoticed',false)){store.set('homeNoticed',true);setTimeout(()=>toast(`Você aparece em ${city(me.home).n}. Para não aparecer no mapa, use o modo invisível.`),1200)}}
   const ev=nextMyEvent()||null;$('#eventcard').hidden=!ev;
@@ -1243,7 +1247,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792796263';
+const APP_VERSION='1792800625';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
