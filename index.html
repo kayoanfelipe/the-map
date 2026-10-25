@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-V06ukbFmyLQfgqsYQF18cZafbt6P2qBwPwHoPz4LxO4='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co https://resultados.tse.jus.br; connect-src 'self' https://resultados.tse.jus.br https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-EisNvru2wVwMKy+gast6j1dnaeOs14etxoZutmw5p0g='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co https://resultados.tse.jus.br; connect-src 'self' https://resultados.tse.jus.br https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1247,7 +1247,7 @@ function pushBanner(){if(!me||pushState==='on'||store.get('pushOn',false)||!push
 let msgPollT=0,msgSyncing=false;
 async function syncMessages(){if(!me||!sb||msgSyncing||document.hidden)return;if(!(stack.includes('shInbox')||stack.includes('shChat')))return;msgSyncing=true;
   try{const [r1,r2,r3]=await Promise.all([sb.from('messages').select('*').order('created_at'),sb.from('city_messages').select('*').order('created_at'),sb.from('reactions').select('kind,msg_id,member_id')]);let changed=false;
-    if(r3&&!r3.error&&r3.data){const fr=r3.data.map(r=>({k:r.kind,id:r.msg_id,m:r.member_id}));const rkey=l=>l.map(r=>r.k+r.id+r.m).sort().join(',');if(rkey(fr)!==rkey(REACTS)){REACTS=fr;changed=true}}
+    if(r3&&!r3.error&&r3.data){const fr=applyRxPending(r3.data.map(r=>({k:r.kind,id:r.msg_id,m:r.member_id})));const rkey=l=>l.map(r=>r.k+r.id+r.m).sort().join(',');if(rkey(fr)!==rkey(REACTS)){REACTS=fr;changed=true}}
     if(!r1.error&&r1.data){const fresh=r1.data.map(msgRow);const key=l=>l.map(x=>x.id+':'+(x.read?1:0)).sort().join(',');
       if(key(fresh)!==key(MSGS.filter(x=>!x.tmp))){const tmp=MSGS.filter(x=>x.tmp);MSGS=fresh.concat(tmp);if(stack.includes('shChat')&&chatWith&&!cityChatId())markRead(chatWith);changed=true}}
     if(!r2.error&&r2.data){const fresh=r2.data.map(cmRow);const key=l=>l.map(x=>x.id).sort().join(',');
@@ -1346,12 +1346,17 @@ async function deliver(tmp){const cid=tmp.place;let res;
   if(error){tmp.failed=true;if(stack.includes('shChat'))renderChat();if(/Muitas mensagens/.test(error.message||''))toast('Muitas mensagens em pouco tempo. Espere um minuto.');return}
   if(data){chatSeen.add(String(data.id));if(cid){CMSGS=CMSGS.filter(x=>x!==tmp);if(!CMSGS.some(x=>x.id===data.id))CMSGS.push(cmRow(data));if(cityChatId()===cid)markCitySeen(cid)}else{MSGS=MSGS.filter(x=>x!==tmp);if(!MSGS.some(x=>x.id===data.id))MSGS.push(msgRow(data))}if(stack.includes('shChat'))renderChat()}refresh()}
 let lastTap={};
+/* curtida em andamento: vale por cima do que vem do servidor até salvar (e mais 5 s), para o coração não piscar */
+const RXPEND=new Map();
+function applyRxPending(list){const now=Date.now();for(const [key,p] of RXPEND){if(p.until<now){RXPEND.delete(key);continue}const [k,id]=key.split(':');const i=list.findIndex(r=>r.k===k&&String(r.id)===id&&r.m===me.id);if(p.add&&i<0)list.push({k,id:+id,m:me.id});else if(!p.add&&i>=0)list.splice(i,1)}return list}
 /* toque duplo: curte ou descurte com um coração */
-async function toggleHeart(mid){const cid=cityChatId();const k=cid?'c':'d';const id=+mid;if(!id)return;const mine=REACTS.find(r=>r.k===k&&r.id===id&&r.m===me.id);
-  if(mine)REACTS=REACTS.filter(r=>r!==mine);else{REACTS.push({k,id,m:me.id});heartPop=k+':'+id}haptic();renderChat();
+async function toggleHeart(mid){const cid=cityChatId();const k=cid?'c':'d';const id=+mid;if(!id)return;const mine=REACTS.find(r=>r.k===k&&r.id===id&&r.m===me.id);const key=k+':'+id;
+  if(mine)REACTS=REACTS.filter(r=>r!==mine);else{REACTS.push({k,id,m:me.id});heartPop=key}RXPEND.set(key,{add:!mine,until:Infinity});haptic();renderChat();
   const {error}=mine?await sb.from('reactions').delete().eq('kind',k).eq('msg_id',id).eq('member_id',me.id):await sb.from('reactions').insert({kind:k,msg_id:id,member_id:me.id});
-  if(error&&!/duplicate/i.test(error.message||'')){if(mine)REACTS.push(mine);else REACTS=REACTS.filter(r=>!(r.k===k&&r.id===id&&r.m===me.id));renderChat();toast('Não foi possível curtir agora.')}}
-function rxEvent(p){const n=p&&p.new,o=p&&p.old;if(p.eventType==='INSERT'&&n){if(!REACTS.some(r=>r.k===n.kind&&r.id===n.msg_id&&r.m===n.member_id))REACTS.push({k:n.kind,id:n.msg_id,m:n.member_id})}
+  if(error&&!/duplicate/i.test(error.message||'')){RXPEND.delete(key);if(mine)REACTS.push(mine);else REACTS=REACTS.filter(r=>!(r.k===k&&r.id===id&&r.m===me.id));renderChat();toast('Não foi possível curtir agora.');return}
+  const p=RXPEND.get(key);if(p&&p.add===!mine)p.until=Date.now()+5000}
+function rxEvent(p){const n=p&&p.new,o=p&&p.old;const pk=(n||o)&&(n||o).member_id===(me&&me.id)?RXPEND.get((n||o).kind+':'+(n||o).msg_id):null;if(pk&&((p.eventType==='INSERT'&&!pk.add)||(p.eventType==='DELETE'&&pk.add)))return;
+  if(p.eventType==='INSERT'&&n){if(!REACTS.some(r=>r.k===n.kind&&r.id===n.msg_id&&r.m===n.member_id))REACTS.push({k:n.kind,id:n.msg_id,m:n.member_id})}
   else if(p.eventType==='DELETE'&&o){REACTS=REACTS.filter(r=>!(r.k===o.kind&&r.id===o.msg_id&&r.m===o.member_id))}if(stack.includes('shChat'))renderChat()}
 /* novas mensagens abaixo: aparece quando chega mensagem e você está lendo mais acima */
 function paintNewBelow(){const b=$('#newBelow');b.hidden=!chatNewBelow;$('#newBelowN').textContent=chatNewBelow===1?'1 nova':`${chatNewBelow} novas`}
@@ -1729,7 +1734,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792897711';
+const APP_VERSION='1792898116';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
