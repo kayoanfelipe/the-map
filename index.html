@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-u7DuJoKTp3bTX1AQ6OCW4P09oPRTozVIeb56es2p3zE='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co; connect-src 'self' https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-zYHW735B+ixyUt7FvSH2etdyUeHwfQS8DYhxRh6SKvc='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co; connect-src 'self' https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -985,7 +985,7 @@ function renderGlobalMembers(){const q=($('#gmQ').value||'').trim().toLowerCase(
   const groups={};for(const m of list){const c=country(m)||'Sem cidade';(groups[c]=groups[c]||[]).push(m)}
   const order=Object.keys(groups).sort((a,b)=>a===BR?-1:b===BR?1:a==='Sem cidade'?1:b==='Sem cidade'?-1:a.localeCompare(b));
   $('#gmBody').innerHTML=list.length?order.map(c=>`<div class="sec">${esc(c)} <span>${groups[c].length}</span></div>`+groups[c].sort((a,b)=>a.name.localeCompare(b.name)).map(m=>`<button class="row" data-prof="${m.id}"><span>${avatar(m)}</span><span class="t"><b>${esc(m.name)}${me&&m.id===me.id?' <span class="pill adm">você</span>':''}</b><small>${esc([m.co,m.niche].filter(Boolean).join(' · '))}</small></span><span class="meta">${esc(homeLabel(m))}</span><span class="chev">›</span></button>`).join('')).join(''):`<div class="empty"><b>Nenhum resultado.</b>Nenhum membro com esse nome ou cidade.</div>`}
-const FEATURE_MEMBERS=false;
+const FEATURE_MEMBERS=true;
 function openGlobalMembers(){$('#gmQ').value='';renderGlobalMembers();openSheet('shMembers')}
 function globalMentionsUnread(){if(!me)return 0;const seen=store.get('cityseen.global','');return cityThread('global').filter(x=>x.kind==='text'&&x.from!==me.id&&x.at>seen&&((x.mentions||[]).includes(me.id)||isAllMsg(x))).length}
 function cityChatId(){return typeof chatWith==='string'&&chatWith.startsWith('city:')?chatWith.slice(5):null}
@@ -1441,7 +1441,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792887138';
+const APP_VERSION='1792887311';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
