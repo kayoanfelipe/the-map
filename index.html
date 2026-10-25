@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-S9XnyIDj4YSLA9mj/NSKEs7nvJd+CzXyqUx1Rfq9MFI='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co https://resultados.tse.jus.br; connect-src 'self' https://resultados.tse.jus.br https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-Wq3GyUJwUy4GMg5XhW0JnJEawQVNmqcWyX8pJZEofKM='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co https://resultados.tse.jus.br; connect-src 'self' https://resultados.tse.jus.br https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1147,7 +1147,7 @@ function renderGlobalMembers(){const q=($('#gmQ').value||'').trim().toLowerCase(
   const groups={};for(const m of list){const c=country(m)||'Sem cidade';(groups[c]=groups[c]||[]).push(m)}
   const order=Object.keys(groups).sort((a,b)=>a===BR?-1:b===BR?1:a==='Sem cidade'?1:b==='Sem cidade'?-1:a.localeCompare(b));
   $('#gmBody').innerHTML=list.length?order.map(c=>`<div class="sec">${esc(c)} <span>${groups[c].length}</span></div>`+groups[c].sort((a,b)=>a.name.localeCompare(b.name)).map(m=>`<button class="row" data-prof="${m.id}"><span>${avatar(m)}</span><span class="t"><b>${esc(m.name)}${me&&m.id===me.id?' <span class="pill adm">você</span>':''}</b><small>${esc([m.co,m.niche].filter(Boolean).join(' · '))}</small></span><span class="meta">${esc(homeLabel(m))}</span><span class="chev">›</span></button>`).join('')).join(''):`<div class="empty"><b>Nenhum resultado.</b>Nenhum membro com esse nome ou cidade.</div>`}
-/* Online agora: presença em tempo real (Supabase Realtime Presence, canal privado).
+/* Online agora (contador visível só para admin): presença em tempo real (Supabase Realtime Presence, canal privado).
    Conta quem está com o app aberto e na tela; sai na hora ao minimizar, trocar de app ou fechar. Invisíveis não aparecem. */
 let pres=null,ONLINE=new Set(),onPrev=0;
 function presenceStart(){if(pres||!sb||!me)return;
@@ -1158,7 +1158,7 @@ function presTrack(){if(!pres||!me)return;try{if(document.hidden||invisible||me.
 function presenceStop(){if(!pres)return;try{pres.untrack();sb.removeChannel(pres)}catch(e){}pres=null;ONLINE=new Set();paintOnline()}
 function onlineList(){return [...ONLINE].map(byId).filter(m=>m&&m.active!==false&&(!m.invisible||m.id===me.id))}
 function paintOnline(){const b=$('#onlineBtn');if(!b)return;const list=me?onlineList():[];const n=list.length;
-  b.hidden=!me||n<1;$('#onlineTxt').textContent=`${n} online`;
+  b.hidden=!me||!me.admin||n<1;$('#onlineTxt').textContent=`${n} online`;
   if(n>onPrev&&onPrev>0){b.classList.remove('bump');void b.offsetWidth;b.classList.add('bump')}onPrev=n;
 }
 document.addEventListener('visibilitychange',()=>{if(!me)return;if(!document.hidden&&pres&&pres.state!=='joined'){presenceStop();presenceStart();return}presTrack()});
@@ -1891,7 +1891,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792957243';
+const APP_VERSION='1792966407';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
