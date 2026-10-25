@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-VH9zXLZ4d4CZK7YMtNHA6JaFWXbb4z+17xq1ok2asbk='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co https://resultados.tse.jus.br; connect-src 'self' https://resultados.tse.jus.br https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-9XoqX9k+10C4zbt0ND0nkMU+hIVTR8jRpRFtqSvf1Ho='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co https://resultados.tse.jus.br; connect-src 'self' https://resultados.tse.jus.br https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -682,7 +682,7 @@ body.kb-open .chatbody{padding-bottom:6px}
     <form class="sb gutter" id="amForm" novalidate>
       <div class="field" style="margin-top:4px"><label for="amName">Nome</label><input id="amName" required autocomplete="off"></div>
       <div class="field"><label for="amEmail">E-mail de acesso</label><input id="amEmail" type="email" required autocapitalize="none" autocomplete="off"><p class="hint">Se mudar, o membro passa a entrar com o e-mail novo.</p></div>
-      <p class="hint" style="margin-top:14px">Empresa, nicho, cidade e Instagram são preenchidos pelo próprio membro no perfil.</p>
+      <button class="secondary" type="button" id="amInvite" style="width:100%;margin-top:18px">Reenviar convite por e-mail</button>
       <p class="err" id="amErr" hidden></p>
       <div class="row2" style="margin-top:20px"><button class="secondary" type="button" id="amToggle">Desativar</button><button class="primary" type="submit" style="flex:1">Salvar</button></div>
     </form>
@@ -1652,19 +1652,22 @@ $('#admQ').addEventListener('input',renderAdmList);
 let admEditId=null;
 function openAdmMember(id){const m=byId(id);if(!m)return;admEditId=id;$('#amTitle').textContent=m.name;$('#amSub').textContent=m.active===false?'Acesso desativado':m.complete?'Perfil completo':'Ainda não completou o perfil';
   $('#amName').value=m.name||'';$('#amEmail').value=m.email||'';$('#amErr').hidden=true;
-  const t=$('#amToggle');t.textContent=m.active===false?'Reativar':'Desativar';t.classList.toggle('danger',m.active!==false);openSheet('shAdmMember')}
+  const t=$('#amToggle');t.textContent=m.active===false?'Reativar':'Desativar';t.classList.toggle('danger',m.active!==false);$('#amInvite').hidden=m.active===false;openSheet('shAdmMember')}
 $('#amForm').onsubmit=async e=>{e.preventDefault();const m=byId(admEditId);if(!m)return;const name=$('#amName').value.trim(),email=$('#amEmail').value.trim().toLowerCase();const err=$('#amErr');err.hidden=true;
   if(!name||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){err.textContent='Preencha nome e um e-mail válido.';err.hidden=false;return}
   if(members.some(x=>x.id!==m.id&&(x.email||'').toLowerCase()===email)){err.textContent='Esse e-mail já é de outro membro.';err.hidden=false;return}
   const row={name};const emailChanged=email!==(m.email||'').toLowerCase();if(emailChanged){row.email=email;row.user_id=null}
   const {error}=await sb.from('members').update(row).eq('id',m.id);if(error){err.textContent='Não foi possível salvar. Tente de novo.';err.hidden=false;return}
   Object.assign(m,{name,email});haptic();closeSheet();toast(emailChanged?`Salvo. ${name.split(' ')[0]} agora entra com o e-mail novo.`:'Alterações salvas');renderAdmList();refresh()};
+$('#amInvite').onclick=async()=>{const m=byId(admEditId);if(!m)return;const b=$('#amInvite');b.disabled=true;b.textContent='Enviando…';
+  try{const {data,error}=await sb.functions.invoke('push',{body:{invite:m.id}});if(error||!data||data.error||!data.sent)throw new Error((data&&data.error)||'falhou');haptic();toast(`Convite enviado para ${m.email}`)}
+  catch(e){toast('Não foi possível enviar agora. Tente de novo.')}finally{b.disabled=false;b.textContent='Reenviar convite por e-mail'}};
 $('#amToggle').onclick=async()=>{const m=byId(admEditId);if(!m)return;const was=m.active!==false;try{await saveMember(m.id,{active:!was})}catch(e){toast('Não foi possível alterar.');return}haptic();closeSheet();toast(was?`Acesso de ${m.name.split(' ')[0]} desativado`:`Acesso de ${m.name.split(' ')[0]} reativado`);renderAdmList();refresh()};
 $('#fGroup').addEventListener('change',async()=>{const v=$('#fGroup').value.trim();const {error}=await sb.from('settings').upsert({key:'group_link',value:v});if(error){toast('Não foi possível salvar o link.');return}SETTINGS.group_link=v;toast('Link do grupo salvo')});
 $('#admForm').onsubmit=async e=>{e.preventDefault();const name=$('#aName').value.trim(),email=$('#aEmail').value.trim().toLowerCase();const err=$('#admErr');err.hidden=true;
   if(!name||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){err.textContent='Preencha nome e um e-mail válido.';err.hidden=false;return}
   if(members.some(m=>(m.email||'').toLowerCase()===email)){err.textContent='Esse e-mail já está cadastrado.';err.hidden=false;return}
-  const {data,error}=await sb.from('members').insert({name,email}).select(MEMBER_COLS).single();if(error){err.textContent='Não foi possível cadastrar. Tente de novo.';err.hidden=false;return}members.push(Object.assign(fromRow(data),{email}));$('#aName').value='';$('#aEmail').value='';haptic();toast(`Cadastro concluído. ${name.split(' ')[0]} já pode entrar com o e-mail.`);openAdmin()};
+  const {data,error}=await sb.from('members').insert({name,email}).select(MEMBER_COLS).single();if(error){err.textContent='Não foi possível cadastrar. Tente de novo.';err.hidden=false;return}members.push(Object.assign(fromRow(data),{email}));$('#aName').value='';$('#aEmail').value='';haptic();toast(`Cadastro concluído. Enviamos o convite para o e-mail de ${name.split(' ')[0]}.`);openAdmin()};
 let pendingPhoto=null,editStage=1;
 function openEdit(first){
   editStage=1;$('#editTitle').textContent=first?'Complete seu perfil':'Editar perfil';$('#editSub').textContent='Assim os membros sabem, em poucos segundos, por que falar com você.';$('#editSub').hidden=!first;$('#termsRow').hidden=!first;$('#editA').hidden=false;$('#editB').hidden=first;$('#editSkip').hidden=true;$('#editSave').textContent=first?'Continuar':'Salvar';
@@ -1781,7 +1784,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792901773';
+const APP_VERSION='1792906312';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
