@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-X39vmLEF56GOJhg9xeMOiaLTvxzBJgdk0tO70uf1H/g='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co https://resultados.tse.jus.br; connect-src 'self' https://resultados.tse.jus.br https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-lCkwfvUEJs4r4pi1KC4GYM2Angj5U+V0HlzoNuZuaW4='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co https://resultados.tse.jus.br; connect-src 'self' https://resultados.tse.jus.br https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -91,7 +91,7 @@ svg[data-tier="c"] .lbl.state text{opacity:.8}
 .bubble circle.ring{fill:none;stroke:var(--fg);stroke-width:2}
 .bubble text{font-family:var(--font);font-weight:700;fill:var(--fg);text-anchor:middle;dominant-baseline:central;pointer-events:none;font-variant-numeric:tabular-nums}
 .bubble .plane{fill:var(--fg);pointer-events:none}.bubble .pb{fill:var(--accent)}.bubble .pbp{fill:var(--accent-ink);pointer-events:none}
-.bubble .name{font-weight:600;fill:var(--fg);font-size:11px;dominant-baseline:auto;paint-order:stroke;stroke:#1a1a1a;stroke-width:3px;stroke-linejoin:round}
+.bubble .name{transition:opacity .2s;font-weight:600;fill:var(--fg);font-size:11px;dominant-baseline:auto;paint-order:stroke;stroke:#1a1a1a;stroke-width:3px;stroke-linejoin:round}
 @media (prefers-reduced-motion:reduce){ .bubble circle.b{transition:none} }
 
 /* top bar */
@@ -885,7 +885,8 @@ function drawGlobe(){needsDraw=false;setProj();const c=gctx,r=gScale(),cx=W/2,cy
   c.beginPath();gpath({type:'Sphere'});c.strokeStyle='rgba(255,255,255,0.12)';c.lineWidth=1;c.stroke();
   c.globalAlpha=1}
   if(st>0)drawSym(c,cx,cy,r,st);
-  placeBubbles()}
+  if(bubbleMode==='city'&&BD)commitClusters(clusterize());
+  placeBubbles();if(bubbleMode==='city')declutterNames()}
 function placeBubbles(){const center=[-rot[0],-rot[1]];for(const g of $('#bubbles').children){const ll=[+g.dataset.lng,+g.dataset.lat];if(d3.geoDistance(ll,center)>Math.PI/2-0.04){g.style.display='none';continue}const q=gproj(ll);g.style.display='';g.setAttribute('transform',`translate(${q[0].toFixed(1)} ${q[1].toFixed(1)})`)}}
 function applyTransform(){if(!(z>0))z=1;if((z<0.7?'country':'city')!==bubbleMode){renderBubbles();return}if(!needsDraw){needsDraw=true;requestAnimationFrame(drawGlobe)}}
 const clampLat=v=>Math.max(-80,Math.min(80,v));
@@ -910,6 +911,7 @@ window.addEventListener('pointermove',e=>{if(!ptrs.has(e.pointerId))return;ptrs.
 function spin(){const k=degPerPx();const cap=v=>Math.max(-14,Math.min(14,v));let v=[cap(vel[0]*9),cap(vel[1]*9)];const step=()=>{rot[0]+=v[0]*k;rot[1]=clampLat(rot[1]-v[1]*k);v=[v[0]*0.955,v[1]*0.955];applyTransform();if(Math.hypot(v[0],v[1])>0.15)spinAnim=requestAnimationFrame(step);else spinAnim=0};spinAnim=requestAnimationFrame(step)}
 function endPtr(e){if(!ptrs.has(e.pointerId))return;ptrs.delete(e.pointerId);if(ptrs.size<2&&over>0)releaseOver();
   if(ptrs.size===0&&down&&Date.now()-down.t<500){const b=down.target.closest&&down.target.closest('[data-city]');if(b){tapBubble(b);haptic();setTimeout(()=>openCity(b.dataset.city),140)}
+    const kb=down.target.closest&&down.target.closest('[data-cluster]');if(kb){tapBubble(kb);haptic();zoomCluster(kb.dataset.cluster.split(','))}
     const cb=down.target.closest&&down.target.closest('[data-country]');if(cb){haptic();tapBubble(cb);worldView=false;$('#worldLbl').textContent='Mundo';if(cb.dataset.country===BR)fitBrazil(true);else{const a=city(cb.dataset.anchor);flyTo(a.lng,a.lat,2.4)}}}
   else if(ptrs.size===0&&!down&&performance.now()-lastT<80&&Math.hypot(vel[0],vel[1])>0.15&&!matchMedia('(prefers-reduced-motion:reduce)').matches)spin();
   if(ptrs.size===1){const[a]=[...ptrs.values()];lastP={x:a.x,y:a.y};lastDist=0}down=null}
@@ -938,18 +940,62 @@ function renderBubbles(){
   if(bubbleMode==='country'){const groups={};for(const c of CITIES.filter(c=>counts[c.id])){const g=groups[c.c]||(groups[c.c]={n:0,top:null});g.n+=counts[c.id];if(!g.top||counts[c.id]>counts[g.top.id])g.top=c}
     const PLc='M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z';const tripC={};for(const t of upcomingTrips()){const cc=city(t.place).c;tripC[cc]=(tripC[cc]||0)+1;if(!groups[cc])groups[cc]={n:0,top:city(t.place),tripOnly:true}}
     $('#bubbles').innerHTML=Object.entries(groups).sort((a,b)=>b[1].n-a[1].n).map(([name,g],i)=>{const anchor=name===BR?city('bsb'):g.top;const n=g.n;const tr=tripC[name]||0;const r=n?Math.min(30,15+n*3):17;const core=n?`<text style="font-size:${n>9?15:16}px">${n}</text>`:`<path class="plane" d="${PLc}" transform="translate(-10 -10) scale(.83)"/>`;const badge=n&&tr?`<circle class="pb" cx="${r*.72}" cy="${-r*.72}" r="8"/><path class="pbp" d="${PLc}" transform="translate(${r*.72-5.2} ${-r*.72-5.2}) scale(.43)"/>`:'';return`<g class="bubble${n?'':' trip'}" data-country="${esc(name)}" data-anchor="${g.top.id}" data-lng="${anchor.lng}" data-lat="${anchor.lat}" tabindex="0" role="button" aria-label="${esc(name)}: ${n||tr}">${bubbleInner('c:'+name,i,`<circle class="halo" r="${r+9}"/><circle class="b" r="${r}"/>${core}${badge}<text class="name" y="${r+15}">${esc(name)}</text>`,r)}</g>`}).join('');bubbleFirst=false;applyTransform();return}
-  const now=Date.now();const PL='M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z';
   const tripsBy={};for(const t of upcomingTrips()){tripsBy[t.place]=(tripsBy[t.place]||0)+1}
   const freeBy={};for(const k of activeCheckins()){if(!k.place.startsWith('ev:')&&freeOf(byId(k.m)))freeBy[k.place]=(freeBy[k.place]||0)+1}
   const list=CITIES.filter(c=>counts[c.id]||tripsBy[c.id]).sort((a,b)=>(counts[b.id]||0)-(counts[a.id]||0)||(tripsBy[b.id]||0)-(tripsBy[a.id]||0));
-  $('#bubbles').innerHTML=list.map((c,i)=>{const n=counts[c.id]||0;const tr=tripsBy[c.id]||0;const r=n?Math.min(30,15+n*3):17;const cls=(myCity===c.id?' mine':'')+((freshUntil[c.id]||0)>now?' fresh':'')+(n?'':' trip');
-    const core=n?`<text style="font-size:${n>9?15:16}px">${n}</text>`:`<path class="plane" d="${PL}" transform="translate(-10 -10) scale(.83)"/>`;
-    const badge=n&&tr?`<circle class="pb" cx="${r*.72}" cy="${-r*.72}" r="8"/><path class="pbp" d="${PL}" transform="translate(${r*.72-5.2} ${-r*.72-5.2}) scale(.43)"/>`:'';
-    const fd=n&&freeBy[c.id]?`<circle class="fd" cx="${-r*.72}" cy="${-r*.72}" r="5"/>`:'';
-    const label=n?`${c.n}: ${n} ${n>1?'membros':'membro'}${tr?`, ${tr} ${tr>1?'viagens marcadas':'viagem marcada'}`:''}${freeBy[c.id]?`, ${freeBy[c.id]} livre hoje`:''}`:`${c.n}: ${tr} ${tr>1?'viagens marcadas':'viagem marcada'}`;
-    return`<g class="bubble${cls}" data-city="${c.id}" data-lng="${c.lng}" data-lat="${c.lat}" tabindex="0" role="button" aria-label="${esc(label)}">${bubbleInner('m:'+c.id,i,`<circle class="halo" r="${r+9}"/><circle class="b" r="${r}"/>${myCity===c.id?`<circle class="ring" r="${r-2}"/>`:''}${core}${badge}${fd}<text class="name" y="${r+15}">${esc(c.n)}</text>`,r)}</g>`}).join('');bubbleFirst=false;
+  BD={counts,trips:tripsBy,free:freeBy,list,myCity};setProj();clSig='';commitClusters(clusterize());
   applyTransform();
 }
+/* ---------- agrupamento: bolhas (com o nome) que se encostariam na tela viram uma só; separam ao aproximar ---------- */
+let BD=null,clSig='',clPrev=new Map();
+const PLANE='M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z';
+const bubR=(n,multi)=>n?Math.min(multi?32:30,15+n*3):17;
+const lblW=t=>t.length*6.4+8;
+const clName=k=>k.cs.length>1?`${k.cs[0].c.n} +${k.cs.length-1}`:k.cs[0].c.n;
+function bBox(x,y,r,label){const hw=Math.max(r+1,lblW(label)/2);return{l:x-hw,r:x+hw,t:y-r-1,b:y+r+18}}
+const clBox=k=>bBox(k.x,k.y,bubR(k.n,k.cs.length>1),clName(k));
+const bHit=(a,b,pad)=>a.l<b.r+pad&&b.l<a.r+pad&&a.t<b.b+pad&&b.t<a.b+pad;
+function clusterize(){if(!BD)return[];const center=[-rot[0],-rot[1]],pts=[];
+  for(const c of BD.list){const ll=[c.lng,c.lat];if(d3.geoDistance(ll,center)>Math.PI/2-0.04)continue;const q=gproj(ll);if(!q||!isFinite(q[0]))continue;pts.push({c,x:q[0],y:q[1],n:BD.counts[c.id]||0,tr:BD.trips[c.id]||0})}
+  const was=(a,b)=>clPrev.has(a)&&clPrev.get(a)===clPrev.get(b);
+  /* agrupa só quando os círculos se sobrepõem mais de 28% (do menor); separa quando cai abaixo de 12% */
+  const ovl=(x1,y1,r1,x2,y2,r2)=>(r1+r2-Math.hypot(x1-x2,y1-y2))/(2*Math.min(r1,r2));const lim=(a,b)=>was(a,b)?0.12:0.28;
+  const cls=[];
+  for(const p of pts){const pr=bubR(p.n,false);let into=null;
+    for(const k of cls){if(ovl(p.x,p.y,pr,k.x,k.y,bubR(k.n,k.cs.length>1))>lim(p.c.id,k.cs[0].c.id)){into=k;break}}
+    if(into){into.cs.push(p);into.n+=p.n;into.tr+=p.tr}else cls.push({x:p.x,y:p.y,n:p.n,tr:p.tr,cs:[p]})}
+  for(let again=true;again;){again=false;
+    find:for(let i=0;i<cls.length;i++)for(let j=i+1;j<cls.length;j++){const I=cls[i],J=cls[j];if(ovl(I.x,I.y,bubR(I.n,I.cs.length>1),J.x,J.y,bubR(J.n,J.cs.length>1))>lim(I.cs[0].c.id,J.cs[0].c.id)){const A=cls[i],B=cls[j];A.cs.push(...B.cs);A.n+=B.n;A.tr+=B.tr;cls.splice(j,1);again=true;break find}}}
+  return cls}
+function commitClusters(cls){const sig=cls.map(k=>k.cs.map(p=>p.c.id).join('+')).join('|');if(sig===clSig)return;clSig=sig;
+  clPrev=new Map();cls.forEach((k,i)=>k.cs.forEach(p=>clPrev.set(p.c.id,i)));buildCityBubbles(cls)}
+function buildCityBubbles(cls){const now=Date.now();const prevKeys=new Set([...$('#bubbles').children].map(g=>g.dataset.key));if(!bubbleFirst)shownBubbles=prevKeys;
+  $('#bubbles').innerHTML=cls.slice().sort((a,b)=>b.n-a.n||b.tr-a.tr).map((k,i)=>{const multi=k.cs.length>1,ids=k.cs.map(p=>p.c.id),a=k.cs[0].c,n=k.n,tr=k.tr,r=bubR(n,multi);
+    const free=ids.reduce((t,id)=>t+(BD.free[id]||0),0);const mine=ids.includes(BD.myCity),fresh=ids.some(id=>(freshUntil[id]||0)>now);
+    const key=multi?'k:'+ids.slice().sort().join(','):'m:'+a.id;const name=clName(k);
+    const cls2=(mine?' mine':'')+(fresh?' fresh':'')+(n?'':' trip')+(multi?' group':'');
+    const core=n?`<text style="font-size:${n>99?13:n>9?15:16}px">${n}</text>`:`<path class="plane" d="${PLANE}" transform="translate(-10 -10) scale(.83)"/>`;
+    const badge=n&&tr?`<circle class="pb" cx="${r*.72}" cy="${-r*.72}" r="8"/><path class="pbp" d="${PLANE}" transform="translate(${r*.72-5.2} ${-r*.72-5.2}) scale(.43)"/>`:'';
+    const fd=n&&free?`<circle class="fd" cx="${-r*.72}" cy="${-r*.72}" r="5"/>`:'';
+    const what=n?`${n} ${n>1?'membros':'membro'}${tr?`, ${tr} ${tr>1?'viagens marcadas':'viagem marcada'}`:''}${free?`, ${free} livre hoje`:''}`:`${tr} ${tr>1?'viagens marcadas':'viagem marcada'}`;
+    const label=multi?`${a.n} e mais ${ids.length-1} ${ids.length>2?'cidades':'cidade'}: ${what}. Toque para aproximar`:`${a.n}: ${what}`;
+    const data=multi?`data-cluster="${ids.join(',')}"`:`data-city="${a.id}"`;
+    return`<g class="bubble${cls2}" ${data} data-key="${key}" data-n="${n*100+tr}" data-r="${r}" data-lng="${a.lng}" data-lat="${a.lat}" tabindex="0" role="button" aria-label="${esc(label)}">${bubbleInner(key,i,`<circle class="halo" r="${r+9}"/><circle class="b" r="${r}"/>${mine?`<circle class="ring" r="${r-2}"/>`:''}${core}${badge}${fd}<text class="name" y="${r+15}">${esc(name)}</text>`,r)}</g>`}).join('');
+  bubbleFirst=false;placeBubbles()}
+/* nomes: se dois se encostam, fica só o da bolha maior */
+function declutterNames(){const gs=[...$('#bubbles').children].filter(g=>g.style.display!=='none'&&g.dataset.r).map(g=>{const m=/translate\(([-\d.]+) ([-\d.]+)\)/.exec(g.getAttribute('transform')||'');const t=g.querySelector('.name');return{g,t,x:m?+m[1]:0,y:m?+m[2]:0,r:+g.dataset.r,n:+g.dataset.n,w:lblW(t?t.textContent:'')}}).sort((a,b)=>b.n-a.n);
+  const keep=[];for(const b of gs){if(!b.t)continue;const box={l:b.x-b.w/2,r:b.x+b.w/2,t:b.y+b.r+4,b:b.y+b.r+18};
+    const hit=keep.some(k=>box.l<k.r&&k.l<box.r&&box.t<k.b&&k.t<box.b)||gs.some(o=>o!==b&&o.n>=b.n&&Math.hypot(o.x-b.x,o.y-(box.t+box.b)/2)<o.r);
+    b.t.style.opacity=hit?'0':'';if(!hit)keep.push(box)}}
+/* toque num grupo: aproxima até as cidades caberem na tela e se separarem */
+function zoomCluster(ids){const cs=ids.map(city).filter(Boolean);if(!cs.length)return;
+  const lng=cs.reduce((t,c)=>t+c.lng,0)/cs.length,lat=cs.reduce((t,c)=>t+c.lat,0)/cs.length;
+  const spread=Math.max(1e-4,...cs.map(c=>d3.geoDistance([c.lng,c.lat],[lng,lat])));const zFit=Math.min(W,H)*0.34/(spread*RPZ);
+  let need=1;for(let i=0;i<cs.length;i++)for(let j=i+1;j<cs.length;j++){const A=gproj([cs[i].lng,cs[i].lat]),B=gproj([cs[j].lng,cs[j].lat]);if(!A||!B)continue;
+    const dx=Math.abs(A[0]-B[0]),dy=Math.abs(A[1]-B[1]),d=Math.hypot(dx,dy);if(d<0.5)continue;const nA=BD.counts[cs[i].id]||0,nB=BD.counts[cs[j].id]||0;
+    const want=dx/d*((lblW(cs[i].n)+lblW(cs[j].n))/2+10)+dy/d*(bubR(nA)+bubR(nB)+34);need=Math.max(need,want/d)}
+  const zSplit=z*need*1.12;const zt=Math.min(zMax(),Math.max(z*2.2,Math.min(zFit,zSplit)));flyTo(lng,lat,zt,900)}
+
 /* ---------- sheets ---------- */
 const stack=[];
 let ignorePop=0,rerendering=false;
@@ -1599,7 +1645,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792894211';
+const APP_VERSION='1792895364';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
