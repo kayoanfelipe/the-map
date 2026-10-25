@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-Eu3nrmaHgn7BnEYd56RWc/LEfUpqw/pViRkylWFllCI='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co https://resultados.tse.jus.br; connect-src 'self' https://resultados.tse.jus.br https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-/zQCybhFT9DdCFcUKho/TQkuJcEZhM/FYZi0yRXFhD8='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co https://resultados.tse.jus.br; connect-src 'self' https://resultados.tse.jus.br https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -173,7 +173,7 @@ body.kb-open .sf{padding-bottom:10px}
 #pushGate ol li:before{content:counter(s);position:absolute;left:0;top:7px;width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.1);display:grid;place-items:center;font-size:12.5px;font-weight:700}
 #pushGate .go{display:block;width:100%;height:52px;margin-top:22px;border:0;border-radius:999px;background:var(--fg);color:#111;font:inherit;font-size:16px;font-weight:700;cursor:pointer}
 #pushGate .later{display:block;width:100%;margin-top:6px;padding:12px;border:0;background:none;color:var(--fg3);font:inherit;font-size:14px;cursor:pointer}
-.elbar{pointer-events:auto;width:min(330px,calc(100% - 32px));padding:9px 13px 10px;border-radius:16px;background:rgba(20,20,22,.6);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);color:var(--fg);border:0;text-align:left;font:inherit;cursor:pointer}
+.elbar{pointer-events:auto;width:min(330px,calc(100% - 32px));padding:9px 13px 10px;border-radius:16px;background:rgba(24,24,26,.94);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);color:var(--fg);border:0;text-align:left;font:inherit;cursor:pointer}
 .elbar[hidden]{display:none}
 .elbar .r{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
 .elbar .r small span{font-variant-numeric:tabular-nums}
@@ -244,13 +244,8 @@ body.kb-open .sf{padding-bottom:10px}
 .elgrid b{display:block;font-size:17px;margin-top:4px;font-variant-numeric:tabular-nums}
 .elfoot{color:var(--fg3);font-size:12.5px;text-align:center;margin:24px 0 12px;line-height:1.55}
 .elload{color:var(--fg3);text-align:center;padding:60px 0}
-.ellive.poll i{background:var(--fg2);animation:none}
-.elhead2{font-size:34px;font-weight:700;letter-spacing:-.02em;margin-top:12px;line-height:1.05}
-.elsub{color:var(--fg2);font-size:14.5px;margin-top:8px;line-height:1.4}
 .elcount{display:block;margin-top:16px;background:var(--surface2);border-radius:16px;padding:12px 14px;font-size:14px;line-height:1.35}
 .elcount b{font-variant-numeric:tabular-nums}
-.elnote{margin-top:22px;border-radius:16px;padding:14px;background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 1px var(--line);color:var(--fg2);font-size:13px;line-height:1.5}
-.elnote b{color:var(--fg);display:block;margin-bottom:4px;font-size:13.5px}
 .elodds{margin-top:22px;background:var(--surface2);border-radius:22px;padding:16px 16px 14px}
 .elodds>small{display:block;color:var(--fg3);font-size:12px;font-weight:700;letter-spacing:.08em}
 .elodr{display:flex;justify-content:space-between;align-items:flex-end;margin-top:10px}
@@ -934,8 +929,6 @@ function releaseOver(){cancelAnimationFrame(overAnim);if(over<=0){overAnim=0;ret
   const step=now=>{const k=Math.min(1,(now-t0)/520),e=1-Math.pow(1-k,3);over=o0*(1-e);applyTransform();overAnim=k<1?requestAnimationFrame(step):0};overAnim=requestAnimationFrame(step)}
 setTimeout(()=>{try{symMorph()}catch(e){}},1800);
 function setProj(){gproj.translate([W/2,GY()]).scale(gScale()).rotate([rot[0],rot[1]]);gproj.clipExtent(z>9?[[-40,-40],[W+40,H+40]]:null)}
-/* TEMPORÁRIO (2026-10-25): Brasil pintado de verde no mapa. Desligar com false. */
-const FEATURE_BRASIL_VERDE=false;
 function drawGlobe(){needsDraw=false;setProj();const c=gctx,r=gScale(),cx=W/2,cy=GY(),st=symT();c.setTransform(DPR,0,0,DPR,0,0);c.clearRect(0,0,W,H);
   const far=r<Math.max(W,H)*1.5;if(far)drawStars(c);
   $('#bubbles').style.opacity=st?String(1-st):'';
@@ -945,8 +938,8 @@ function drawGlobe(){needsDraw=false;setProj();const c=gctx,r=gScale(),cx=W/2,cy
   c.lineJoin='round';c.lineWidth=0.8;
   c.beginPath();gpath(LAND);c.fillStyle='rgba(255,255,255,0.065)';c.fill();c.strokeStyle='rgba(255,255,255,0.20)';c.stroke();
   c.beginPath();gpath(BRST);c.fillStyle='rgba(255,255,255,0.065)';c.fill();c.strokeStyle='rgba(255,255,255,0.15)';c.stroke();
-  if(FEATURE_BRASIL_VERDE&&!elMapOn()){c.beginPath();gpath(BRST);c.fillStyle='rgba(0,156,59,0.62)';c.fill();c.strokeStyle='rgba(0,200,80,0.9)';c.lineWidth=0.8;c.stroke()}
-  if(elMapOn())drawElStates(c);
+  /* estados da apuração somem ao aproximar nas cidades (z 3 a 4.5): nesse zoom a divisão nem aparece e o desenho pesa na pinça */
+  if(elMapOn()&&z<4.5){const fa=z<=3?1:(4.5-z)/1.5,ga=c.globalAlpha;c.globalAlpha=ga*fa;drawElStates(c);c.globalAlpha=ga}
   c.beginPath();gpath({type:'Sphere'});c.strokeStyle='rgba(255,255,255,0.12)';c.lineWidth=1;c.stroke();
   c.globalAlpha=1}
   if(st>0)drawSym(c,cx,cy,r,st);
@@ -968,7 +961,11 @@ function fitBrazil(animate=false){flyTo(-53,-14,Math.min(W*0.92,H*0.78)/(40*Math
 /* gestures: one finger rotates, two fingers zoom, a flick keeps spinning */
 const ptrs=new Map();let down=null,lastP=null,lastDist=0,vel=[0,0],lastT=0;
 function degPerPx(){return 0.8*180/Math.PI/RAD()}
-mapEl.addEventListener('pointerdown',e=>{stopMotion();ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});if(ptrs.size===1){down={x:e.clientX,y:e.clientY,t:Date.now(),target:e.target};lastP={x:e.clientX,y:e.clientY};vel=[0,0];lastT=performance.now()}else if(ptrs.size===2){cancelAnimationFrame(overAnim);overAnim=0;const[a,b]=[...ptrs.values()];lastP={x:(a.x+b.x)/2,y:(a.y+b.y)/2};lastDist=Math.hypot(a.x-b.x,a.y-b.y);down=null}});
+/* toque "fantasma": se o app vai para segundo plano com o dedo na tela (gravar áudio, trocar de app), o iPhone não avisa que o dedo saiu.
+   Sem essa limpeza o mapa achava que tinha 3 dedos e a pinça parava até fechar o app. */
+function ptrsReset(){ptrs.clear();down=null;lastDist=0;pinchL=0;cancelAnimationFrame(pinchAnim);pinchAnim=0;if(over>0)releaseOver()}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)ptrsReset()});window.addEventListener('blur',ptrsReset);window.addEventListener('pagehide',ptrsReset);
+mapEl.addEventListener('pointerdown',e=>{stopMotion();if(e.isPrimary)ptrs.clear();ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});while(ptrs.size>2)ptrs.delete(ptrs.keys().next().value);if(ptrs.size===1){down={x:e.clientX,y:e.clientY,t:Date.now(),target:e.target};lastP={x:e.clientX,y:e.clientY};vel=[0,0];lastT=performance.now()}else if(ptrs.size===2){cancelAnimationFrame(overAnim);overAnim=0;const[a,b]=[...ptrs.values()];lastP={x:(a.x+b.x)/2,y:(a.y+b.y)/2};lastDist=Math.hypot(a.x-b.x,a.y-b.y);down=null}});
 window.addEventListener('pointermove',e=>{if(!ptrs.has(e.pointerId))return;ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
   if(ptrs.size===1){const dx=e.clientX-lastP.x,dy=e.clientY-lastP.y,now=performance.now(),dt=Math.max(1,now-lastT);const k=degPerPx();rot[0]+=dx*k;rot[1]=clampLat(rot[1]-dy*k);
     vel=[vel[0]*0.6+dx/dt*0.4,vel[1]*0.6+dy/dt*0.4];lastT=now;lastP={x:e.clientX,y:e.clientY};if(down&&Math.hypot(e.clientX-down.x,e.clientY-down.y)>8)down=null;applyTransform()}
@@ -1170,8 +1167,7 @@ window.addEventListener('pagehide',()=>{try{pres&&pres.untrack()}catch(e){}});
 const FEATURE_ELEICAO=true;
 const FEATURE_PUSH_GATE=true;
 const EL_URL='https://resultados.tse.jus.br/oficial/ele2026/6258/dados/br/br-c0001-e006258-u.json',EL_FOTO='https://resultados.tse.jus.br/oficial/ele2026/6258/fotos/br/';
-const EL_SIM=false; /* simulação só para preview: trocar por /[?&]sim=eleicao/.test(location.search) */
-let EL=null,elBusy=false,elSim=null,elKey='';
+let EL=null,elBusy=false,elKey='';
 const elNum=x=>+String(x==null?'0':x).replace(/\./g,'').replace(',','.')||0;
 const elName=x=>String(x||'').toLowerCase().replace(/(^|\s)\S/g,c=>c.toUpperCase()).replace(/ (Da|De|Do|Dos|Das|E) /g,c=>c.toLowerCase());
 const elP=(n,k)=>(+n||0).toLocaleString('pt-BR',{minimumFractionDigits:k,maximumFractionDigits:k});
@@ -1181,18 +1177,13 @@ function elParse(d){const cs=[];const g=((d.carg||[])[0]||{}).agr||[];
   g.forEach(a=>(a.par||[]).forEach(p=>(p.cand||[]).forEach(c=>cs.push({sq:c.sqcand,n:c.n,nm:elName(c.nmu||c.nm),sg:p.sg,seq:+c.seq||9,v:elNum(c.vap),p:elNum(c.pvapn||c.pvap),e:c.e==='s'}))));
   cs.sort((a,b)=>a.seq-b.seq);const s=d.s||{},v=d.v||{},e=d.e||{};
   return{cs,pst:elNum(s.pstn||s.pst),hg:d.hg||'',dg:d.dg||'',fim:d.tf==='s',vv:elNum(v.vv),te:elNum(e.te),vb:elNum(v.vb),vn:elNum(v.tvn),pab:elNum(e.pan||e.pa)}}
-function elSimStep(){if(!elSim){const r=()=>Math.random()*2-1;elSim={pst:0,a0:0.5+r()*0.04,a1:0.5+r()*0.02}}const S=elSim;
-  if(S.pst<100)S.pst=Math.min(100,S.pst+(S.pst<1?0.7:0.8+Math.random()*3));const x=S.pst/100;
-  const sh=S.a0+(S.a1-S.a0)*x+0.003*Math.sin(Date.now()/3000);const vv=Math.round(118e6*x),va=Math.round(vv*sh),vb=vv-va,fim=S.pst>=100;
-  EL={cs:[{sq:'280002542548',n:'13',nm:'Lula',sg:'PT',v:va,p:vv?va/vv*100:0,e:fim&&va>vb},{sq:'280002551544',n:'22',nm:'Flavio Bolsonaro',sg:'PL',v:vb,p:vv?vb/vv*100:0,e:fim&&vb>va}],
-    pst:S.pst,hg:new Date().toTimeString().slice(0,8),fim,vv,vb:Math.round(vv*0.013),vn:Math.round(vv*0.034),pab:19.6+0.8*x};elPaint()}
-async function elLoad(){if(EL_SIM){elSimStep();return}if(elBusy)return;elBusy=true;
+async function elLoad(){if(elBusy)return;elBusy=true;
   const ac=new AbortController(),to=setTimeout(()=>ac.abort(),8000);
   try{const r=await fetch(EL_URL,{cache:'no-cache',signal:ac.signal});if(r.ok){const d=elParse(await r.json());if(!EL||d.pst>=EL.pst||d.fim){EL=d;elPaint()}}}catch(e){}finally{clearTimeout(to);elBusy=false}}
 const elWaiting=d=>!d||(!d.pst&&!d.vv);
 const elColor=n=>({'13':'#E5484D','22':'#22C55E'})[n]||'rgba(255,255,255,.4)';
 function elRowInner(){const d=EL;let sub='Apuração ao vivo';
-  if(d&&elWaiting(d))sub=EL_POLL?`Pesquisa ${EL_POLL.inst} · `+d.cs.map(c=>`${c.nm.split(' ')[0]} ${(EL_POLL.c[c.n]||{v:0}).v}%`).join(' · ')+' · apuração às 17h':'A apuração começa às 17h';
+  if(d&&elWaiting(d))sub='A apuração começa às 17h';
   else if(d){sub=`${Math.floor(d.pst)}% das urnas · `+d.cs.map(c=>`${c.nm.split(' ')[0]} ${elP(c.p,1)}%`).join(' · ');const w=d.cs.find(c=>c.e);if(w)sub=`${w.nm} eleito com ${elP(w.p,2)}%`}
   return`${ELAV}<span class="t"><b><span>Eleição presidencial</span>${d&&d.fim?'<small>Final</small>':d&&elWaiting(d)?`<small>${new Date(EL_START).toDateString()===new Date().toDateString()?'Hoje':'Amanhã'} 17h</small>`:'<small class="live">AO VIVO</small>'}</b><small class="snip">${esc(sub)}</small></span>`}
 function elRowHtml(){return`<button class="row convrow elrow" id="elRow">${elRowInner()}</button>`}
@@ -1227,26 +1218,11 @@ function elOddsPaint(d,wait){const box=$('#elOdds');if(!box)return;const o=wait?
   if(!o){[0,1].forEach(i=>{const b=$('#elO'+i);if(b){b.textContent='–';b.style.color=''}});['#elOA','#elOB'].forEach(k=>{$(k).style.width='50%';$(k).style.background='rgba(255,255,255,.16)'});return}
   o.forEach((p,i)=>{const b=$('#elO'+i);if(b){b.textContent=d.fim||d.cs.some(c=>c.e)?Math.round(p*100)+'%':elPct(p);b.style.color=elColor(d.cs[i].n)}});
   $('#elOA').style.width=o[0]*100+'%';$('#elOB').style.width=o[1]*100+'%';$('#elOA').style.background=elColor(d.cs[0].n);$('#elOB').style.background=elColor(d.cs[1].n)}
-/* Antes da apuração: números da última pesquisa Datafolha (não é resultado) */
-const FEATURE_PESQUISA=false; /* tela da pesquisa antes das 17h; desligada: antes da apuração fica a tela de preparo cinza */
-const EL_POLL=FEATURE_PESQUISA&&{inst:'Datafolha',dias:'23 e 24 de outubro',n:'4.050',reg:'BR-09540/2026',margem:2,c:{'13':{v:49,t:47},'22':{v:51,t:48}},bn:3,ind:2};
 const EL_START=Date.parse('2026-10-25T17:00:00-03:00');
 function elCountdown(){const ms=EL_START-Date.now();if(ms<=0)return'A apuração já começou. Os primeiros números saem em instantes.';const h=Math.floor(ms/36e5),m=Math.floor(ms%36e5/6e4);
   return`A apuração em tempo real começa em <b>${h?h+'h ':''}${m}min</b>, às 17h de Brasília.`}
-function elPollPaint(d){const b=$('#elBody'),P=EL_POLL;const cs=d.cs.map(c=>Object.assign({},c,P.c[c.n]||{v:0,t:0}));const top=Math.max(...cs.map(c=>c.v));const tie=Math.abs(cs[0].v-(cs[1]||cs[0]).v)<=P.margem*2;
-  if(elKey!=='poll'){elKey='poll';b.innerHTML=`<div class="elhero"><span class="ellive poll"><i></i><span>PESQUISA ${esc(P.inst.toUpperCase())}</span></span>
-    <div class="elhead2">${tie?'Empate técnico':esc(cs.find(c=>c.v===top).nm)+' à frente'}</div><div class="elsub">Votos válidos na pesquisa de ${esc(P.dias)}. Margem de erro de ${P.margem} pontos.</div>
-    <div class="elcount" id="elCount"></div></div>
-    <div class="elduel">${cs.map(c=>`<div class="elc${!tie&&c.v===top?' lead':''}">${!tie&&c.v===top?'<span class="tag">À frente</span>':''}<div class="elph">${esc(c.nm.split(' ').map(w=>w[0]).slice(0,2).join(''))}<img src="${EL_FOTO}${encodeURIComponent(c.sq)}.jpeg" alt=""></div><h3>${esc(c.nm)}</h3><small>${esc(c.sg)} · ${esc(c.n)}</small><div class="pc">${c.v}%</div><div class="vt">${c.t}% dos votos totais</div></div>`).join('')}</div>
-    ${cs.length===2?`<div class="elsplit"><i style="width:${cs[0].v}%;background:${elColor(cs[0].n)}"></i><i style="width:${cs[1].v}%;background:${elColor(cs[1].n)}"></i></div><div class="elsplitlab"><span>${cs[0].v}%</span><span>50%</span><span>${cs[1].v}%</span></div>`:''}
-    <div class="elgrid"><div><small>Diferença</small><b>${Math.abs(cs[0].v-(cs[1]||cs[0]).v)} pontos</b></div><div><small>Margem de erro</small><b>${P.margem} pontos</b></div><div><small>Brancos e nulos</small><b>${P.bn}%</b></div><div><small>Indecisos</small><b>${P.ind}%</b></div></div>
-    <div class="elnote"><b>Isto não é resultado da eleição</b>São números da pesquisa ${esc(P.inst)} feita em ${esc(P.dias)}, com ${esc(P.n)} entrevistas, registrada no TSE com o número ${esc(P.reg)}. Às 17h esta página passa a mostrar a apuração oficial do TSE em tempo real.</div>
-    <p class="elfoot">Fonte: ${esc(P.inst)} · registro ${esc(P.reg)}</p>`;
-    b.querySelectorAll('.elph img').forEach(im=>im.addEventListener('error',()=>im.remove()))}
-  $('#elCount').innerHTML=elCountdown()}
 function elPaint(){fwCheck(EL);const r=$('#elRow');if(r)r.innerHTML=elRowInner();if(!stack.includes('shEleicao'))return;const d=EL,b=$('#elBody');
   if(!d){if(!b.innerHTML)b.innerHTML='<div class="elload">Carregando a apuração…</div>';return}
-  if(elWaiting(d)&&EL_POLL){elPollPaint(d);return}
   if(elKey!==d.cs.map(c=>c.sq).join()||!$('#elPst'))elBuild(d);
   const wait=elWaiting(d),lv=$('#elLive');lv.className='ellive'+(wait?' wait':d.fim?' fin':'');lv.querySelector('span').textContent=wait?'AGUARDANDO':d.fim?'APURAÇÃO ENCERRADA':'AO VIVO';
   elTween($('#elPst'),d.pst,n=>elP(n,2)+'%');$('#elProg').style.width=d.pst+'%';const cnt=$('#elCount');cnt.hidden=!wait;if(wait)cnt.innerHTML=elCountdown();
@@ -1257,7 +1233,7 @@ function elPaint(){fwCheck(EL);const r=$('#elRow');if(r)r.innerHTML=elRowInner()
   if(d.cs.length===2){$('#elA').style.width=(wait?50:d.cs[0].p)+'%';$('#elB').style.width=(wait?50:d.cs[1].p)+'%';$('#elA').style.background=wait?'rgba(255,255,255,.16)':elColor(d.cs[0].n);$('#elB').style.background=wait?'rgba(255,255,255,.16)':elColor(d.cs[1].n);$('#elAl').textContent=wait?'':elP(d.cs[0].p,1)+'%';$('#elBl').textContent=wait?'':elP(d.cs[1].p,1)+'%';
     elTween($('#elDif'),Math.abs(d.cs[0].v-d.cs[1].v),elV);elOddsPaint(d,wait)}else $('#elDif').textContent='–';
   elTween($('#elVv'),d.vv,elV);elTween($('#elBn'),d.vb+d.vn,elV);elTween($('#elAb'),d.pab,n=>elP(n,1)+'%');if(wait)['#elDif','#elVv','#elBn','#elAb'].forEach(k=>{const e=$(k);if(e){e.dataset.v=0;e.textContent='–'}});
-  $('#elFoot').innerHTML=(wait?'A apuração começa às 17h de Brasília':`Atualizado às ${esc(d.hg.slice(0,5))}`+(d.fim?'':' · atualiza sozinho'))+' · Fonte: TSE'+(EL_SIM?'<br>Dados simulados para teste':'')}
+  $('#elFoot').innerHTML=(wait?'A apuração começa às 17h de Brasília':`Atualizado às ${esc(d.hg.slice(0,5))}`+(d.fim?'':' · atualiza sozinho'))+' · Fonte: TSE'}
 /* Apuração por estado no mapa (TEMPORÁRIO, junto com a eleição): cada estado ganha a cor de quem lidera,
    mais forte conforme a vantagem e mais preenchido conforme as urnas apuradas. Dados: um arquivo do TSE por estado. */
 const FEATURE_ELEICAO_MAPA=true;
@@ -1265,7 +1241,13 @@ const EL_UFS=['ac','al','am','ap','ba','ce','df','es','go','ma','mg','ms','mt','
 const EL_COL={'13':[229,72,77],'22':[34,197,94]};
 let ST_RES={},EL_NAT=null,ELM_SIM=false,elmBusy=false;
 const elMapOn=()=>FEATURE_ELEICAO_MAPA&&!!EL_NAT;
-function drawElStates(c){c.lineWidth=0.8;for(const s of BR_UF){const r=ST_RES[s.uf];c.beginPath();gpath(s.feat);
+/* contorno simplificado dos estados (Douglas-Peucker, 0,04°): mesmo desenho na tela, bem menos pontos por quadro */
+function elSimp(ring,tol){if(ring.length<=8)return ring;const keep=new Uint8Array(ring.length);keep[0]=keep[ring.length-1]=1;const st=[[0,ring.length-1]];
+  while(st.length){const[a,b]=st.pop();const[ax,ay]=ring[a],[bx,by]=ring[b],dx=bx-ax,dy=by-ay,L=Math.hypot(dx,dy);let mi=-1,md=tol;
+    for(let i=a+1;i<b;i++){const d=L<1e-9?Math.hypot(ring[i][0]-ax,ring[i][1]-ay):Math.abs(dy*ring[i][0]-dx*ring[i][1]+bx*ay-by*ax)/L; /* anel fechado: começo e fim no mesmo ponto */if(d>md){md=d;mi=i}}if(mi>0){keep[mi]=1;st.push([a,mi],[mi,b])}}
+  const out=ring.filter((_,i)=>keep[i]);return out.length>=4?out:ring}
+function elLite(s){return s.lite||(s.lite={type:'Feature',geometry:{type:'MultiPolygon',coordinates:s.feat.geometry.coordinates.map(poly=>poly.map(r=>elSimp(r,0.04)))}})}
+function drawElStates(c){c.lineWidth=0.8;for(const s of BR_UF){const r=ST_RES[s.uf];c.beginPath();gpath(elLite(s));
     if(!r||!r.vv){c.fillStyle='rgba(255,255,255,0.09)';c.fill();c.strokeStyle='rgba(255,255,255,0.26)';c.stroke();continue}
     const top=r.cs.slice().sort((a,b)=>b.v-a.v);const lead=top[0],sec=top[1]||{p:0};const col=EL_COL[lead.n]||[200,200,200];
     const margin=Math.abs(lead.p-sec.p);const a=(0.28+0.5*Math.min(1,margin/25))*(0.35+0.65*Math.min(1,r.pst/100));
@@ -1330,7 +1312,7 @@ async function loadElStates(){if(!FEATURE_ELEICAO_MAPA||ELM_SIM||elmBusy||docume
 setInterval(loadElStates,10000);setInterval(()=>{if(EL_NAT&&!EL_NAT.vv)paintElLeg()},30000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)loadElStates()});
 function openEleicao(){openSheet('shEleicao');elPaint();elLoad()}
 const elOn=()=>FEATURE_ELEICAO&&!document.hidden&&me&&(stack.includes('shEleicao')||stack.includes('shInbox'));
-setInterval(()=>{if(elOn())elLoad()},EL_SIM?2500:10000);
+setInterval(()=>{if(elOn())elLoad()},10000);
 setInterval(()=>{const c=$('#elCount');if(c&&stack.includes('shEleicao'))c.innerHTML=elCountdown()},15000);
 document.addEventListener('visibilitychange',()=>{if(elOn())elLoad()});
 const FEATURE_MEMBERS=true;
@@ -1906,7 +1888,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792951362';
+const APP_VERSION='1792953881';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
