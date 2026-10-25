@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-/zQCybhFT9DdCFcUKho/TQkuJcEZhM/FYZi0yRXFhD8='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co https://resultados.tse.jus.br; connect-src 'self' https://resultados.tse.jus.br https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-S9XnyIDj4YSLA9mj/NSKEs7nvJd+CzXyqUx1Rfq9MFI='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co https://resultados.tse.jus.br; connect-src 'self' https://resultados.tse.jus.br https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1198,14 +1198,17 @@ function elBuild(d){const b=$('#elBody');elKey=d.cs.map(c=>c.sq).join();
   b.querySelectorAll('.elph img').forEach(im=>im.addEventListener('error',()=>im.remove()))}
 /* Chance de vencer: projeta o resultado final somando cada estado. A parte já apurada fica como está; o que falta
    segue a tendência do próprio estado, e os estados sem urnas seguem o 2º turno de 2022 corrigido pela variação
-   que os estados já apurados mostram. A incerteza encolhe conforme a apuração avança. Estimativa, não dado oficial. */
+   que os estados já apurados mostram. Os votos do exterior (zz) entram como mais uma parte, sem base de 2022 (50%).
+   O número de eleitores de cada parte fica guardado aqui: se o arquivo de um estado não carregar, só ele usa a estimativa.
+   A incerteza encolhe conforme a apuração avança. Estimativa, não dado oficial. */
 const EL_BASE={ac:.297,al:.587,am:.511,ap:.486,ba:.721,ce:.700,df:.412,es:.420,go:.413,ma:.711,mg:.502,ms:.405,mt:.349,pa:.548,pb:.666,pe:.669,pi:.769,pr:.376,rj:.435,rn:.651,ro:.293,rr:.239,rs:.437,sc:.307,se:.672,sp:.448,to:.514}; /* Lula no 2º turno de 2022 */
+const EL_TE={ac:613715,al:2442081,am:2798661,ap:576910,ba:11312891,ce:6996521,df:2258995,es:2991515,go:5080385,ma:5183049,mg:16372144,ms:2024437,mt:2637879,pa:6262063,pb:3248434,pe:7223227,pi:2704695,pr:8613628,rj:12857526,rn:2659867,ro:1265926,rr:401540,rs:8522318,sc:5734687,se:1740093,sp:34123591,to:1182041,zz:916683,br:158745502}; /* eleitores aptos por estado e no exterior (zz), lidos do TSE em 25/10/2026 */
 const elPhi=z=>{const t=1/(1+.2316419*Math.abs(z)),y=.3989423*Math.exp(-z*z/2)*t*(.3193815+t*(-.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));return z>0?1-y:y};
 function elOdds(d){if(!d||!d.vv||d.cs.length!==2)return null;if(d.cs.some(c=>c.e))return d.cs.map(c=>c.e?1:0);
-  const A=d.cs[0].n,B=d.cs[1].n,base=uf=>A==='13'?EL_BASE[uf]:B==='13'?1-EL_BASE[uf]:.5;
-  const unit=(r,pr)=>{const a=r?(r.cs.find(c=>c.n===A)||{v:0}).v:0,cnt=r?r.cs.reduce((t,c)=>t+c.v,0):0;return{a,cnt,x:r?Math.min(1,r.pst/100):0,te:r&&r.te||0,pr}};
-  let us=EL_UFS.map(uf=>unit(ST_RES[uf],base(uf)));
-  if(!us.some(u=>u.cnt)||!us.every(u=>u.te))us=[unit(d,.5)]; /* sem os estados: só o arquivo nacional */
+  const A=d.cs[0].n,B=d.cs[1].n,base=uf=>EL_BASE[uf]==null?.5:A==='13'?EL_BASE[uf]:B==='13'?1-EL_BASE[uf]:.5;
+  const unit=(r,pr,te)=>{const a=r?(r.cs.find(c=>c.n===A)||{v:0}).v:0,cnt=r?r.cs.reduce((t,c)=>t+c.v,0):0;return{a,cnt,x:r?Math.min(1,r.pst/100):0,te:r&&r.te||te||0,pr}};
+  let us=[...EL_UFS,'zz'].map(uf=>unit(ST_RES[uf],base(uf),EL_TE[uf]));
+  if(!us.some(u=>u.cnt))us=[unit(d,.5,EL_TE.br)]; /* nenhum estado carregou ainda: só o arquivo nacional */
   let sw=0,sc=0;us.forEach(u=>{if(u.cnt){sw+=u.cnt*(u.a/u.cnt-u.pr);sc+=u.cnt}});sw=sc?sw/sc:0;const X0=Math.min(1,d.pst/100);sw*=X0/(X0+.15); /* no começo a variação pesa menos: as primeiras urnas não representam o estado todo */
   let am=0,V=0,R=0,vr=0;
   for(const u of us){const w=Math.min(1,u.x/.2),T=Math.max(u.cnt,u.cnt&&u.x?w*u.cnt/u.x+(1-w)*u.te*.76:u.te*.76),r=T-u.cnt;
@@ -1306,8 +1309,8 @@ function fwRun(){const cv=$('#fw'),c=cv.getContext('2d');cv.width=Math.round(W*D
 const elGet=url=>{const ac=new AbortController(),t=setTimeout(()=>ac.abort(),8000);return fetch(url,{cache:'no-cache',signal:ac.signal}).then(r=>r.ok?r.json():null).catch(()=>null).finally(()=>clearTimeout(t))};
 async function loadElStates(){if(!FEATURE_ELEICAO_MAPA||ELM_SIM||elmBusy||document.hidden||!me)return;elmBusy=true;
   try{const nat=await elGet(EL_URL);if(!nat)return;const N=elParse(nat);const first=!EL_NAT;if(!EL_NAT||N.pst>=EL_NAT.pst){EL_NAT=N;paintElLeg();if(first)applyTransform()}if(!N.pst&&!N.vv)return;
-    const res=await Promise.all(EL_UFS.map(uf=>elGet(`https://resultados.tse.jus.br/oficial/ele2026/6258/dados/${uf}/${uf}-c0001-e006258-u.json`)));
-    let ch=false;res.forEach((d,i)=>{if(!d)return;const r=elParse(d);const old=ST_RES[EL_UFS[i]];if(!old||r.pst>=old.pst){ST_RES[EL_UFS[i]]=r;ch=true}});
+    const UFS=[...EL_UFS,'zz'];const res=await Promise.all(UFS.map(uf=>elGet(`https://resultados.tse.jus.br/oficial/ele2026/6258/dados/${uf}/${uf}-c0001-e006258-u.json`)));
+    let ch=false;res.forEach((d,i)=>{if(!d)return;const r=elParse(d);const old=ST_RES[UFS[i]];if(!old||r.pst>=old.pst){ST_RES[UFS[i]]=r;ch=true}});
     if(ch){paintElLeg();applyTransform();if(EL&&$('#elOdds'))elOddsPaint(EL,elWaiting(EL))}}finally{elmBusy=false}}
 setInterval(loadElStates,10000);setInterval(()=>{if(EL_NAT&&!EL_NAT.vv)paintElLeg()},30000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)loadElStates()});
 function openEleicao(){openSheet('shEleicao');elPaint();elLoad()}
@@ -1888,7 +1891,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792953881';
+const APP_VERSION='1792957243';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
