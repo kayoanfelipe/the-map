@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-Wq3GyUJwUy4GMg5XhW0JnJEawQVNmqcWyX8pJZEofKM='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co https://resultados.tse.jus.br; connect-src 'self' https://resultados.tse.jus.br https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-mD4DhLnOFIpeIkkfI7CIPd1Px+pCrNePpf0FAOJkhsk='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co https://resultados.tse.jus.br; connect-src 'self' https://resultados.tse.jus.br https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -242,6 +242,14 @@ body.kb-open .sf{padding-bottom:10px}
 .elgrid div{background:var(--surface2);border-radius:16px;padding:13px 14px}
 .elgrid small{display:block;color:var(--fg3);font-size:12px;font-weight:600}
 .elgrid b{display:block;font-size:17px;margin-top:4px;font-variant-numeric:tabular-nums}
+.row.elregbtn{margin-top:22px;background:var(--surface2);border-radius:22px;padding:12px 16px;gap:16px;min-height:0}.elregbtn .elav{width:22px;height:44px;display:grid;place-items:center;flex:none;color:var(--fg)}
+.elrtip{color:var(--fg3);font-size:13.5px;text-align:center;margin:0 0 4px;line-height:1.45}
+.elrmini{width:48px;height:6px;border-radius:3px;overflow:hidden;display:flex;background:rgba(255,255,255,.14);flex:none}.elrmini i{display:block;height:100%}
+.elrsub{color:var(--fg3);font-size:13px;text-align:center;margin:-2px 0 4px}
+.elrduel{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+.elrc{background:var(--surface2);border-radius:20px;padding:14px 14px 13px;position:relative}.elrc.lead{box-shadow:inset 0 0 0 1.5px var(--c)}
+.elrc h3{font-size:15px;margin:0;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.elrc .pc{font-size:26px;font-weight:800;margin-top:6px;color:var(--c);font-variant-numeric:tabular-nums}.elrc .vt{font-size:13px;color:var(--fg2);margin-top:2px;font-variant-numeric:tabular-nums}
+.elrc .tag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.04em;padding:3px 8px;border-radius:999px;background:var(--c);color:#0b0b0b;margin-bottom:8px}
 .elfoot{color:var(--fg3);font-size:12.5px;text-align:center;margin:24px 0 12px;line-height:1.55}
 .elload{color:var(--fg3);text-align:center;padding:60px 0}
 .elcount{display:block;margin-top:16px;background:var(--surface2);border-radius:16px;padding:12px 14px;font-size:14px;line-height:1.35}
@@ -556,6 +564,16 @@ body.kb-open .chatbody{padding-bottom:6px}
   <section class="sheet page" id="shEleicao" aria-label="Eleição presidencial">
     <div class="sh gutter pagehead"><button class="chatback" data-close aria-label="Voltar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button><h2 class="ctr">Eleição presidencial</h2></div>
     <div class="sb gutter" id="elBody"></div>
+  </section>
+
+  <section class="sheet page" id="shElReg" aria-label="Apuração por estado e cidade">
+    <div class="sh gutter pagehead"><button class="chatback" data-close aria-label="Voltar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button><h2 class="ctr">Estados e cidades</h2></div>
+    <div class="sb gutter"><div class="srch"><input type="search" id="elrQ" placeholder="Buscar estado ou cidade" autocomplete="off" autocorrect="off" aria-label="Buscar estado ou cidade"></div><div id="elrList"></div></div>
+  </section>
+
+  <section class="sheet page" id="shElLoc" aria-label="Apuração do lugar">
+    <div class="sh gutter pagehead"><button class="chatback" data-close aria-label="Voltar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button><h2 class="ctr" id="elrTitle"></h2></div>
+    <div class="sb gutter" id="elrBody"></div>
   </section>
 
   <section class="sheet" id="shMembers" aria-label="Membros do The Group">
@@ -1176,7 +1194,7 @@ const ELAV='<span class="elav"><svg width="24" height="24" viewBox="0 0 24 24" f
 function elParse(d){const cs=[];const g=((d.carg||[])[0]||{}).agr||[];
   g.forEach(a=>(a.par||[]).forEach(p=>(p.cand||[]).forEach(c=>cs.push({sq:c.sqcand,n:c.n,nm:elName(c.nmu||c.nm),sg:p.sg,seq:+c.seq||9,v:elNum(c.vap),p:elNum(c.pvapn||c.pvap),e:c.e==='s'}))));
   cs.sort((a,b)=>a.seq-b.seq);const s=d.s||{},v=d.v||{},e=d.e||{};
-  return{cs,pst:elNum(s.pstn||s.pst),hg:d.hg||'',dg:d.dg||'',fim:d.tf==='s',vv:elNum(v.vv),te:elNum(e.te),vb:elNum(v.vb),vn:elNum(v.tvn),pab:elNum(e.pan||e.pa)}}
+  return{cs,pst:elNum(s.pstn||s.pst),hg:d.hg||'',dg:d.dg||'',fim:d.tf==='s',vv:elNum(v.vv),te:elNum(e.te),vb:elNum(v.vb),vn:elNum(v.tvn),pab:elNum(e.pan||e.pa),ab:elNum(e.a),cp:elNum(e.c),pcp:elNum(e.pcn||e.pc)}}
 async function elLoad(){if(elBusy)return;elBusy=true;
   const ac=new AbortController(),to=setTimeout(()=>ac.abort(),8000);
   try{const r=await fetch(EL_URL,{cache:'no-cache',signal:ac.signal});if(r.ok){const d=elParse(await r.json());if(!EL||d.pst>=EL.pst||d.fim){EL=d;elPaint()}}}catch(e){}finally{clearTimeout(to);elBusy=false}}
@@ -1194,7 +1212,9 @@ function elBuild(d){const b=$('#elBody');elKey=d.cs.map(c=>c.sq).join();
   <div class="elduel">${d.cs.map((c,i)=>`<div class="elc" id="elc${i}"><span class="tag" hidden></span><div class="elph">${esc(c.nm.split(' ').map(w=>w[0]).slice(0,2).join(''))}<img src="${EL_FOTO}${encodeURIComponent(c.sq)}.jpeg" alt=""></div><h3>${esc(c.nm)}</h3><small>${esc(c.sg)} · ${esc(c.n)}</small><div class="pc">0,00%</div><div class="vt">0 votos</div></div>`).join('')}</div>
   ${d.cs.length===2?`<div class="elsplit"><i id="elA"></i><i id="elB"></i></div><div class="elsplitlab"><span id="elAl"></span><span>50%</span><span id="elBl"></span></div><div class="elodds" id="elOdds" hidden><small>CHANCE DE VENCER</small><div class="elodr">${d.cs.map((c,i)=>`<div><b id="elO${i}">–</b><span>${esc(elFirst(c.nm))}</span></div>`).join('<img class="elodlogo" src="email-logo.png" alt="The Group">')}</div><div class="elodbar"><i id="elOA"></i><i id="elOB"></i></div><p><span id="elOn">Estimativa do The Group com as urnas já apuradas em cada estado. Não é dado do TSE.</span></p></div>`:''}
   <div class="elgrid"><div><small>Diferença</small><b id="elDif">0</b></div><div><small>Votos válidos</small><b id="elVv">0</b></div><div><small>Brancos e nulos</small><b id="elBn">0</b></div><div><small>Abstenção</small><b id="elAb">0%</b></div></div>
+  <button class="row elregbtn" id="elRegBtn"><span class="elav"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg></span><span class="t"><b>Ver por estado e cidade</b><small>Pesquise um lugar e veja os votos de lá</small></span><span class="chev">›</span></button>
   <p class="elfoot" id="elFoot"></p>`;
+  $('#elRegBtn').onclick=()=>{haptic();openElReg()};
   b.querySelectorAll('.elph img').forEach(im=>im.addEventListener('error',()=>im.remove()))}
 /* Chance de vencer: projeta o resultado final somando cada estado. A parte já apurada fica como está; o que falta
    segue a tendência do próprio estado, e os estados sem urnas seguem o 2º turno de 2022 corrigido pela variação
@@ -1314,6 +1334,44 @@ async function loadElStates(){if(!FEATURE_ELEICAO_MAPA||ELM_SIM||elmBusy||docume
     if(ch){paintElLeg();applyTransform();if(EL&&$('#elOdds'))elOddsPaint(EL,elWaiting(EL))}}finally{elmBusy=false}}
 setInterval(loadElStates,10000);setInterval(()=>{if(EL_NAT&&!EL_NAT.vv)paintElLeg()},30000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)loadElStates()});
 function openEleicao(){openSheet('shEleicao');elPaint();elLoad()}
+/* Apuração por estado e cidade: lista dos estados com a apuração de cada um e busca de qualquer cidade.
+   Tocar num lugar abre os números dele. A lista de cidades e os votos de cada cidade vêm do TSE, só quando a pessoa pede. */
+const EL_BASEURL='https://resultados.tse.jus.br/oficial/ele2026/6258/';
+const UF_NM={ac:'Acre',al:'Alagoas',am:'Amazonas',ap:'Amapá',ba:'Bahia',ce:'Ceará',df:'Distrito Federal',es:'Espírito Santo',go:'Goiás',ma:'Maranhão',mg:'Minas Gerais',ms:'Mato Grosso do Sul',mt:'Mato Grosso',pa:'Pará',pb:'Paraíba',pe:'Pernambuco',pi:'Piauí',pr:'Paraná',rj:'Rio de Janeiro',rn:'Rio Grande do Norte',ro:'Rondônia',rr:'Roraima',rs:'Rio Grande do Sul',sc:'Santa Catarina',se:'Sergipe',sp:'São Paulo',to:'Tocantins',zz:'Exterior'};
+const elNorm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+let ELR_MUN=null,elrMunBusy=false,ELR_LOC=null;const ELR_CACHE={};
+async function elrLoadMun(){if(ELR_MUN||elrMunBusy)return;elrMunBusy=true;const d=await elGet(EL_BASEURL+'config/mun-e006258-cm.json');elrMunBusy=false;
+  if(!d||!d.abr)return;ELR_MUN=[];d.abr.forEach(a=>{const uf=a.cd.toLowerCase();(a.mu||[]).forEach(m=>{const nm=elName(m.nm);ELR_MUN.push({uf,cd:m.cd,nm,cap:m.c==='s',k:elNorm(nm)})})});if(stack.includes('shElReg'))renderElReg()}
+function openElReg(){$('#elrQ').value='';openSheet('shElReg');renderElReg();elrLoadMun();if(!Object.keys(ST_RES).length)loadElStates()}
+function elrMini(r){if(!r||!r.vv||r.cs.length<2)return'<span class="elrmini"></span>';return`<span class="elrmini">${r.cs.map(c=>`<i style="width:${c.p}%;background:${elColor(c.n)}"></i>`).join('')}</span>`}
+function elrLine(r){if(!r||(!r.pst&&!r.vv))return'Aguardando as urnas';const w=r.cs.find(c=>c.e);
+  return(r.fim?'Apuração encerrada':`${Math.floor(r.pst)}% apurado`)+' · '+r.cs.map(c=>`${elFirst(c.nm)} ${elP(c.p,1)}%`).join(' · ')}
+function elrStateRow(uf){const r=ST_RES[uf];return`<button class="row" data-elr="${uf}"><span class="t"><b>${esc(UF_NM[uf])}</b><small>${esc(elrLine(r))}</small></span>${elrMini(r)}<span class="chev">›</span></button>`}
+function renderElReg(){const q=elNorm($('#elrQ').value),box=$('#elrList');const ufs=[...EL_UFS,'zz'].sort((a,b)=>a==='zz'?1:b==='zz'?-1:UF_NM[a].localeCompare(UF_NM[b]));
+  if(!q){box.innerHTML=`<p class="elrtip">Toque num estado ou digite o nome da sua cidade</p><div class="sec">Estados <span>${ufs.length}</span></div>`+ufs.map(elrStateRow).join('');return}
+  const sts=ufs.filter(uf=>(' '+elNorm(UF_NM[uf])).includes(' '+q)||uf===q);let h=sts.length?`<div class="sec">Estados</div>`+sts.map(elrStateRow).join(''):'';
+  if(!ELR_MUN)h+=`<div class="empty">Carregando as cidades…</div>`;
+  else{const ms=ELR_MUN.filter(m=>m.k.includes(q)).sort((a,b)=>((b.k===q)-(a.k===q))||(b.k.startsWith(q)-a.k.startsWith(q))||(b.cap-a.cap)||a.nm.localeCompare(b.nm));
+    if(ms.length)h+=`<div class="sec">Cidades <span>${ms.length}</span></div>`+ms.slice(0,60).map(m=>`<button class="row" data-elr="${m.uf}" data-cd="${m.cd}"><span class="t"><b>${esc(m.nm)}</b><small>${esc(UF_NM[m.uf]||m.uf.toUpperCase())}</small></span><span class="chev">›</span></button>`).join('')+(ms.length>60?`<p class="elrtip">Digite mais letras para ver as outras ${ms.length-60}</p>`:'');
+    else if(!sts.length)h=`<div class="empty"><b>Nenhum lugar encontrado.</b>Confira o nome e tente de novo.</div>`}
+  box.innerHTML=h}
+$('#elrQ').addEventListener('input',()=>{clearTimeout(renderElReg.t);renderElReg.t=setTimeout(renderElReg,120)});
+$('#elrList').addEventListener('click',e=>{const b=e.target.closest('[data-elr]');if(!b)return;haptic();const uf=b.dataset.elr,cd=b.dataset.cd||'';
+  const m=cd&&ELR_MUN?ELR_MUN.find(x=>x.uf===uf&&x.cd===cd):null;openElLoc({uf,cd,nm:m?m.nm:UF_NM[uf],sub:cd?UF_NM[uf]:uf==='zz'?'Votos de quem mora fora do Brasil':'Estado'})});
+function elrKey(l){return l.uf+(l.cd||'')}
+function openElLoc(l){ELR_LOC=l;$('#elrTitle').textContent=l.nm;openSheet('shElLoc');paintElLoc();loadElLoc()}
+async function loadElLoc(){const l=ELR_LOC;if(!l)return;const d=await elGet(`${EL_BASEURL}dados/${l.uf}/${elrKey(l)}-c0001-e006258-u.json`);if(!d)return;const r=elParse(d),k=elrKey(l),old=ELR_CACHE[k];
+  if(!old||r.pst>=old.pst){ELR_CACHE[k]=r;if(!l.cd)ST_RES[l.uf]=ST_RES[l.uf]&&ST_RES[l.uf].pst>r.pst?ST_RES[l.uf]:r}if(ELR_LOC===l)paintElLoc()}
+function paintElLoc(){const l=ELR_LOC,b=$('#elrBody');if(!l)return;const r=ELR_CACHE[elrKey(l)]||(!l.cd&&ST_RES[l.uf]);
+  if(!r){b.innerHTML=`<p class="elrsub">${esc(l.sub)}</p><div class="elload">Carregando…</div>`;return}
+  const wait=!r.pst&&!r.vv,top=Math.max(...r.cs.map(c=>c.v)),uniq=r.cs.filter(c=>c.v===top).length===1,dif=r.cs.length===2?Math.abs(r.cs[0].v-r.cs[1].v):0;
+  b.innerHTML=`<p class="elrsub">${esc(l.sub)}</p>
+  <div class="elhero"><span class="ellive${wait?' wait':r.fim?' fin':''}"><i></i><span>${wait?'AGUARDANDO':r.fim?'APURAÇÃO ENCERRADA':'AO VIVO'}</span></span><div class="elpst"><b>${elP(r.pst,2)}%</b><span>das urnas apuradas</span></div><div class="elprog"><i style="width:${r.pst}%"></i></div>${wait?'<div class="elcount">Os votos daqui ainda não chegaram ao TSE. Esta página atualiza sozinha.</div>':''}</div>
+  <div class="elrduel">${r.cs.map(c=>{const lead=!wait&&c.v===top&&uniq;return`<div class="elrc${lead?' lead':''}" style="--c:${elColor(c.n)}">${lead?`<span class="tag">${r.fim?'VENCEU AQUI':'À FRENTE'}</span>`:'<span class="tag" style="visibility:hidden">–</span>'}<h3>${esc([elFirst(c.nm),...c.nm.split(' ').slice(1)].join(' '))}</h3><div class="pc">${wait?'–':elP(c.p,2)+'%'}</div><div class="vt">${wait?'0 votos':elV(c.v)+' votos'}</div></div>`}).join('')}</div>
+  ${r.cs.length===2?`<div class="elsplit"><i style="width:${wait?50:r.cs[0].p}%;background:${wait?'rgba(255,255,255,.16)':elColor(r.cs[0].n)}"></i><i style="width:${wait?50:r.cs[1].p}%;background:${wait?'rgba(255,255,255,.16)':elColor(r.cs[1].n)}"></i></div>`:''}
+  <div class="elgrid"><div><small>Diferença</small><b>${wait?'–':elV(dif)}</b></div><div><small>Votos válidos</small><b>${wait?'–':elV(r.vv)}</b></div><div><small>Eleitores</small><b>${r.te?elV(r.te):'–'}</b></div><div><small>Compareceram</small><b>${wait?'–':elP(r.pcp,1)+'%'}</b></div><div><small>Brancos e nulos</small><b>${wait?'–':elV(r.vb+r.vn)}</b></div><div><small>Abstenção</small><b>${wait?'–':elP(r.pab,1)+'%'}</b></div></div>
+  <p class="elfoot">${r.hg?`Atualizado às ${esc(r.hg.slice(0,5))}`:''}${r.fim?'':' · atualiza sozinho'} · Fonte: TSE</p>`}
+setInterval(()=>{if(!document.hidden&&stack[stack.length-1]==='shElLoc')loadElLoc();else if(!document.hidden&&stack[stack.length-1]==='shElReg'&&!$('#elrQ').value)renderElReg()},20000);
 const elOn=()=>FEATURE_ELEICAO&&!document.hidden&&me&&(stack.includes('shEleicao')||stack.includes('shInbox'));
 setInterval(()=>{if(elOn())elLoad()},10000);
 setInterval(()=>{const c=$('#elCount');if(c&&stack.includes('shEleicao'))c.innerHTML=elCountdown()},15000);
@@ -1891,7 +1949,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792966407';
+const APP_VERSION='1792967461';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
