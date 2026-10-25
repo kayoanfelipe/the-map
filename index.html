@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-EisNvru2wVwMKy+gast6j1dnaeOs14etxoZutmw5p0g='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co https://resultados.tse.jus.br; connect-src 'self' https://resultados.tse.jus.br https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-B6Bf8Cda3nzNKAqwDth/VzamyKiDSG7Kk49K3KrZkIM='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co https://resultados.tse.jus.br; connect-src 'self' https://resultados.tse.jus.br https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -892,6 +892,8 @@ function releaseOver(){cancelAnimationFrame(overAnim);if(over<=0){overAnim=0;ret
   const step=now=>{const k=Math.min(1,(now-t0)/520),e=1-Math.pow(1-k,3);over=o0*(1-e);applyTransform();overAnim=k<1?requestAnimationFrame(step):0};overAnim=requestAnimationFrame(step)}
 setTimeout(()=>{try{symMorph()}catch(e){}},1800);
 function setProj(){gproj.translate([W/2,GY()]).scale(gScale()).rotate([rot[0],rot[1]]);gproj.clipExtent(z>9?[[-40,-40],[W+40,H+40]]:null)}
+/* TEMPORÁRIO (2026-10-25): Brasil pintado de verde no mapa. Desligar com false. */
+const FEATURE_BRASIL_VERDE=true;
 function drawGlobe(){needsDraw=false;setProj();const c=gctx,r=gScale(),cx=W/2,cy=GY(),st=symT();c.setTransform(DPR,0,0,DPR,0,0);c.clearRect(0,0,W,H);
   const far=r<Math.max(W,H)*1.5;if(far)drawStars(c);
   $('#bubbles').style.opacity=st?String(1-st):'';
@@ -901,6 +903,7 @@ function drawGlobe(){needsDraw=false;setProj();const c=gctx,r=gScale(),cx=W/2,cy
   c.lineJoin='round';c.lineWidth=0.8;
   c.beginPath();gpath(LAND);c.fillStyle='rgba(255,255,255,0.065)';c.fill();c.strokeStyle='rgba(255,255,255,0.20)';c.stroke();
   c.beginPath();gpath(BRST);c.fillStyle='rgba(255,255,255,0.065)';c.fill();c.strokeStyle='rgba(255,255,255,0.15)';c.stroke();
+  if(FEATURE_BRASIL_VERDE){c.beginPath();gpath(BRST);c.fillStyle='rgba(0,156,59,0.62)';c.fill();c.strokeStyle='rgba(0,200,80,0.9)';c.lineWidth=0.8;c.stroke()}
   c.beginPath();gpath({type:'Sphere'});c.strokeStyle='rgba(255,255,255,0.12)';c.lineWidth=1;c.stroke();
   c.globalAlpha=1}
   if(st>0)drawSym(c,cx,cy,r,st);
@@ -1734,7 +1737,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792898116';
+const APP_VERSION='1792900532';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
