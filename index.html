@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-BnPqqluWTK/aSNoovZoO02xgNWOyGdPDm4X0WaV8jyI='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co https://resultados.tse.jus.br; connect-src 'self' https://resultados.tse.jus.br https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-Sjn+vpAGxLnCsMV8X4Qvw8FMmSb0Pcw9A62UBAWHvOE='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co https://resultados.tse.jus.br; connect-src 'self' https://resultados.tse.jus.br https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1119,7 +1119,7 @@ function openCityChat(id){if(!inCity(id)){openCity(id);return}chatWith='city:'+i
   const n=id==='global'?members.filter(m=>m.active!==false).length:activeCheckins().filter(k=>k.place===id).length;
   $('#chatWho').innerHTML=`${groupAv(id)}<span style="min-width:0"><b>${esc(groupName(id))}</b><small>${id==='global'?'Todos os membros':'Quem está na cidade'}${n?` · ${n} ${n===1?'membro':'membros'}`:''}</small></span>`;
   const ta=$('#chatIn');ta.value='';ta.style.height='';
-  openSheet('shChat');renderChat();markCitySeen(id);syncMessages();setTimeout(()=>{$('#chatBody').scrollTop=1e9},60)}
+  openSheet('shChat');renderChat();$('#chatBody').scrollTop=1e9;markCitySeen(id);syncMessages();setTimeout(()=>{$('#chatBody').scrollTop=1e9},60)}
 function cmEvent(p){if(!me)return;const n=p&&p.new,o=p&&p.old;
   if(p.eventType==='INSERT'&&n){if(!CMSGS.some(x=>x.id===n.id)){CMSGS=CMSGS.filter(x=>!(x.tmp&&x.place===n.place&&x.from===n.sender_id&&x.body===n.body));CMSGS.push(cmRow(n))}if(stack.includes('shChat')&&cityChatId()===n.place&&!document.hidden)markCitySeen(n.place)}
   else if(p.eventType==='DELETE'&&o){CMSGS=CMSGS.filter(x=>x.id!==o.id)}
@@ -1178,7 +1178,7 @@ function renderInbox(){const q=($('#inboxQ').value||'').trim().toLowerCase();con
 function openChat(id,prefill){const m=byId(id);if(!m)return;chatWith=id;$('#chatMenu').hidden=true;setReply(null);
   $('#chatWho').innerHTML=`${avatar(m)}<span style="min-width:0"><b>${esc(m.name)}</b><small>${esc([m.co,m.niche].filter(Boolean).join(' · ')||'Toque para ver o perfil')}</small></span>`;
   const ta=$('#chatIn');ta.value=prefill&&!threadWith(id).length?prefill:'';ta.style.height='';
-  openSheet('shChat');renderChat();markRead(id);setTimeout(()=>{$('#chatBody').scrollTop=1e9},60)}
+  openSheet('shChat');renderChat();$('#chatBody').scrollTop=1e9;markRead(id);setTimeout(()=>{$('#chatBody').scrollTop=1e9},60)}
 function chatState(){const cc=cityChatId();if(cc)return inCity(cc)?{ok:true,note:''}:{ok:false,note:'Você não está mais nesta cidade.'};const m=byId(chatWith);if(!m)return{ok:false,note:''};if(BLOCKS.includes(chatWith))return{ok:false,note:`Você bloqueou ${m.name.split(' ')[0]}. Nada chega de nenhum lado.`};if(m.active===false)return{ok:false,note:'Este membro não está mais no The Group.'};if(m.dmOff)return{ok:false,note:`${m.name.split(' ')[0]} prefere conversar pelo grupo do WhatsApp.`};return{ok:true,note:''}}
 const REP_ICON='';
 function renderChat(){const el=$('#chatBody');const cid=cityChatId();const th=cid?cityThread(cid):threadWith(chatWith);let h='',day='';const m=cid?null:byId(chatWith);const c=cid?city(cid):null;
@@ -1243,7 +1243,7 @@ $('#chatSend').onclick=sendMsg;$('#chatSend').addEventListener('mousedown',e=>e.
 /* elástico genérico para listas que rolam */
 /* elástico: conta a partir do ponto em que a lista chega ao fim, segura a rolagem nativa enquanto estica,
    desenha por quadro e quica quando a lista chega ao fim pelo embalo */
-function rubber(el,top,bottom,dim){dim=dim||110;let y=null,x0=0,y0=0,axis=0,over=0,raf=0,anim=0,touching=false,lastT=0,lastS=0,vel=0;
+function rubber(el,top,bottom,dim){dim=dim||110;let y=null,x0=0,y0=0,axis=0,over=0,raf=0,anim=0,touching=false,lastT=0,lastS=0,vel=0,lastEnd=-1e9;
   const atTop=()=>el.scrollTop<=0.5,atBot=()=>el.scrollTop+el.clientHeight>=el.scrollHeight-1.5;
   const curve=o=>Math.sign(o)*(1-1/(Math.abs(o)*0.55/dim+1))*dim;
   const inv=k=>{const r=Math.min(Math.abs(k)/dim,0.95);return Math.sign(k)*(1/(1-r)-1)*dim/0.55};
@@ -1259,14 +1259,14 @@ function rubber(el,top,bottom,dim){dim=dim||110;let y=null,x0=0,y0=0,axis=0,over
     const was=over;over+=d;if((was>0&&over<0)||(was<0&&over>0)||(over>0&&!top)||(over<0&&!bottom))over=0;
     if(over){if(e.cancelable)e.preventDefault();if(over>0)el.scrollTop=0;else el.scrollTop=el.scrollHeight}
     if(!raf)raf=requestAnimationFrame(()=>{raf=0;paint(curve(over))})},{passive:false});
-  const end=()=>{if(y==null&&!touching)return;y=null;touching=false;if(raf){cancelAnimationFrame(raf);raf=0}
+  const end=()=>{if(y==null&&!touching)return;y=null;touching=false;lastEnd=performance.now();if(raf){cancelAnimationFrame(raf);raf=0}
     if(over||cur()){over=0;el.style.transition='transform .45s cubic-bezier(.25,1.15,.4,1)';paint(0)}};
   el.addEventListener('touchend',end);el.addEventListener('touchcancel',end);
   const bounce=(dir,v)=>{const A=Math.min(dim*0.42,v*16);if(A<4)return;el.style.transition='';const t0=performance.now(),D=460;
     const step=now=>{const p=Math.min(1,(now-t0)/D);const k=p<0.28?Math.sin(Math.PI/2*p/0.28):0.5*(1+Math.cos(Math.PI*(p-0.28)/0.72));
       paint(dir*A*k);if(p<1)anim=requestAnimationFrame(step);else{anim=0;paint(0)}};anim=requestAnimationFrame(step)};
   el.addEventListener('scroll',()=>{const now=performance.now(),s=el.scrollTop;vel=now-lastT<100&&now>lastT?(s-lastS)/(now-lastT):0;lastT=now;lastS=s;
-    if(touching||anim||over||Math.abs(vel)>8)return;
+    if(touching||anim||over||Math.abs(vel)>8||now-lastEnd>2500)return;
     if(top&&vel<-0.35&&atTop())bounce(1,-vel);else if(bottom&&vel>0.35&&atBot())bounce(-1,vel)},{passive:true})}
 document.querySelectorAll('.sheet .sb').forEach(sb=>{if(sb.id==='chatBody')return;const page=sb.closest('.sheet.page');rubber(sb,!!page,true)});
 rubber($('#chatBody'),true,true,120);
@@ -1577,7 +1577,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792892299';
+const APP_VERSION='1792892465';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
