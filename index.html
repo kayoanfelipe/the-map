@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-clnp76ETAM7IUdKU+hoJW7kwcgbhxStE9aHrYj92yW8='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co; connect-src 'self' https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-BnPqqluWTK/aSNoovZoO02xgNWOyGdPDm4X0WaV8jyI='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co https://resultados.tse.jus.br; connect-src 'self' https://resultados.tse.jus.br https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -159,6 +159,49 @@ svg[data-tier="c"] .lbl.state text{opacity:.8}
 .sb{flex:1 1 auto;overflow-y:auto;padding-top:6px;-webkit-overflow-scrolling:touch;padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));min-height:0}
 .sf{flex:none;padding-top:10px;padding-bottom:calc(14px + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1px solid var(--line)}
 body.kb-open .sf{padding-bottom:10px}
+.elrow .elav{width:54px;height:54px;border-radius:50%;background:var(--surface2);display:grid;place-items:center;flex:none;color:var(--fg)}
+.convrow .t b small.live{color:#FF453A;font-weight:700;letter-spacing:.06em;font-size:11px}
+.elhero{padding:10px 0 4px}
+.ellive{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.09em;color:var(--fg2)}
+.ellive i{width:8px;height:8px;border-radius:50%;background:#FF453A;animation:elpulse 1.6s infinite}
+.ellive.wait i{background:var(--fg3);animation:none}.ellive.fin i{background:var(--fg);animation:none}
+@keyframes elpulse{0%{box-shadow:0 0 0 0 rgba(255,69,58,.55)}70%{box-shadow:0 0 0 9px rgba(255,69,58,0)}100%{box-shadow:0 0 0 0 rgba(255,69,58,0)}}
+.elpst{display:flex;align-items:baseline;gap:9px;margin-top:12px}
+.elpst b{font-size:46px;font-weight:700;letter-spacing:-.025em;font-variant-numeric:tabular-nums;line-height:1}
+.elpst span{color:var(--fg2);font-size:15px}
+.elprog{height:4px;border-radius:2px;background:var(--surface2);overflow:hidden;margin-top:14px}
+.elprog i{display:block;height:100%;width:0;background:var(--fg);transition:width .8s cubic-bezier(.22,1,.36,1)}
+.elduel{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:24px}
+.elc{background:var(--surface2);border-radius:22px;padding:20px 12px 16px;text-align:center;position:relative;transition:box-shadow .3s}
+.elc.lead{box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.32)}
+.elc .tag{position:absolute;top:10px;right:10px;font-size:10.5px;font-weight:700;letter-spacing:.04em;padding:3px 8px;border-radius:99px;background:rgba(255,255,255,.12);color:var(--fg)}
+.elc .tag.win{background:var(--fg);color:#141414}
+.elph{width:88px;height:88px;border-radius:50%;margin:0 auto 12px;background:rgba(255,255,255,.1);overflow:hidden;position:relative;display:grid;place-items:center;font-weight:700;font-size:26px;color:var(--fg2)}
+.elph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 16%}
+.elc h3{margin:0;font-size:16.5px;font-weight:700;line-height:1.2}
+.elc small{display:block;color:var(--fg3);font-size:12.5px;margin-top:3px;font-weight:600;letter-spacing:.02em}
+.elc .pc{font-size:34px;font-weight:700;letter-spacing:-.025em;margin-top:14px;font-variant-numeric:tabular-nums;line-height:1}
+.elc .vt{color:var(--fg2);font-size:13px;margin-top:6px;font-variant-numeric:tabular-nums}
+.elsplit{display:flex;justify-content:space-between;height:10px;border-radius:5px;overflow:hidden;margin-top:18px;background:var(--surface2);position:relative}
+.elsplit i{display:block;height:100%;width:0;transition:width .8s cubic-bezier(.22,1,.36,1)}
+.elsplit i:first-child{background:var(--fg)}.elsplit i:last-child{background:rgba(255,255,255,.34)}
+.elsplit:after{content:'';position:absolute;left:50%;top:0;bottom:0;width:2px;margin-left:-1px;background:var(--surface)}
+.elsplitlab{display:flex;justify-content:space-between;font-size:12px;color:var(--fg3);margin-top:8px;font-variant-numeric:tabular-nums}
+.elgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:24px}
+.elgrid div{background:var(--surface2);border-radius:16px;padding:13px 14px}
+.elgrid small{display:block;color:var(--fg3);font-size:12px;font-weight:600}
+.elgrid b{display:block;font-size:17px;margin-top:4px;font-variant-numeric:tabular-nums}
+.elfoot{color:var(--fg3);font-size:12.5px;text-align:center;margin:24px 0 12px;line-height:1.55}
+.elload{color:var(--fg3);text-align:center;padding:60px 0}
+.ellive.poll i{background:var(--fg2);animation:none}
+.elhead2{font-size:34px;font-weight:700;letter-spacing:-.02em;margin-top:12px;line-height:1.05}
+.elsub{color:var(--fg2);font-size:14.5px;margin-top:8px;line-height:1.4}
+.elcount{display:block;margin-top:16px;background:var(--surface2);border-radius:16px;padding:12px 14px;font-size:14px;line-height:1.35}
+.elcount b{font-variant-numeric:tabular-nums}
+.elnote{margin-top:22px;border-radius:16px;padding:14px;background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 1px var(--line);color:var(--fg2);font-size:13px;line-height:1.5}
+.elnote b{color:var(--fg);display:block;margin-bottom:4px;font-size:13.5px}
+
+
 .sheet>.sh,.sheet>.sf,.sheet>.grab{position:relative;z-index:3;background:var(--surface)}.sheet>.sb{position:relative;z-index:1;overscroll-behavior-y:none}
 body.kb-open .sb{padding-bottom:12px}
 .sf .primary{width:100%}
@@ -449,6 +492,11 @@ body.kb-open .chatbody{padding-bottom:6px}
     <div class="sh gutter chathead"><button class="chatback" data-close aria-label="Voltar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button><button class="chatwho" id="chatWho"></button><button class="more" id="chatMore" aria-label="Mais opções">⋯</button></div>
     <div class="sb gutter chatbody" id="chatBody"></div>
     <div class="sf gutter" id="chatFoot"><div class="chatmenu" id="chatMenu" hidden></div><div class="mentions" id="mentionList" hidden></div><div class="replybar" id="replyBar" hidden><span class="t"><b id="rbWho"></b><small id="rbText"></small></span><button class="close xs" id="rbX" aria-label="Cancelar resposta">✕</button></div><div class="chatin"><textarea id="chatIn" rows="1" maxlength="2000" placeholder="Mensagem" aria-label="Mensagem"></textarea><button class="send" id="chatSend" aria-label="Enviar">↑</button></div><p class="chatnote" id="chatNote" hidden></p></div>
+  </section>
+
+  <section class="sheet page" id="shEleicao" aria-label="Eleição presidencial">
+    <div class="sh gutter pagehead"><button class="chatback" data-close aria-label="Voltar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button><h2 class="ctr">Eleição presidencial</h2></div>
+    <div class="sb gutter" id="elBody"></div>
   </section>
 
   <section class="sheet" id="shMembers" aria-label="Membros do The Group">
@@ -985,6 +1033,78 @@ function renderGlobalMembers(){const q=($('#gmQ').value||'').trim().toLowerCase(
   const groups={};for(const m of list){const c=country(m)||'Sem cidade';(groups[c]=groups[c]||[]).push(m)}
   const order=Object.keys(groups).sort((a,b)=>a===BR?-1:b===BR?1:a==='Sem cidade'?1:b==='Sem cidade'?-1:a.localeCompare(b));
   $('#gmBody').innerHTML=list.length?order.map(c=>`<div class="sec">${esc(c)} <span>${groups[c].length}</span></div>`+groups[c].sort((a,b)=>a.name.localeCompare(b.name)).map(m=>`<button class="row" data-prof="${m.id}"><span>${avatar(m)}</span><span class="t"><b>${esc(m.name)}${me&&m.id===me.id?' <span class="pill adm">você</span>':''}</b><small>${esc([m.co,m.niche].filter(Boolean).join(' · '))}</small></span><span class="meta">${esc(homeLabel(m))}</span><span class="chev">›</span></button>`).join('')).join(''):`<div class="empty"><b>Nenhum resultado.</b>Nenhum membro com esse nome ou cidade.</div>`}
+/* Eleição presidencial 2026, 2º turno (TEMPORÁRIO: desligar com FEATURE_ELEICAO=false depois da apuração) */
+const FEATURE_ELEICAO=true;
+const EL_URL='https://resultados.tse.jus.br/oficial/ele2026/6258/dados/br/br-c0001-e006258-u.json',EL_FOTO='https://resultados.tse.jus.br/oficial/ele2026/6258/fotos/br/';
+const EL_SIM=false; /* simulação só para preview: trocar por /[?&]sim=eleicao/.test(location.search) */
+let EL=null,elBusy=false,elSim=null,elKey='';
+const elNum=x=>+String(x==null?'0':x).replace(/\./g,'').replace(',','.')||0;
+const elName=x=>String(x||'').toLowerCase().replace(/(^|\s)\S/g,c=>c.toUpperCase()).replace(/ (Da|De|Do|Dos|Das|E) /g,c=>c.toLowerCase());
+const elP=(n,k)=>(+n||0).toLocaleString('pt-BR',{minimumFractionDigits:k,maximumFractionDigits:k});
+const elV=n=>Math.round(+n||0).toLocaleString('pt-BR');
+const ELAV='<span class="elav"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M6 20v-8M12 20V5M18 20v-5"/></svg></span>';
+function elParse(d){const cs=[];const g=((d.carg||[])[0]||{}).agr||[];
+  g.forEach(a=>(a.par||[]).forEach(p=>(p.cand||[]).forEach(c=>cs.push({sq:c.sqcand,n:c.n,nm:elName(c.nmu||c.nm),sg:p.sg,seq:+c.seq||9,v:elNum(c.vap),p:elNum(c.pvapn||c.pvap),e:c.e==='s'}))));
+  cs.sort((a,b)=>a.seq-b.seq);const s=d.s||{},v=d.v||{},e=d.e||{};
+  return{cs,pst:elNum(s.pstn||s.pst),hg:d.hg||'',fim:d.tf==='s',vv:elNum(v.vv),vb:elNum(v.vb),vn:elNum(v.tvn),pab:elNum(e.pan||e.pa)}}
+function elSimStep(){if(!elSim){const r=()=>Math.random()*2-1;elSim={pst:0,a0:0.5+r()*0.04,a1:0.5+r()*0.02}}const S=elSim;
+  if(S.pst<100)S.pst=Math.min(100,S.pst+(S.pst<1?0.7:0.8+Math.random()*3));const x=S.pst/100;
+  const sh=S.a0+(S.a1-S.a0)*x+0.003*Math.sin(Date.now()/3000);const vv=Math.round(118e6*x),va=Math.round(vv*sh),vb=vv-va,fim=S.pst>=100;
+  EL={cs:[{sq:'280002542548',n:'13',nm:'Lula',sg:'PT',v:va,p:vv?va/vv*100:0,e:fim&&va>vb},{sq:'280002551544',n:'22',nm:'Flavio Bolsonaro',sg:'PL',v:vb,p:vv?vb/vv*100:0,e:fim&&vb>va}],
+    pst:S.pst,hg:new Date().toTimeString().slice(0,8),fim,vv,vb:Math.round(vv*0.013),vn:Math.round(vv*0.034),pab:19.6+0.8*x};elPaint()}
+async function elLoad(){if(EL_SIM){elSimStep();return}if(elBusy)return;elBusy=true;
+  const ac=new AbortController(),to=setTimeout(()=>ac.abort(),8000);
+  try{const r=await fetch(EL_URL,{cache:'no-cache',signal:ac.signal});if(r.ok){const d=elParse(await r.json());if(!EL||d.pst>=EL.pst||d.fim){EL=d;elPaint()}}}catch(e){}finally{clearTimeout(to);elBusy=false}}
+const elWaiting=d=>!d||(!d.pst&&!d.vv);
+function elRowInner(){const d=EL;let sub='Apuração ao vivo';
+  if(d&&elWaiting(d))sub=EL_POLL?`Pesquisa ${EL_POLL.inst} · `+d.cs.map(c=>`${c.nm.split(' ')[0]} ${(EL_POLL.c[c.n]||{v:0}).v}%`).join(' · ')+' · apuração às 17h':'A apuração começa às 17h';
+  else if(d){sub=`${Math.floor(d.pst)}% das urnas · `+d.cs.map(c=>`${c.nm.split(' ')[0]} ${elP(c.p,1)}%`).join(' · ');const w=d.cs.find(c=>c.e);if(w)sub=`${w.nm} eleito com ${elP(w.p,2)}%`}
+  return`${ELAV}<span class="t"><b><span>Eleição presidencial</span>${d&&d.fim?'<small>Final</small>':d&&elWaiting(d)?`<small>${new Date(EL_START).toDateString()===new Date().toDateString()?'Hoje':'Amanhã'} 17h</small>`:'<small class="live">AO VIVO</small>'}</b><small class="snip">${esc(sub)}</small></span>`}
+function elRowHtml(){return`<button class="row convrow elrow" id="elRow">${elRowInner()}</button>`}
+function elTween(el,to,fmt){if(!el)return;const from=el.dataset.v!=null?+el.dataset.v:0;el.dataset.v=to;if(from===to){el.textContent=fmt(to);return}const t0=performance.now(),D=700;
+  const st=now=>{const p=Math.min(1,(now-t0)/D),k=1-Math.pow(1-p,3);el.textContent=fmt(from+(to-from)*k);if(p<1)requestAnimationFrame(st)};requestAnimationFrame(st)}
+function elBuild(d){const b=$('#elBody');elKey=d.cs.map(c=>c.sq).join();
+  b.innerHTML=`<div class="elhero"><span class="ellive" id="elLive"><i></i><span></span></span><div class="elpst"><b id="elPst">0,00%</b><span>das urnas apuradas</span></div><div class="elprog"><i id="elProg"></i></div></div>
+  <div class="elduel">${d.cs.map((c,i)=>`<div class="elc" id="elc${i}"><span class="tag" hidden></span><div class="elph">${esc(c.nm.split(' ').map(w=>w[0]).slice(0,2).join(''))}<img src="${EL_FOTO}${encodeURIComponent(c.sq)}.jpeg" alt=""></div><h3>${esc(c.nm)}</h3><small>${esc(c.sg)} · ${esc(c.n)}</small><div class="pc">0,00%</div><div class="vt">0 votos</div></div>`).join('')}</div>
+  ${d.cs.length===2?'<div class="elsplit"><i id="elA"></i><i id="elB"></i></div><div class="elsplitlab"><span id="elAl"></span><span>50%</span><span id="elBl"></span></div>':''}
+  <div class="elgrid"><div><small>Diferença</small><b id="elDif">0</b></div><div><small>Votos válidos</small><b id="elVv">0</b></div><div><small>Brancos e nulos</small><b id="elBn">0</b></div><div><small>Abstenção</small><b id="elAb">0%</b></div></div>
+  <p class="elfoot" id="elFoot"></p>`;
+  b.querySelectorAll('.elph img').forEach(im=>im.addEventListener('error',()=>im.remove()))}
+/* Antes da apuração: números da última pesquisa Datafolha (não é resultado) */
+const EL_POLL={inst:'Datafolha',dias:'23 e 24 de outubro',n:'4.050',reg:'BR-09540/2026',margem:2,c:{'13':{v:49,t:47},'22':{v:51,t:48}},bn:3,ind:2};
+const EL_START=Date.parse('2026-10-25T17:00:00-03:00');
+function elCountdown(){const ms=EL_START-Date.now();if(ms<=0)return'A apuração já começou. Os primeiros números saem em instantes.';const h=Math.floor(ms/36e5),m=Math.floor(ms%36e5/6e4);
+  return`A apuração em tempo real começa em <b>${h?h+'h ':''}${m}min</b>, às 17h de Brasília.`}
+function elPollPaint(d){const b=$('#elBody'),P=EL_POLL;const cs=d.cs.map(c=>Object.assign({},c,P.c[c.n]||{v:0,t:0}));const top=Math.max(...cs.map(c=>c.v));const tie=Math.abs(cs[0].v-(cs[1]||cs[0]).v)<=P.margem*2;
+  if(elKey!=='poll'){elKey='poll';b.innerHTML=`<div class="elhero"><span class="ellive poll"><i></i><span>PESQUISA ${esc(P.inst.toUpperCase())}</span></span>
+    <div class="elhead2">${tie?'Empate técnico':esc(cs.find(c=>c.v===top).nm)+' à frente'}</div><div class="elsub">Votos válidos na pesquisa de ${esc(P.dias)}. Margem de erro de ${P.margem} pontos.</div>
+    <div class="elcount" id="elCount"></div></div>
+    <div class="elduel">${cs.map(c=>`<div class="elc${!tie&&c.v===top?' lead':''}">${!tie&&c.v===top?'<span class="tag">À frente</span>':''}<div class="elph">${esc(c.nm.split(' ').map(w=>w[0]).slice(0,2).join(''))}<img src="${EL_FOTO}${encodeURIComponent(c.sq)}.jpeg" alt=""></div><h3>${esc(c.nm)}</h3><small>${esc(c.sg)} · ${esc(c.n)}</small><div class="pc">${c.v}%</div><div class="vt">${c.t}% dos votos totais</div></div>`).join('')}</div>
+    ${cs.length===2?`<div class="elsplit"><i style="width:${cs[0].v}%"></i><i style="width:${cs[1].v}%"></i></div><div class="elsplitlab"><span>${cs[0].v}%</span><span>50%</span><span>${cs[1].v}%</span></div>`:''}
+    <div class="elgrid"><div><small>Diferença</small><b>${Math.abs(cs[0].v-(cs[1]||cs[0]).v)} pontos</b></div><div><small>Margem de erro</small><b>${P.margem} pontos</b></div><div><small>Brancos e nulos</small><b>${P.bn}%</b></div><div><small>Indecisos</small><b>${P.ind}%</b></div></div>
+    <div class="elnote"><b>Isto não é resultado da eleição</b>São números da pesquisa ${esc(P.inst)} feita em ${esc(P.dias)}, com ${esc(P.n)} entrevistas, registrada no TSE com o número ${esc(P.reg)}. Às 17h esta página passa a mostrar a apuração oficial do TSE em tempo real.</div>
+    <p class="elfoot">Fonte: ${esc(P.inst)} · registro ${esc(P.reg)}</p>`;
+    b.querySelectorAll('.elph img').forEach(im=>im.addEventListener('error',()=>im.remove()))}
+  $('#elCount').innerHTML=elCountdown()}
+function elPaint(){const r=$('#elRow');if(r)r.innerHTML=elRowInner();if(!stack.includes('shEleicao'))return;const d=EL,b=$('#elBody');
+  if(!d){if(!b.innerHTML)b.innerHTML='<div class="elload">Carregando a apuração…</div>';return}
+  if(elWaiting(d)&&EL_POLL){elPollPaint(d);return}
+  if(elKey!==d.cs.map(c=>c.sq).join()||!$('#elPst'))elBuild(d);
+  const wait=elWaiting(d),lv=$('#elLive');lv.className='ellive'+(wait?' wait':d.fim?' fin':'');lv.querySelector('span').textContent=wait?'AGUARDANDO':d.fim?'APURAÇÃO ENCERRADA':'AO VIVO';
+  elTween($('#elPst'),d.pst,n=>elP(n,2)+'%');$('#elProg').style.width=d.pst+'%';
+  const top=Math.max(...d.cs.map(c=>c.v));
+  d.cs.forEach((c,i)=>{const el=$('#elc'+i);if(!el)return;elTween(el.querySelector('.pc'),c.p,n=>elP(n,2)+'%');elTween(el.querySelector('.vt'),c.v,n=>elV(n)+' votos');
+    const lead=!wait&&c.v===top&&d.cs.filter(x=>x.v===top).length===1;el.classList.toggle('lead',lead||c.e);const t=el.querySelector('.tag');
+    if(c.e){t.hidden=false;t.textContent='Eleito';t.classList.add('win')}else if(lead&&!d.fim){t.hidden=false;t.textContent='À frente';t.classList.remove('win')}else t.hidden=true});
+  if(d.cs.length===2){$('#elA').style.width=d.cs[0].p+'%';$('#elB').style.width=d.cs[1].p+'%';$('#elAl').textContent=wait?'':elP(d.cs[0].p,1)+'%';$('#elBl').textContent=wait?'':elP(d.cs[1].p,1)+'%';
+    elTween($('#elDif'),Math.abs(d.cs[0].v-d.cs[1].v),elV)}else $('#elDif').textContent='–';
+  elTween($('#elVv'),d.vv,elV);elTween($('#elBn'),d.vb+d.vn,elV);elTween($('#elAb'),d.pab,n=>elP(n,1)+'%');
+  $('#elFoot').innerHTML=(wait?'A apuração começa às 17h de Brasília':`Atualizado às ${esc(d.hg.slice(0,5))}`+(d.fim?'':' · atualiza sozinho'))+' · Fonte: TSE'+(EL_SIM?'<br>Dados simulados para teste':'')}
+function openEleicao(){openSheet('shEleicao');elPaint();elLoad()}
+const elOn=()=>FEATURE_ELEICAO&&!document.hidden&&me&&(stack.includes('shEleicao')||stack.includes('shInbox'));
+setInterval(()=>{if(elOn())elLoad()},EL_SIM?2500:10000);
+setInterval(()=>{const c=$('#elCount');if(c&&stack.includes('shEleicao'))c.innerHTML=elCountdown()},15000);
+document.addEventListener('visibilitychange',()=>{if(elOn())elLoad()});
 const FEATURE_MEMBERS=true;
 function openGlobalMembers(){$('#gmQ').value='';renderGlobalMembers();openSheet('shMembers')}
 function globalMentionsUnread(){if(!me)return 0;const seen=store.get('cityseen.global','');return cityThread('global').filter(x=>x.kind==='text'&&x.from!==me.id&&x.at>seen&&((x.mentions||[]).includes(me.id)||isAllMsg(x))).length}
@@ -1050,8 +1170,9 @@ function openInbox(){$('#inboxQ').value='';renderInbox();openSheet('shInbox');sy
 $('#inboxQ').addEventListener('input',renderInbox);
 $('#gmQ').addEventListener('input',renderGlobalMembers);
 function renderInbox(){const q=($('#inboxQ').value||'').trim().toLowerCase();const list=conversations().filter(c=>!q||byId(c.id).name.toLowerCase().includes(q));const el=$('#inboxBody');
-  const cityRows=(me?['global']:[]).concat(myCities()).map(cityConvRow).join('');el.innerHTML=pushBanner()+cityRows+(list.length?list.map(c=>{const m=byId(c.id);const mineLast=c.last.from===me.id;return`<button class="row convrow${c.unread?' unread':''}" data-chat="${c.id}">${avatar(m)}<span class="t"><b><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(m.name)}</span><small>${whenShort(c.last.at)}</small></b><small class="snip">${mineLast?'Você: ':''}${esc(c.last.body)}</small></span>${c.unread?`<span class="dot" aria-label="${c.unread} não lidas"></span>`:''}</button>`}).join('')
+  const cityRows=(me?['global']:[]).concat(myCities()).map(cityConvRow).join('');el.innerHTML=pushBanner()+(FEATURE_ELEICAO&&me&&!q?elRowHtml():'')+cityRows+(list.length?list.map(c=>{const m=byId(c.id);const mineLast=c.last.from===me.id;return`<button class="row convrow${c.unread?' unread':''}" data-chat="${c.id}">${avatar(m)}<span class="t"><b><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(m.name)}</span><small>${whenShort(c.last.at)}</small></b><small class="snip">${mineLast?'Você: ':''}${esc(c.last.body)}</small></span>${c.unread?`<span class="dot" aria-label="${c.unread} não lidas"></span>`:''}</button>`}).join('')
     :(q?`<div class="empty"><b>Nenhum resultado.</b>Nenhuma conversa com esse nome.</div>`:cityRows?'':`<div class="empty"><b>Nenhuma conversa ainda.</b>Toque em um membro no mapa para enviar uma mensagem.</div>`));
+  const er=$('#elRow');if(er){er.onclick=()=>{haptic();openEleicao()};if(!EL)elLoad()}
   const pa=$('#pushAsk');if(pa)pa.onclick=async()=>{pa.disabled=true;if(await enablePush()){haptic();toast('Avisos ativados')}renderInbox()};
   el.querySelectorAll('[data-chat]').forEach(b=>b.onclick=()=>{haptic();openChat(b.dataset.chat)})}
 function openChat(id,prefill){const m=byId(id);if(!m)return;chatWith=id;$('#chatMenu').hidden=true;setReply(null);
@@ -1456,7 +1577,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792887773';
+const APP_VERSION='1792892299';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
