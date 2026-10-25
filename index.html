@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-MCdvgpL9WsGS12o/9RASBOTAPqX6EansN7tOChwUDT0='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co; connect-src 'self' https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-u7DuJoKTp3bTX1AQ6OCW4P09oPRTozVIeb56es2p3zE='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co; connect-src 'self' https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -159,6 +159,7 @@ svg[data-tier="c"] .lbl.state text{opacity:.8}
 .sb{flex:1 1 auto;overflow-y:auto;padding-top:6px;-webkit-overflow-scrolling:touch;padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));min-height:0}
 .sf{flex:none;padding-top:10px;padding-bottom:calc(14px + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1px solid var(--line)}
 body.kb-open .sf{padding-bottom:10px}
+.sheet>.sh,.sheet>.sf,.sheet>.grab{position:relative;z-index:3;background:var(--surface)}.sheet>.sb{position:relative;z-index:1}
 body.kb-open .sb{padding-bottom:12px}
 .sf .primary{width:100%}
 
@@ -448,6 +449,12 @@ body.kb-open .chatbody{padding-bottom:6px}
     <div class="sh gutter chathead"><button class="chatback" data-close aria-label="Voltar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button><button class="chatwho" id="chatWho"></button><button class="more" id="chatMore" aria-label="Mais opções">⋯</button></div>
     <div class="sb gutter chatbody" id="chatBody"></div>
     <div class="sf gutter" id="chatFoot"><div class="chatmenu" id="chatMenu" hidden></div><div class="mentions" id="mentionList" hidden></div><div class="replybar" id="replyBar" hidden><span class="t"><b id="rbWho"></b><small id="rbText"></small></span><button class="close xs" id="rbX" aria-label="Cancelar resposta">✕</button></div><div class="chatin"><textarea id="chatIn" rows="1" maxlength="2000" placeholder="Mensagem" aria-label="Mensagem"></textarea><button class="send" id="chatSend" aria-label="Enviar">↑</button></div><p class="chatnote" id="chatNote" hidden></p></div>
+  </section>
+
+  <section class="sheet" id="shMembers" aria-label="Membros do The Group">
+    <div class="grab"><i></i></div>
+    <div class="sh gutter"><div><h2>The Group</h2><p id="gmSub"></p></div></div>
+    <div class="sb gutter"><div class="srch"><input type="search" id="gmQ" placeholder="Pesquisar" autocomplete="off" aria-label="Pesquisar membro"></div><div id="gmBody"></div></div>
   </section>
 
   <section class="sheet" id="shProfile" aria-label="Perfil">
@@ -971,6 +978,15 @@ function groupName(id){return id==='global'?'The Group':'Grupo de '+city(id).n}
 function groupAv(id){return id==='global'?GOLD_AV:GROUP_AV}
 function homeLabel(m){if(!m||!knownCity(m.home))return'';const c=city(m.home);return c.c===BR?c.n:c.n+', '+c.c}
 function isAllMsg(x){return x&&x.place==='global'&&/(^|\s)@todos(\s|$)/.test(x.body||'')&&!!(byId(x.from)||{}).admin}
+function renderGlobalMembers(){const q=($('#gmQ').value||'').trim().toLowerCase();const all=members.filter(m=>m.active!==false);
+  const country=m=>knownCity(m.home)?city(m.home).c:'';const nc=new Set(all.map(country).filter(Boolean)).size;
+  $('#gmSub').textContent=`${all.length} ${all.length===1?'membro':'membros'}${nc?` · ${nc} ${nc===1?'país':'países'}`:''}`;
+  const list=all.filter(m=>!q||m.name.toLowerCase().includes(q)||homeLabel(m).toLowerCase().includes(q));
+  const groups={};for(const m of list){const c=country(m)||'Sem cidade';(groups[c]=groups[c]||[]).push(m)}
+  const order=Object.keys(groups).sort((a,b)=>a===BR?-1:b===BR?1:a==='Sem cidade'?1:b==='Sem cidade'?-1:a.localeCompare(b));
+  $('#gmBody').innerHTML=list.length?order.map(c=>`<div class="sec">${esc(c)} <span>${groups[c].length}</span></div>`+groups[c].sort((a,b)=>a.name.localeCompare(b.name)).map(m=>`<button class="row" data-prof="${m.id}"><span>${avatar(m)}</span><span class="t"><b>${esc(m.name)}${me&&m.id===me.id?' <span class="pill adm">você</span>':''}</b><small>${esc([m.co,m.niche].filter(Boolean).join(' · '))}</small></span><span class="meta">${esc(homeLabel(m))}</span><span class="chev">›</span></button>`).join('')).join(''):`<div class="empty"><b>Nenhum resultado.</b>Nenhum membro com esse nome ou cidade.</div>`}
+const FEATURE_MEMBERS=false;
+function openGlobalMembers(){$('#gmQ').value='';renderGlobalMembers();openSheet('shMembers')}
 function globalMentionsUnread(){if(!me)return 0;const seen=store.get('cityseen.global','');return cityThread('global').filter(x=>x.kind==='text'&&x.from!==me.id&&x.at>seen&&((x.mentions||[]).includes(me.id)||isAllMsg(x))).length}
 function cityChatId(){return typeof chatWith==='string'&&chatWith.startsWith('city:')?chatWith.slice(5):null}
 function cityThread(id){return CMSGS.filter(x=>x.place===id&&byId(x.from)&&!BLOCKS.includes(x.from)).sort((a,b)=>a.at<b.at?-1:1)}
@@ -1032,6 +1048,7 @@ async function syncMessages(){if(!me||!sb||msgSyncing||document.hidden)return;if
 function startMsgPoll(){clearInterval(msgPollT);msgPollT=setInterval(()=>{if(stack.includes('shChat'))syncMessages();else if(++msgPollN%2===0)syncMessages()},4000)}let msgPollN=0;
 function openInbox(){$('#inboxQ').value='';renderInbox();openSheet('shInbox');syncMessages()}
 $('#inboxQ').addEventListener('input',renderInbox);
+$('#gmQ').addEventListener('input',renderGlobalMembers);
 function renderInbox(){const q=($('#inboxQ').value||'').trim().toLowerCase();const list=conversations().filter(c=>!q||byId(c.id).name.toLowerCase().includes(q));const el=$('#inboxBody');
   const cityRows=(me?['global']:[]).concat(myCities()).map(cityConvRow).join('');el.innerHTML=pushBanner()+cityRows+(list.length?list.map(c=>{const m=byId(c.id);const mineLast=c.last.from===me.id;return`<button class="row convrow${c.unread?' unread':''}" data-chat="${c.id}">${avatar(m)}<span class="t"><b><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(m.name)}</span><small>${whenShort(c.last.at)}</small></b><small class="snip">${mineLast?'Você: ':''}${esc(c.last.body)}</small></span>${c.unread?`<span class="dot" aria-label="${c.unread} não lidas"></span>`:''}</button>`}).join('')
     :(q?`<div class="empty"><b>Nenhum resultado.</b>Nenhuma conversa com esse nome.</div>`:cityRows?'':`<div class="empty"><b>Nenhuma conversa ainda.</b>Toque em um membro no mapa para enviar uma mensagem.</div>`));
@@ -1099,8 +1116,8 @@ async function toggleBlock(){const id=chatWith;const m=byId(id);if(!m)return;con
   const {error}=on?await sb.from('blocks').delete().eq('blocker_id',me.id).eq('blocked_id',id):await sb.from('blocks').insert({blocker_id:me.id,blocked_id:id});
   if(error){toast('Não foi possível alterar.');return}BLOCKS=on?BLOCKS.filter(x=>x!==id):[...BLOCKS,id];haptic();$('#chatMenu').hidden=true;refresh();renderChat();toast(on?`${m.name.split(' ')[0]} desbloqueado`:`${m.name.split(' ')[0]} bloqueado`)}
 $('#btnMsgs').onclick=()=>{haptic();openInbox()};
-$('#chatWho').onclick=()=>{const c=cityChatId();if(c==='global')return;if(c)openCity(c);else if(chatWith)openProfile(chatWith)};
-$('#chatMore').onclick=()=>{const mn=$('#chatMenu');if(!mn.hidden){mn.hidden=true;return}const cc=cityChatId();if(cc==='global')return;if(cc){mn.innerHTML='<button id="cmCity">Ver cidade</button>';mn.hidden=false;$('#cmCity').onclick=()=>{mn.hidden=true;openCity(cc)};return}const on=BLOCKS.includes(chatWith);mn.innerHTML=`<button id="cmProf">Ver perfil</button><button class="danger" id="cmBlock">${on?'Desbloquear':'Bloquear'}</button>`;mn.hidden=false;$('#cmProf').onclick=()=>{mn.hidden=true;openProfile(chatWith)};$('#cmBlock').onclick=toggleBlock};
+$('#chatWho').onclick=()=>{const c=cityChatId();if(c==='global'){if(FEATURE_MEMBERS)openGlobalMembers();return}if(c)openCity(c);else if(chatWith)openProfile(chatWith)};
+$('#chatMore').onclick=()=>{const mn=$('#chatMenu');if(!mn.hidden){mn.hidden=true;return}const cc=cityChatId();if(cc==='global'){if(!FEATURE_MEMBERS)return;mn.innerHTML='<button id="cmMembers">Ver membros</button>';mn.hidden=false;$('#cmMembers').onclick=()=>{mn.hidden=true;openGlobalMembers()};return}if(cc){mn.innerHTML='<button id="cmCity">Ver cidade</button>';mn.hidden=false;$('#cmCity').onclick=()=>{mn.hidden=true;openCity(cc)};return}const on=BLOCKS.includes(chatWith);mn.innerHTML=`<button id="cmProf">Ver perfil</button><button class="danger" id="cmBlock">${on?'Desbloquear':'Bloquear'}</button>`;mn.hidden=false;$('#cmProf').onclick=()=>{mn.hidden=true;openProfile(chatWith)};$('#cmBlock').onclick=toggleBlock};
 $('#chatSend').onclick=sendMsg;$('#chatSend').addEventListener('mousedown',e=>e.preventDefault());$('#chatSend').addEventListener('touchend',e=>{e.preventDefault();sendMsg()},{passive:false});
 /* elástico genérico para listas que rolam */
 function rubber(el,top,bottom){let y0=null,on=false;
@@ -1424,7 +1441,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792886485';
+const APP_VERSION='1792887138';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
