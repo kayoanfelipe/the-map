@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-hKWvmySdM2ToMkYvUUg5gxy0uhrsvDAb+4qhsMSCzh4='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co https://resultados.tse.jus.br; connect-src 'self' https://resultados.tse.jus.br https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-V06ukbFmyLQfgqsYQF18cZafbt6P2qBwPwHoPz4LxO4='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co https://resultados.tse.jus.br; connect-src 'self' https://resultados.tse.jus.br https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1358,8 +1358,16 @@ function paintNewBelow(){const b=$('#newBelow');b.hidden=!chatNewBelow;$('#newBe
 $('#newBelow').onclick=()=>{haptic();const el=$('#chatBody');el.scrollTo({top:el.scrollHeight,behavior:'smooth'});chatNewBelow=0;paintNewBelow()};
 $('#newBelow').addEventListener('mousedown',e=>e.preventDefault());
 $('#chatBody').addEventListener('scroll',()=>{const el=$('#chatBody');if(chatNewBelow&&el.scrollHeight-el.scrollTop-el.clientHeight<60){chatNewBelow=0;paintNewBelow()}},{passive:true});
+/* teclado: quando o chat encolhe (teclado sobe) ou cresce, quem estava no fim continua vendo a última mensagem */
+let chatStick=true,chatH=0;
+const pinChat=()=>{const el=$('#chatBody');chatH=el.clientHeight;if(chatStick&&stack.includes('shChat'))el.scrollTop=el.scrollHeight};
+/* rolagem causada pela mudança de tamanho não conta como "saiu do fim" */
+$('#chatBody').addEventListener('scroll',()=>{const el=$('#chatBody');if(el.clientHeight!==chatH){pinChat();return}chatStick=el.scrollHeight-el.scrollTop-el.clientHeight<80},{passive:true});
+if(window.ResizeObserver)new ResizeObserver(pinChat).observe($('#chatBody'));
+if(window.visualViewport)visualViewport.addEventListener('resize',()=>{pinChat();requestAnimationFrame(pinChat)});
+$('#chatIn').addEventListener('focus',()=>{const el=$('#chatBody');chatStick=chatStick||el.scrollHeight-el.scrollTop-el.clientHeight<160;[0,60,180,350,600].forEach(t=>setTimeout(pinChat,t))});
 /* ao abrir: começa na linha "Novas mensagens" quando ela existe, senão no fim */
-function chatScrollStart(){const el=$('#chatBody');const sep=el.querySelector('.daysep.unread');if(sep&&sep.offsetTop>el.clientHeight*0.5)el.scrollTop=Math.max(0,sep.offsetTop-16);else el.scrollTop=1e9}
+function chatScrollStart(){const el=$('#chatBody');const sep=el.querySelector('.daysep.unread');if(sep&&sep.offsetTop>el.clientHeight*0.5){el.scrollTop=Math.max(0,sep.offsetTop-16);chatStick=false}else{el.scrollTop=1e9;chatStick=true}}
 /* digitando: canal privado da conversa (tp:dm:<a>:<b> ou tp:g:<cidade>) */
 /* tempos: avisa na 1ª tecla, repete a cada 1,5 s enquanto digita, avisa que parou 1,5 s após a última tecla; quem recebe apaga sozinho após 3,2 s sem sinal */
 let tpCh=null,tpTopic='',TYPERS=new Map(),tpLastSent=0,tpIdle=0;
@@ -1721,7 +1729,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792897273';
+const APP_VERSION='1792897711';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
