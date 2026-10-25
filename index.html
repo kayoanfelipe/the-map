@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-lCkwfvUEJs4r4pi1KC4GYM2Angj5U+V0HlzoNuZuaW4='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co https://resultados.tse.jus.br; connect-src 'self' https://resultados.tse.jus.br https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-ts420AGZCG+4KMO6ubwJLjVydHyvFQbM8GT8DTsdRlw='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co https://resultados.tse.jus.br; connect-src 'self' https://resultados.tse.jus.br https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -917,10 +917,10 @@ function endPtr(e){if(!ptrs.has(e.pointerId))return;ptrs.delete(e.pointerId);if(
   if(ptrs.size===1){const[a]=[...ptrs.values()];lastP={x:a.x,y:a.y};lastDist=0}down=null}
 window.addEventListener('pointerup',endPtr);window.addEventListener('pointercancel',endPtr);
 function tapBubble(g){const bin=g.querySelector('.bin');if(!bin)return;bin.classList.remove('enter','tap');void bin.getBBox();bin.classList.add('tap');setTimeout(()=>bin.classList.remove('tap'),450)}
-/* pinça no celular: mais lenta que os dedos e com suavização, para não ficar agressiva */
+/* pinça no celular: mais lenta que os dedos e com suavização, para não ficar agressiva (2026-10-24: 45% do gesto, 28% por quadro) */
 let pinchL=0,pinchAnim=0;
-function pinchStep(){const take=pinchL*0.4;pinchL-=take;if(Math.abs(take)>1e-5)zoomBy(Math.exp(take));applyTransform();pinchAnim=Math.abs(pinchL)>1e-4?requestAnimationFrame(pinchStep):0;if(!pinchAnim)pinchL=0}
-function pinchPush(L){pinchL+=L*0.62;if(!pinchAnim)pinchAnim=requestAnimationFrame(pinchStep)}
+function pinchStep(){const take=pinchL*0.28;pinchL-=take;if(Math.abs(take)>1e-5)zoomBy(Math.exp(take));applyTransform();pinchAnim=Math.abs(pinchL)>1e-4?requestAnimationFrame(pinchStep):0;if(!pinchAnim)pinchL=0}
+function pinchPush(L){pinchL+=L*0.45;if(!pinchAnim)pinchAnim=requestAnimationFrame(pinchStep)}
 /* roda e pinça do trackpad: acumula e aplica aos poucos, para o zoom ficar fluido no computador */
 let wheelL=0,wheelAnim=0;
 function wheelStep(){const take=wheelL*0.32;wheelL-=take;if(Math.abs(take)>1e-5)zoomBy(Math.exp(take));applyTransform();wheelAnim=Math.abs(wheelL)>1e-4?requestAnimationFrame(wheelStep):0;if(!wheelAnim)wheelL=0}
@@ -1645,7 +1645,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792895364';
+const APP_VERSION='1792895691';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
