@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-ts420AGZCG+4KMO6ubwJLjVydHyvFQbM8GT8DTsdRlw='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co https://resultados.tse.jus.br; connect-src 'self' https://resultados.tse.jus.br https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-Ls6XGNAKWohDY9hIkBuL8XCvFVzUzZV/zWRKZumP0ME='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co https://resultados.tse.jus.br; connect-src 'self' https://resultados.tse.jus.br https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -960,12 +960,12 @@ function clusterize(){if(!BD)return[];const center=[-rot[0],-rot[1]],pts=[];
   const was=(a,b)=>clPrev.has(a)&&clPrev.get(a)===clPrev.get(b);
   /* agrupa só quando os círculos se sobrepõem mais de 28% (do menor); separa quando cai abaixo de 12% */
   const ovl=(x1,y1,r1,x2,y2,r2)=>(r1+r2-Math.hypot(x1-x2,y1-y2))/(2*Math.min(r1,r2));const lim=(a,b)=>was(a,b)?0.12:0.28;
-  const cls=[];
-  for(const p of pts){const pr=bubR(p.n,false);let into=null;
-    for(const k of cls){if(ovl(p.x,p.y,pr,k.x,k.y,bubR(k.n,k.cs.length>1))>lim(p.c.id,k.cs[0].c.id)){into=k;break}}
-    if(into){into.cs.push(p);into.n+=p.n;into.tr+=p.tr}else cls.push({x:p.x,y:p.y,n:p.n,tr:p.tr,cs:[p]})}
-  for(let again=true;again;){again=false;
-    find:for(let i=0;i<cls.length;i++)for(let j=i+1;j<cls.length;j++){const I=cls[i],J=cls[j];if(ovl(I.x,I.y,bubR(I.n,I.cs.length>1),J.x,J.y,bubR(J.n,J.cs.length>1))>lim(I.cs[0].c.id,J.cs[0].c.id)){const A=cls[i],B=cls[j];A.cs.push(...B.cs);A.n+=B.n;A.tr+=B.tr;cls.splice(j,1);again=true;break find}}}
+  /* cidade com cidade, pelo tamanho de cada uma: ao aproximar, os pares só se afastam, então os grupos só se dividem */
+  const par=pts.map((_,i)=>i);const root=i=>{while(par[i]!==i){par[i]=par[par[i]];i=par[i]}return i};
+  for(let i=0;i<pts.length;i++){const A=pts[i],ra=bubR(A.n,false);for(let j=i+1;j<pts.length;j++){const B=pts[j];
+    if(ovl(A.x,A.y,ra,B.x,B.y,bubR(B.n,false))>lim(A.c.id,B.c.id)){const x=root(i),y=root(j);if(x!==y)par[Math.max(x,y)]=Math.min(x,y)}}}
+  const by=new Map();pts.forEach((p,i)=>{const r=root(i);if(!by.has(r))by.set(r,[]);by.get(r).push(p)});
+  const cls=[...by.values()].map(cs=>({x:cs[0].x,y:cs[0].y,n:cs.reduce((t,p)=>t+p.n,0),tr:cs.reduce((t,p)=>t+p.tr,0),cs}));
   return cls}
 function commitClusters(cls){const sig=cls.map(k=>k.cs.map(p=>p.c.id).join('+')).join('|');if(sig===clSig)return;clSig=sig;
   clPrev=new Map();cls.forEach((k,i)=>k.cs.forEach(p=>clPrev.set(p.c.id,i)));buildCityBubbles(cls)}
@@ -1645,7 +1645,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792895691';
+const APP_VERSION='1792896040';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
