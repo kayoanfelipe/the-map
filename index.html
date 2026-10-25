@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-Sjn+vpAGxLnCsMV8X4Qvw8FMmSb0Pcw9A62UBAWHvOE='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co https://resultados.tse.jus.br; connect-src 'self' https://resultados.tse.jus.br https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-X39vmLEF56GOJhg9xeMOiaLTvxzBJgdk0tO70uf1H/g='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co https://resultados.tse.jus.br; connect-src 'self' https://resultados.tse.jus.br https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -159,6 +159,11 @@ svg[data-tier="c"] .lbl.state text{opacity:.8}
 .sb{flex:1 1 auto;overflow-y:auto;padding-top:6px;-webkit-overflow-scrolling:touch;padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));min-height:0}
 .sf{flex:none;padding-top:10px;padding-bottom:calc(14px + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1px solid var(--line)}
 body.kb-open .sf{padding-bottom:10px}
+.online{pointer-events:none;display:inline-flex;align-items:center;gap:7px;height:28px;padding:0 12px;border-radius:999px;font-size:13px;font-weight:600;color:var(--fg2);background:rgba(20,20,22,.55);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);font-variant-numeric:tabular-nums;transition:opacity .3s}
+.online i{width:7px;height:7px;border-radius:50%;background:#F5F5F5;box-shadow:0 0 0 3px rgba(255,255,255,.12);flex:none}
+.online.bump i{animation:onbump .6s ease-out}
+@keyframes onbump{0%{box-shadow:0 0 0 0 rgba(255,255,255,.55)}100%{box-shadow:0 0 0 9px rgba(255,255,255,0)}}
+
 .elrow .elav{width:54px;height:54px;border-radius:50%;background:var(--surface2);display:grid;place-items:center;flex:none;color:var(--fg)}
 .convrow .t b small.live{color:#FF453A;font-weight:700;letter-spacing:.06em;font-size:11px}
 .elhero{padding:10px 0 4px}
@@ -454,6 +459,7 @@ body.kb-open .chatbody{padding-bottom:6px}
       <button class="tipbtn" id="tipAction" hidden>Instalar</button>
       <button class="tipx" id="tipClose" aria-label="Fechar aviso">✕</button>
     </div>
+    <div class="online" id="onlineBtn" hidden role="status" aria-label="Membros online agora"><i></i><span id="onlineTxt"></span></div>
     <button class="status" id="myStatus" hidden><span class="dot"></span><span><b id="stCity">São Paulo</b> <span id="stMeta">· até sexta</span></span><span style="color:var(--fg3);font-size:18px">›</span><span class="x" id="stEnd" role="button" aria-label="Encerrar check-in">✕</span></button>
     <button class="estou" id="btnCheckin"><span id="btnCheckinLbl">Marcar local</span></button>
   </div>
@@ -813,7 +819,7 @@ function subscribeLive(){if(live||!sb)return;live=sb.channel('themap-live').on('
 document.addEventListener('gesturestart',e=>{if(!e.target.closest||!e.target.closest('#map,#cropBox'))e.preventDefault()},{passive:false});document.addEventListener('touchmove',e=>{if(e.touches.length>1&&!(e.target.closest&&e.target.closest('#map,#cropBox')))e.preventDefault()},{passive:false});
 document.addEventListener('keydown',e=>{if(e.key==='Tab')document.body.classList.add('kb')});document.addEventListener('pointerdown',()=>document.body.classList.remove('kb'),{capture:true});
 document.addEventListener('visibilitychange',()=>{if(document.hidden||!me)return;if(live&&live.state!=='joined'){try{sb.removeChannel(live)}catch(e){}live=null;subscribeLive()}syncMessages();softReload()});
-async function signOutLocal(msg){try{if(live){sb.removeChannel(live);live=null}await sb.auth.signOut()}catch(e){}me=null;myCheckin=null;CHECKINS=[];members=[];closeAll();refresh();$('#login').classList.remove('out');$('#codeForm').hidden=true;$('#emailForm').hidden=false;$('#email').value=store.get('lastEmail','');if(msg){$('#emailErr').textContent=msg;$('#emailErr').hidden=false}}
+async function signOutLocal(msg){try{presenceStop();if(live){sb.removeChannel(live);live=null}await sb.auth.signOut()}catch(e){}me=null;myCheckin=null;CHECKINS=[];members=[];closeAll();refresh();$('#login').classList.remove('out');$('#codeForm').hidden=true;$('#emailForm').hidden=false;$('#email').value=store.get('lastEmail','');if(msg){$('#emailErr').textContent=msg;$('#emailErr').hidden=false}}
 
 /* ---------- helpers ---------- */
 const $=s=>document.querySelector(s);
@@ -1033,6 +1039,22 @@ function renderGlobalMembers(){const q=($('#gmQ').value||'').trim().toLowerCase(
   const groups={};for(const m of list){const c=country(m)||'Sem cidade';(groups[c]=groups[c]||[]).push(m)}
   const order=Object.keys(groups).sort((a,b)=>a===BR?-1:b===BR?1:a==='Sem cidade'?1:b==='Sem cidade'?-1:a.localeCompare(b));
   $('#gmBody').innerHTML=list.length?order.map(c=>`<div class="sec">${esc(c)} <span>${groups[c].length}</span></div>`+groups[c].sort((a,b)=>a.name.localeCompare(b.name)).map(m=>`<button class="row" data-prof="${m.id}"><span>${avatar(m)}</span><span class="t"><b>${esc(m.name)}${me&&m.id===me.id?' <span class="pill adm">você</span>':''}</b><small>${esc([m.co,m.niche].filter(Boolean).join(' · '))}</small></span><span class="meta">${esc(homeLabel(m))}</span><span class="chev">›</span></button>`).join('')).join(''):`<div class="empty"><b>Nenhum resultado.</b>Nenhum membro com esse nome ou cidade.</div>`}
+/* Online agora: presença em tempo real (Supabase Realtime Presence, canal privado).
+   Conta quem está com o app aberto e na tela; sai na hora ao minimizar, trocar de app ou fechar. Invisíveis não aparecem. */
+let pres=null,ONLINE=new Set(),onPrev=0;
+function presenceStart(){if(pres||!sb||!me)return;
+  pres=sb.channel('themap-online',{config:{private:true,presence:{key:me.id}}});
+  pres.on('presence',{event:'sync'},()=>{const st=pres.presenceState();ONLINE=new Set(Object.keys(st).filter(id=>(st[id]||[]).length));paintOnline()});
+  pres.subscribe(st=>{if(st==='SUBSCRIBED')presTrack()})}
+function presTrack(){if(!pres||!me)return;try{if(document.hidden||invisible||me.active===false)pres.untrack();else pres.track({at:Date.now()})}catch(e){}}
+function presenceStop(){if(!pres)return;try{pres.untrack();sb.removeChannel(pres)}catch(e){}pres=null;ONLINE=new Set();paintOnline()}
+function onlineList(){return [...ONLINE].map(byId).filter(m=>m&&m.active!==false&&(!m.invisible||m.id===me.id))}
+function paintOnline(){const b=$('#onlineBtn');if(!b)return;const list=me?onlineList():[];const n=list.length;
+  b.hidden=!me||n<1;$('#onlineTxt').textContent=`${n} online`;
+  if(n>onPrev&&onPrev>0){b.classList.remove('bump');void b.offsetWidth;b.classList.add('bump')}onPrev=n;
+}
+document.addEventListener('visibilitychange',()=>{if(!me)return;if(!document.hidden&&pres&&pres.state!=='joined'){presenceStop();presenceStart();return}presTrack()});
+window.addEventListener('pagehide',()=>{try{pres&&pres.untrack()}catch(e){}});
 /* Eleição presidencial 2026, 2º turno (TEMPORÁRIO: desligar com FEATURE_ELEICAO=false depois da apuração) */
 const FEATURE_ELEICAO=true;
 const EL_URL='https://resultados.tse.jus.br/oficial/ele2026/6258/dados/br/br-c0001-e006258-u.json',EL_FOTO='https://resultados.tse.jus.br/oficial/ele2026/6258/fotos/br/';
@@ -1390,7 +1412,7 @@ function openMe(){
    ${me.admin?`<div class="sec">Administração</div><button class="linkrow" id="goAdmin"><span class="ic">⚙</span><span class="t"><b>Membros</b><small>Cadastrar e desativar acessos</small></span><span class="chev">›</span></button><button class="linkrow" id="goAdmEvents"><span class="ic">▦</span><span class="t"><b>Gerenciar eventos</b><small>Criar, editar e apagar eventos</small></span><span class="chev">›</span></button>`:''}
    <div style="margin-top:18px"><button class="secondary danger" id="logout">Sair</button></div>
 `;
-  $('#swInv').onclick=async()=>{const v=!invisible;try{await saveMember(me.id,{invisible:v})}catch(e){toast('Não foi possível mudar agora.');return}invisible=v;$('#swInv').setAttribute('aria-checked',invisible);haptic();refresh();toast(invisible?'Você está invisível no mapa':'Você voltou a aparecer')};
+  $('#swInv').onclick=async()=>{const v=!invisible;try{await saveMember(me.id,{invisible:v})}catch(e){toast('Não foi possível mudar agora.');return}invisible=v;$('#swInv').setAttribute('aria-checked',invisible);haptic();refresh();presTrack();toast(invisible?'Você está invisível no mapa':'Você voltou a aparecer')};
   $('#meBody').querySelectorAll('[data-free]').forEach(b=>b.onclick=async()=>{const k=b.dataset.free;const cur=freeOf(me);const off=cur&&cur.kind===k;const patch=off?{freeKind:'',freeTime:'',freeDay:''}:{freeKind:k,freeTime:'',freeDay:today()};
     try{await saveMember(me.id,{freeKind:patch.freeKind||null,freeTime:null,freeDay:patch.freeDay||null})}catch(e){toast('Não foi possível salvar agora.');return}Object.assign(me,patch);haptic();openMe();refresh();toast(off?'Disponibilidade removida':`Disponível para um ${k} hoje`)});
   $('#meBody').querySelectorAll('[data-ftime]').forEach(b=>b.onclick=async()=>{const t=b.dataset.ftime;try{await saveMember(me.id,{freeTime:t||null})}catch(e){toast('Não foi possível salvar agora.');return}me.freeTime=t;haptic();openMe();refresh()});
@@ -1537,7 +1559,7 @@ $('#codeForm').onsubmit=async e=>{e.preventDefault();if(entering)return;const c=
   }catch(x){err.textContent='Sem conexão com o servidor. Tente de novo.';err.hidden=false}
   finally{entering=false;btn.disabled=false;btn.textContent='Entrar'}};
 let idleT=0;function idleSpin(on){cancelAnimationFrame(idleT);idleT=0;if(!on||matchMedia('(prefers-reduced-motion:reduce)').matches)return;const step=()=>{if(me){idleT=0;return}rot[0]-=0.045;applyTransform();idleT=requestAnimationFrame(step)};idleT=requestAnimationFrame(step)}
-function enter(m){idleSpin(false);me=m;shownBubbles=new Set();bubbleFirst=true;subscribeLive();startMsgPoll();haptic();$('#login').classList.add('out');refresh();initPush();
+function enter(m){idleSpin(false);me=m;shownBubbles=new Set();bubbleFirst=true;subscribeLive();presenceStart();startMsgPoll();haptic();$('#login').classList.add('out');refresh();initPush();
   const qc=new URLSearchParams(location.search).get('chat');if(qc&&byId(qc)){history.replaceState(null,'',location.pathname);setTimeout(()=>openChat(qc),900)}
   const qcc=new URLSearchParams(location.search).get('citychat');if(qcc&&(qcc==='global'||knownCity(qcc))){history.replaceState(null,'',location.pathname);setTimeout(()=>openCityChat(qcc),900)}
   const qcity=new URLSearchParams(location.search).get('city');if(qcity&&knownCity(qcity)){history.replaceState(null,'',location.pathname);setTimeout(()=>openCity(qcity),900)}
@@ -1577,7 +1599,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792892465';
+const APP_VERSION='1792894211';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
