@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-vbj4XynAN6ohdSC3HP7bqBvatSztrUQlWL+RDBPIBRw='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co https://resultados.tse.jus.br; connect-src 'self' https://resultados.tse.jus.br https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-Eu3nrmaHgn7BnEYd56RWc/LEfUpqw/pViRkylWFllCI='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co https://resultados.tse.jus.br; connect-src 'self' https://resultados.tse.jus.br https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1764,7 +1764,10 @@ async function openAdmin(){
   openSheet('shAdmin');
 }
 function renderAdmList(){const q=($('#admQ').value||'').trim().toLowerCase();const list=members.filter(m=>m.id!==me.id&&(!q||(m.name||'').toLowerCase().includes(q)||(m.email||'').toLowerCase().includes(q))).sort((a,b)=>a.name.localeCompare(b.name));
-  $('#admList').innerHTML=list.length?list.map(m=>`<button class="row" type="button" data-adm="${m.id}"><span>${avatar(m)}</span><span class="t"><b>${esc(m.name)} ${m.active===false?'<span class="pill off">desativado</span>':m.complete?'':'<span class="pill">sem perfil</span>'}</b><small>${esc(m.email||'')}</small></span><span class="chev">›</span></button>`).join(''):`<div class="empty"><b>Nenhum membro.</b>${q?'Nenhum cadastro com esse nome ou e-mail.':'Cadastre o primeiro membro acima.'}</div>`;
+  /* separado em blocos: quem já completou o perfil em cima, quem ainda não completou embaixo (para reenviar o convite), desativados por último */
+  const row=m=>`<button class="row" type="button" data-adm="${m.id}"><span>${avatar(m)}</span><span class="t"><b>${esc(m.name)} ${m.active===false?'<span class="pill off">desativado</span>':m.complete?'':'<span class="pill">sem perfil</span>'}</b><small>${esc(m.email||'')}</small></span><span class="chev">›</span></button>`;
+  const grp=[['Com perfil',list.filter(m=>m.active!==false&&m.complete)],['Sem perfil',list.filter(m=>m.active!==false&&!m.complete)],['Desativados',list.filter(m=>m.active===false)]].filter(g=>g[1].length);
+  $('#admList').innerHTML=list.length?grp.map(([t,ms])=>`<div class="sec">${t} <span>${ms.length}</span></div>`+ms.map(row).join('')).join(''):`<div class="empty"><b>Nenhum membro.</b>${q?'Nenhum cadastro com esse nome ou e-mail.':'Cadastre o primeiro membro acima.'}</div>`;
   $('#admList').querySelectorAll('[data-adm]').forEach(b=>b.onclick=()=>{haptic();openAdmMember(b.dataset.adm)})}
 $('#admQ').addEventListener('input',renderAdmList);
 let admEditId=null;
@@ -1903,7 +1906,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792946735';
+const APP_VERSION='1792951362';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
