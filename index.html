@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-mD4DhLnOFIpeIkkfI7CIPd1Px+pCrNePpf0FAOJkhsk='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co https://resultados.tse.jus.br; connect-src 'self' https://resultados.tse.jus.br https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'sha256-NODnuRLwrNQnywFXq4imb+qCEcDPrOc+cG+VLP+TKqE='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://kqucpivagntlmukfghhg.supabase.co https://resultados.tse.jus.br; connect-src 'self' https://resultados.tse.jus.br https://kqucpivagntlmukfghhg.supabase.co wss://kqucpivagntlmukfghhg.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com; worker-src 'self'; manifest-src 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -54,7 +54,6 @@ a{color:var(--link)}
 /* ---------- App shell ---------- */
 #app{position:absolute;inset:0;height:var(--appH,auto);overflow:clip}
 #map canvas,#map svg{position:absolute;inset:0;width:100%;height:100%;display:block}
-#map #fw{pointer-events:none}#map #fw[hidden]{display:none}
 #map{background:radial-gradient(120% 90% at 50% 40%,#0b0b0d 0%,#060607 55%,#020203 100%);position:absolute;inset:0;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
 #map:active{cursor:grabbing}
 
@@ -173,19 +172,6 @@ body.kb-open .sf{padding-bottom:10px}
 #pushGate ol li:before{content:counter(s);position:absolute;left:0;top:7px;width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.1);display:grid;place-items:center;font-size:12.5px;font-weight:700}
 #pushGate .go{display:block;width:100%;height:52px;margin-top:22px;border:0;border-radius:999px;background:var(--fg);color:#111;font:inherit;font-size:16px;font-weight:700;cursor:pointer}
 #pushGate .later{display:block;width:100%;margin-top:6px;padding:12px;border:0;background:none;color:var(--fg3);font:inherit;font-size:14px;cursor:pointer}
-.elbar{pointer-events:auto;width:min(330px,calc(100% - 32px));padding:9px 13px 10px;border-radius:16px;background:rgba(24,24,26,.94);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);color:var(--fg);border:0;text-align:left;font:inherit;cursor:pointer}
-.elbar[hidden]{display:none}
-.elbar .r{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
-.elbar .r small span{font-variant-numeric:tabular-nums}
-.elbar .r small{font-size:11.5px;font-weight:600;color:var(--fg3);display:inline-flex;align-items:center;gap:5px}
-.elbar .r small i{width:6px;height:6px;border-radius:50%;background:#FF453A;animation:elpulse 1.6s infinite}
-.elbar .r small.fin i{background:var(--fg);animation:none}
-.elbar .r small span{transition:opacity .25s}.elbar .r small span.win{color:var(--fg);font-weight:700}
-.elbar .bar{position:relative;display:flex;justify-content:space-between;height:8px;border-radius:4px;overflow:hidden;margin-top:7px;background:rgba(255,255,255,.1)}
-.elbar .bar i{display:block;height:100%;transition:width .9s cubic-bezier(.22,1,.36,1)}
-.elbar .bar .a{background:#E5484D}.elbar .bar .b{background:#22C55E}
-.elbar.wait .bar .a,.elbar.wait .bar .b{background:rgba(255,255,255,.22)}.elbar.wait .r b{color:var(--fg2)}.elbar.wait .r small i{background:var(--fg3);animation:none}
-.elbar .bar:after{content:'';position:absolute;left:50%;top:0;bottom:0;width:2px;margin-left:-1px;background:rgba(20,20,22,.9)}
 .msg.enter,.mrow.enter{animation:msgIn .34s cubic-bezier(.2,.9,.25,1.12) backwards}
 .msg.out.enter{transform-origin:100% 100%}.msg.in.enter,.mrow.enter{transform-origin:0 100%}
 @keyframes msgIn{from{opacity:0;transform:translateY(16px) scale(.9)}}
@@ -210,61 +196,6 @@ body.kb-open .sf{padding-bottom:10px}
 .online.bump i{animation:onbump .6s ease-out}
 @keyframes onbump{0%{box-shadow:0 0 0 0 rgba(255,255,255,.55)}100%{box-shadow:0 0 0 9px rgba(255,255,255,0)}}
 
-.elrow .elav{width:54px;height:54px;border-radius:50%;background:var(--surface2);display:grid;place-items:center;flex:none;color:var(--fg)}
-.convrow .t b small.live{color:#FF453A;font-weight:700;letter-spacing:.06em;font-size:11px}
-.elhero{padding:10px 0 4px}
-.ellive{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.09em;color:var(--fg2)}
-.ellive i{width:8px;height:8px;border-radius:50%;background:#FF453A;animation:elpulse 1.6s infinite}
-.ellive.wait i{background:var(--fg3);animation:none}.ellive.fin i{background:var(--fg);animation:none}
-@keyframes elpulse{0%{box-shadow:0 0 0 0 rgba(255,69,58,.55)}70%{box-shadow:0 0 0 9px rgba(255,69,58,0)}100%{box-shadow:0 0 0 0 rgba(255,69,58,0)}}
-.elpst{display:flex;align-items:baseline;gap:9px;margin-top:12px}
-.elpst b{font-size:46px;font-weight:700;letter-spacing:-.025em;font-variant-numeric:tabular-nums;line-height:1}
-.elpst span{color:var(--fg2);font-size:15px}
-.elprog{height:4px;border-radius:2px;background:var(--surface2);overflow:hidden;margin-top:14px}
-.elprog i{display:block;height:100%;width:0;background:var(--fg);transition:width .8s cubic-bezier(.22,1,.36,1)}
-.elduel{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:24px}
-.elc{background:var(--surface2);border-radius:22px;padding:20px 12px 16px;text-align:center;position:relative;transition:box-shadow .3s}
-.elc.lead{box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.32)}
-.elc .tag{position:absolute;top:10px;right:10px;font-size:10.5px;font-weight:700;letter-spacing:.04em;padding:3px 8px;border-radius:99px;background:rgba(255,255,255,.12);color:var(--fg)}
-.elc .tag.win{background:var(--fg);color:#141414}
-.elph{width:88px;height:88px;border-radius:50%;margin:0 auto 12px;background:rgba(255,255,255,.1);overflow:hidden;position:relative;display:grid;place-items:center;font-weight:700;font-size:26px;color:var(--fg2)}
-.elph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 16%}
-.elc h3{margin:0;font-size:16.5px;font-weight:700;line-height:1.2}
-.elc small{display:block;color:var(--fg3);font-size:12.5px;margin-top:3px;font-weight:600;letter-spacing:.02em}
-.elc .pc{font-size:34px;font-weight:700;letter-spacing:-.025em;margin-top:14px;font-variant-numeric:tabular-nums;line-height:1}
-.elc .vt{color:var(--fg2);font-size:13px;margin-top:6px;font-variant-numeric:tabular-nums}
-.elsplit{display:flex;justify-content:space-between;height:10px;border-radius:5px;overflow:hidden;margin-top:18px;background:var(--surface2);position:relative}
-.elsplit i{display:block;height:100%;width:0;transition:width .8s cubic-bezier(.22,1,.36,1)}
-.elsplit i:first-child{background:var(--fg)}.elsplit i:last-child{background:rgba(255,255,255,.34)}
-.elsplit:after{content:'';position:absolute;left:50%;top:0;bottom:0;width:2px;margin-left:-1px;background:var(--surface)}
-.elsplitlab{display:flex;justify-content:space-between;font-size:12px;color:var(--fg3);margin-top:8px;font-variant-numeric:tabular-nums}
-.elgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:24px}
-.elgrid div{background:var(--surface2);border-radius:16px;padding:13px 14px}
-.elgrid small{display:block;color:var(--fg3);font-size:12px;font-weight:600}
-.elgrid b{display:block;font-size:17px;margin-top:4px;font-variant-numeric:tabular-nums}
-.row.elregbtn{margin-top:22px;background:var(--surface2);border-radius:22px;padding:12px 16px;gap:16px;min-height:0}.elregbtn .elav{width:22px;height:44px;display:grid;place-items:center;flex:none;color:var(--fg)}
-.elrtip{color:var(--fg3);font-size:13.5px;text-align:center;margin:0 0 4px;line-height:1.45}
-.elrmini{width:48px;height:6px;border-radius:3px;overflow:hidden;display:flex;background:rgba(255,255,255,.14);flex:none}.elrmini i{display:block;height:100%}
-.elrsub{color:var(--fg3);font-size:13px;text-align:center;margin:-2px 0 4px}
-.elrduel{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
-.elrc{background:var(--surface2);border-radius:20px;padding:14px 14px 13px;position:relative}.elrc.lead{box-shadow:inset 0 0 0 1.5px var(--c)}
-.elrc h3{font-size:15px;margin:0;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.elrc .pc{font-size:26px;font-weight:800;margin-top:6px;color:var(--c);font-variant-numeric:tabular-nums}.elrc .vt{font-size:13px;color:var(--fg2);margin-top:2px;font-variant-numeric:tabular-nums}
-.elrc .tag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.04em;padding:3px 8px;border-radius:999px;background:var(--c);color:#0b0b0b;margin-bottom:8px}
-.elfoot{color:var(--fg3);font-size:12.5px;text-align:center;margin:24px 0 12px;line-height:1.55}
-.elload{color:var(--fg3);text-align:center;padding:60px 0}
-.elcount{display:block;margin-top:16px;background:var(--surface2);border-radius:16px;padding:12px 14px;font-size:14px;line-height:1.35}
-.elcount b{font-variant-numeric:tabular-nums}
-.elodds{margin-top:22px;background:var(--surface2);border-radius:22px;padding:16px 16px 14px}
-.elodds>small{display:block;color:var(--fg3);font-size:12px;font-weight:700;letter-spacing:.08em}
-.elodr{display:flex;justify-content:space-between;align-items:flex-end;margin-top:10px}
-.elodr div:last-child{text-align:right}
-.elodlogo{width:34px;height:auto;align-self:center;opacity:.92}.elodds.wait .elodlogo{opacity:.4}
-.elodr b{display:block;font-size:30px;font-weight:700;letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}
-.elodr span{display:block;color:var(--fg2);font-size:13px;font-weight:600;margin-top:5px}
-.elodbar{display:flex;height:6px;border-radius:3px;overflow:hidden;margin-top:12px;background:var(--surface)}
-.elodbar i{display:block;height:100%;width:50%;transition:width .8s cubic-bezier(.22,1,.36,1)}
-.elodds p{margin:10px 0 0;color:var(--fg3);font-size:12px;line-height:1.45}
-.elodds.wait .elodr b{color:var(--fg3)}
 
 
 .sheet>.sh,.sheet>.sf,.sheet>.grab{position:relative;z-index:3;background:var(--surface)}.sheet>.sb{position:relative;z-index:1;overscroll-behavior-y:none}
@@ -501,7 +432,7 @@ body.kb-open .chatbody{padding-bottom:6px}
 </head>
 <body>
 <div id="app">
-  <div id="map"><canvas id="globe" aria-hidden="true"></canvas><canvas id="fw" aria-hidden="true" hidden></canvas><svg id="svg" aria-label="Globo com membros por cidade"><g id="bubbles"></g></svg></div>
+  <div id="map"><canvas id="globe" aria-hidden="true"></canvas><svg id="svg" aria-label="Globo com membros por cidade"><g id="bubbles"></g></svg></div>
 
   <div id="top" class="gutter">
     <div style="display:flex;flex-direction:column;align-items:flex-start;gap:8px">
@@ -519,7 +450,6 @@ body.kb-open .chatbody{padding-bottom:6px}
       <button class="tipbtn" id="tipAction" hidden>Instalar</button>
       <button class="tipx" id="tipClose" aria-label="Fechar aviso">✕</button>
     </div>
-    <button class="elbar" id="elLeg" hidden aria-label="Apuração ao vivo: abrir resultado"><div class="r"><b id="elbA"></b><small id="elbS"><i></i><span></span></small><b id="elbB"></b></div><div class="bar"><i class="a" id="elbBarA"></i><i class="b" id="elbBarB"></i></div></button>
     <div class="online" id="onlineBtn" hidden role="status" aria-label="Membros online agora"><i></i><span id="onlineTxt"></span></div>
     <button class="status" id="myStatus" hidden><span class="dot"></span><span><b id="stCity">São Paulo</b> <span id="stMeta">· até sexta</span></span><span style="color:var(--fg3);font-size:18px">›</span><span class="x" id="stEnd" role="button" aria-label="Encerrar check-in">✕</span></button>
     <button class="estou" id="btnCheckin"><span id="btnCheckinLbl">Marcar local</span></button>
@@ -559,21 +489,6 @@ body.kb-open .chatbody{padding-bottom:6px}
     <div class="sh gutter chathead"><button class="chatback" data-close aria-label="Voltar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button><button class="chatwho" id="chatWho"></button><button class="more" id="chatMore" aria-label="Mais opções">⋯</button></div>
     <div class="sb gutter chatbody" id="chatBody"></div>
     <div class="sf gutter" id="chatFoot"><button class="newbelow" id="newBelow" hidden>↓ <span id="newBelowN"></span></button><div class="chatmenu" id="chatMenu" hidden></div><div class="mentions" id="mentionList" hidden></div><div class="replybar" id="replyBar" hidden><span class="t"><b id="rbWho"></b><small id="rbText"></small></span><button class="close xs" id="rbX" aria-label="Cancelar resposta">✕</button></div><div class="chatin"><textarea id="chatIn" rows="1" maxlength="2000" placeholder="Mensagem" aria-label="Mensagem"></textarea><button class="send" id="chatSend" aria-label="Enviar">↑</button></div><p class="chatnote" id="chatNote" hidden></p></div>
-  </section>
-
-  <section class="sheet page" id="shEleicao" aria-label="Eleição presidencial">
-    <div class="sh gutter pagehead"><button class="chatback" data-close aria-label="Voltar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button><h2 class="ctr">Eleição presidencial</h2></div>
-    <div class="sb gutter" id="elBody"></div>
-  </section>
-
-  <section class="sheet page" id="shElReg" aria-label="Apuração por estado e cidade">
-    <div class="sh gutter pagehead"><button class="chatback" data-close aria-label="Voltar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button><h2 class="ctr">Estados e cidades</h2></div>
-    <div class="sb gutter"><div class="srch"><input type="search" id="elrQ" placeholder="Buscar estado ou cidade" autocomplete="off" autocorrect="off" aria-label="Buscar estado ou cidade"></div><div id="elrList"></div></div>
-  </section>
-
-  <section class="sheet page" id="shElLoc" aria-label="Apuração do lugar">
-    <div class="sh gutter pagehead"><button class="chatback" data-close aria-label="Voltar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button><h2 class="ctr" id="elrTitle"></h2></div>
-    <div class="sb gutter" id="elrBody"></div>
   </section>
 
   <section class="sheet" id="shMembers" aria-label="Membros do The Group">
@@ -820,6 +735,9 @@ const CITIES=[
 let EVENTS=[];
 const pad2=n=>String(n).padStart(2,'0');
 const isoLocal=d=>`${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+/* datas da viagem: as mesmas regras do banco (começa amanhã ou depois, no máximo 120 dias) */
+function tripDatesError(from,to){if(!from||!to)return'Escolha as datas da viagem';if(from<D(1))return'A viagem precisa começar amanhã ou depois';if(to<from)return'A volta precisa ser depois da ida';
+  if((Date.parse(to)-Date.parse(from))/864e5>120)return'A viagem pode ter no máximo 120 dias';return''}
 const D=(n)=>{const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()+n);return isoLocal(d)};
 
 /* ---------- per-device conveniences only ---------- */
@@ -956,8 +874,6 @@ function drawGlobe(){needsDraw=false;setProj();const c=gctx,r=gScale(),cx=W/2,cy
   c.lineJoin='round';c.lineWidth=0.8;
   c.beginPath();gpath(LAND);c.fillStyle='rgba(255,255,255,0.065)';c.fill();c.strokeStyle='rgba(255,255,255,0.20)';c.stroke();
   c.beginPath();gpath(BRST);c.fillStyle='rgba(255,255,255,0.065)';c.fill();c.strokeStyle='rgba(255,255,255,0.15)';c.stroke();
-  /* estados da apuração somem ao aproximar nas cidades (z 3 a 4.5): nesse zoom a divisão nem aparece e o desenho pesa na pinça */
-  if(elMapOn()&&z<4.5){const fa=z<=3?1:(4.5-z)/1.5,ga=c.globalAlpha;c.globalAlpha=ga*fa;drawElStates(c);c.globalAlpha=ga}
   c.beginPath();gpath({type:'Sphere'});c.strokeStyle='rgba(255,255,255,0.12)';c.lineWidth=1;c.stroke();
   c.globalAlpha=1}
   if(st>0)drawSym(c,cx,cy,r,st);
@@ -1181,201 +1097,7 @@ function paintOnline(){const b=$('#onlineBtn');if(!b)return;const list=me?online
 }
 document.addEventListener('visibilitychange',()=>{if(!me)return;if(!document.hidden&&pres&&pres.state!=='joined'){presenceStop();presenceStart();return}presTrack()});
 window.addEventListener('pagehide',()=>{try{pres&&pres.untrack()}catch(e){}});
-/* Eleição presidencial 2026, 2º turno (TEMPORÁRIO: desligar com FEATURE_ELEICAO=false depois da apuração) */
-const FEATURE_ELEICAO=true;
 const FEATURE_PUSH_GATE=true;
-const EL_URL='https://resultados.tse.jus.br/oficial/ele2026/6258/dados/br/br-c0001-e006258-u.json',EL_FOTO='https://resultados.tse.jus.br/oficial/ele2026/6258/fotos/br/';
-let EL=null,elBusy=false,elKey='';
-const elNum=x=>+String(x==null?'0':x).replace(/\./g,'').replace(',','.')||0;
-const elName=x=>String(x||'').toLowerCase().replace(/(^|\s)\S/g,c=>c.toUpperCase()).replace(/ (Da|De|Do|Dos|Das|E) /g,c=>c.toLowerCase());
-const elP=(n,k)=>(+n||0).toLocaleString('pt-BR',{minimumFractionDigits:k,maximumFractionDigits:k});
-const elV=n=>Math.round(+n||0).toLocaleString('pt-BR');
-const ELAV='<span class="elav"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M6 20v-8M12 20V5M18 20v-5"/></svg></span>';
-function elParse(d){const cs=[];const g=((d.carg||[])[0]||{}).agr||[];
-  g.forEach(a=>(a.par||[]).forEach(p=>(p.cand||[]).forEach(c=>cs.push({sq:c.sqcand,n:c.n,nm:elName(c.nmu||c.nm),sg:p.sg,seq:+c.seq||9,v:elNum(c.vap),p:elNum(c.pvapn||c.pvap),e:c.e==='s'}))));
-  cs.sort((a,b)=>a.seq-b.seq);const s=d.s||{},v=d.v||{},e=d.e||{};
-  return{cs,pst:elNum(s.pstn||s.pst),hg:d.hg||'',dg:d.dg||'',fim:d.tf==='s',vv:elNum(v.vv),te:elNum(e.te),vb:elNum(v.vb),vn:elNum(v.tvn),pab:elNum(e.pan||e.pa),ab:elNum(e.a),cp:elNum(e.c),pcp:elNum(e.pcn||e.pc)}}
-async function elLoad(){if(elBusy)return;elBusy=true;
-  const ac=new AbortController(),to=setTimeout(()=>ac.abort(),8000);
-  try{const r=await fetch(EL_URL,{cache:'no-cache',signal:ac.signal});if(r.ok){const d=elParse(await r.json());if(!EL||d.pst>=EL.pst||d.fim){EL=d;elPaint()}}}catch(e){}finally{clearTimeout(to);elBusy=false}}
-const elWaiting=d=>!d||(!d.pst&&!d.vv);
-const elColor=n=>({'13':'#E5484D','22':'#22C55E'})[n]||'rgba(255,255,255,.4)';
-function elRowInner(){const d=EL;let sub='Apuração ao vivo';
-  if(d&&elWaiting(d))sub='A apuração começa às 17h';
-  else if(d){sub=`${Math.floor(d.pst)}% das urnas · `+d.cs.map(c=>`${c.nm.split(' ')[0]} ${elP(c.p,1)}%`).join(' · ');const w=d.cs.find(c=>c.e);if(w)sub=`${w.nm} eleito com ${elP(w.p,2)}%`}
-  return`${ELAV}<span class="t"><b><span>Eleição presidencial</span>${d&&d.fim?'<small>Final</small>':d&&elWaiting(d)?`<small>${new Date(EL_START).toDateString()===new Date().toDateString()?'Hoje':'Amanhã'} 17h</small>`:'<small class="live">AO VIVO</small>'}</b><small class="snip">${esc(sub)}</small></span>`}
-function elRowHtml(){return`<button class="row convrow elrow" id="elRow">${elRowInner()}</button>`}
-function elTween(el,to,fmt){if(!el)return;const from=el.dataset.v!=null?+el.dataset.v:0;el.dataset.v=to;if(from===to){el.textContent=fmt(to);return}const t0=performance.now(),D=700;
-  const st=now=>{const p=Math.min(1,(now-t0)/D),k=1-Math.pow(1-p,3);el.textContent=fmt(from+(to-from)*k);if(p<1)requestAnimationFrame(st)};requestAnimationFrame(st)}
-function elBuild(d){const b=$('#elBody');elKey=d.cs.map(c=>c.sq).join();
-  b.innerHTML=`<div class="elhero"><span class="ellive" id="elLive"><i></i><span></span></span><div class="elpst"><b id="elPst">0,00%</b><span>das urnas apuradas</span></div><div class="elprog"><i id="elProg"></i></div><div class="elcount" id="elCount" hidden></div></div>
-  <div class="elduel">${d.cs.map((c,i)=>`<div class="elc" id="elc${i}"><span class="tag" hidden></span><div class="elph">${esc(c.nm.split(' ').map(w=>w[0]).slice(0,2).join(''))}<img src="${EL_FOTO}${encodeURIComponent(c.sq)}.jpeg" alt=""></div><h3>${esc(c.nm)}</h3><small>${esc(c.sg)} · ${esc(c.n)}</small><div class="pc">0,00%</div><div class="vt">0 votos</div></div>`).join('')}</div>
-  ${d.cs.length===2?`<div class="elsplit"><i id="elA"></i><i id="elB"></i></div><div class="elsplitlab"><span id="elAl"></span><span>50%</span><span id="elBl"></span></div><div class="elodds" id="elOdds" hidden><small>CHANCE DE VENCER</small><div class="elodr">${d.cs.map((c,i)=>`<div><b id="elO${i}">–</b><span>${esc(elFirst(c.nm))}</span></div>`).join('<img class="elodlogo" src="email-logo.png" alt="The Group">')}</div><div class="elodbar"><i id="elOA"></i><i id="elOB"></i></div><p><span id="elOn">Estimativa do The Group com as urnas já apuradas em cada estado. Não é dado do TSE.</span></p></div>`:''}
-  <div class="elgrid"><div><small>Diferença</small><b id="elDif">0</b></div><div><small>Votos válidos</small><b id="elVv">0</b></div><div><small>Brancos e nulos</small><b id="elBn">0</b></div><div><small>Abstenção</small><b id="elAb">0%</b></div></div>
-  <button class="row elregbtn" id="elRegBtn"><span class="elav"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg></span><span class="t"><b>Ver por estado e cidade</b><small>Pesquise um lugar e veja os votos de lá</small></span><span class="chev">›</span></button>
-  <p class="elfoot" id="elFoot"></p>`;
-  $('#elRegBtn').onclick=()=>{haptic();openElReg()};
-  b.querySelectorAll('.elph img').forEach(im=>im.addEventListener('error',()=>im.remove()))}
-/* Chance de vencer: projeta o resultado final somando cada estado. A parte já apurada fica como está; o que falta
-   segue a tendência do próprio estado, e os estados sem urnas seguem o 2º turno de 2022 corrigido pela variação
-   que os estados já apurados mostram. Os votos do exterior (zz) entram como mais uma parte, sem base de 2022 (50%).
-   O número de eleitores de cada parte fica guardado aqui: se o arquivo de um estado não carregar, só ele usa a estimativa.
-   A incerteza encolhe conforme a apuração avança. Estimativa, não dado oficial. */
-const EL_BASE={ac:.297,al:.587,am:.511,ap:.486,ba:.721,ce:.700,df:.412,es:.420,go:.413,ma:.711,mg:.502,ms:.405,mt:.349,pa:.548,pb:.666,pe:.669,pi:.769,pr:.376,rj:.435,rn:.651,ro:.293,rr:.239,rs:.437,sc:.307,se:.672,sp:.448,to:.514}; /* Lula no 2º turno de 2022 */
-const EL_TE={ac:613715,al:2442081,am:2798661,ap:576910,ba:11312891,ce:6996521,df:2258995,es:2991515,go:5080385,ma:5183049,mg:16372144,ms:2024437,mt:2637879,pa:6262063,pb:3248434,pe:7223227,pi:2704695,pr:8613628,rj:12857526,rn:2659867,ro:1265926,rr:401540,rs:8522318,sc:5734687,se:1740093,sp:34123591,to:1182041,zz:916683,br:158745502}; /* eleitores aptos por estado e no exterior (zz), lidos do TSE em 25/10/2026 */
-const elPhi=z=>{const t=1/(1+.2316419*Math.abs(z)),y=.3989423*Math.exp(-z*z/2)*t*(.3193815+t*(-.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));return z>0?1-y:y};
-function elOdds(d){if(!d||!d.vv||d.cs.length!==2)return null;if(d.cs.some(c=>c.e))return d.cs.map(c=>c.e?1:0);
-  const A=d.cs[0].n,B=d.cs[1].n,base=uf=>EL_BASE[uf]==null?.5:A==='13'?EL_BASE[uf]:B==='13'?1-EL_BASE[uf]:.5;
-  const unit=(r,pr,te)=>{const a=r?(r.cs.find(c=>c.n===A)||{v:0}).v:0,cnt=r?r.cs.reduce((t,c)=>t+c.v,0):0;return{a,cnt,x:r?Math.min(1,r.pst/100):0,te:r&&r.te||te||0,pr}};
-  let us=[...EL_UFS,'zz'].map(uf=>unit(ST_RES[uf],base(uf),EL_TE[uf]));
-  if(!us.some(u=>u.cnt))us=[unit(d,.5,EL_TE.br)]; /* nenhum estado carregou ainda: só o arquivo nacional */
-  let sw=0,sc=0;us.forEach(u=>{if(u.cnt){sw+=u.cnt*(u.a/u.cnt-u.pr);sc+=u.cnt}});sw=sc?sw/sc:0;const X0=Math.min(1,d.pst/100);sw*=X0/(X0+.15); /* no começo a variação pesa menos: as primeiras urnas não representam o estado todo */
-  let am=0,V=0,R=0,vr=0;
-  for(const u of us){const w=Math.min(1,u.x/.2),T=Math.max(u.cnt,u.cnt&&u.x?w*u.cnt/u.x+(1-w)*u.te*.76:u.te*.76),r=T-u.cnt;
-    const b=u.pr+sw,m=Math.min(.98,Math.max(.02,u.cnt?(u.x*20*(u.a/u.cnt)+b)/(u.x*20+1):b)),sg=.015+.035*(1-u.x);
-    am+=u.a+r*m;V+=T;R+=r;vr+=(r*sg)**2}
-  const X=V?1-R/V:1,ss=.005+.035*(1-X);vr+=(R*ss)**2;const mu=am-V/2,sd=Math.sqrt(vr);
-  const p=sd<1?(mu>0?1:mu<0?0:.5):elPhi(mu/sd);return[p,1-p]}
-const elPct=p=>Math.min(99,Math.max(1,Math.round(p*100)))+'%'; /* 100% e 0% só quando o TSE declara o eleito */
-function elOddsPaint(d,wait){const box=$('#elOdds');if(!box)return;const o=wait?null:elOdds(d);box.hidden=!o&&!wait;box.classList.toggle('wait',!o);$('#elOn').textContent=o?'Estimativa do The Group com as urnas já apuradas em cada estado. Não é dado do TSE.':'A chance de cada um aparece quando saírem os primeiros votos, às 17h.';
-  if(!o){[0,1].forEach(i=>{const b=$('#elO'+i);if(b){b.textContent='–';b.style.color=''}});['#elOA','#elOB'].forEach(k=>{$(k).style.width='50%';$(k).style.background='rgba(255,255,255,.16)'});return}
-  o.forEach((p,i)=>{const b=$('#elO'+i);if(b){b.textContent=d.fim||d.cs.some(c=>c.e)?Math.round(p*100)+'%':elPct(p);b.style.color=elColor(d.cs[i].n)}});
-  $('#elOA').style.width=o[0]*100+'%';$('#elOB').style.width=o[1]*100+'%';$('#elOA').style.background=elColor(d.cs[0].n);$('#elOB').style.background=elColor(d.cs[1].n)}
-const EL_START=Date.parse('2026-10-25T17:00:00-03:00');
-function elCountdown(){const ms=EL_START-Date.now();if(ms<=0)return'A apuração já começou. Os primeiros números saem em instantes.';const h=Math.floor(ms/36e5),m=Math.floor(ms%36e5/6e4);
-  return`A apuração em tempo real começa em <b>${h?h+'h ':''}${m}min</b>, às 17h de Brasília.`}
-function elPaint(){fwCheck(EL);const r=$('#elRow');if(r)r.innerHTML=elRowInner();if(!stack.includes('shEleicao'))return;const d=EL,b=$('#elBody');
-  if(!d){if(!b.innerHTML)b.innerHTML='<div class="elload">Carregando a apuração…</div>';return}
-  if(elKey!==d.cs.map(c=>c.sq).join()||!$('#elPst'))elBuild(d);
-  const wait=elWaiting(d),lv=$('#elLive');lv.className='ellive'+(wait?' wait':d.fim?' fin':'');lv.querySelector('span').textContent=wait?'AGUARDANDO':d.fim?'APURAÇÃO ENCERRADA':'AO VIVO';
-  elTween($('#elPst'),d.pst,n=>elP(n,2)+'%');$('#elProg').style.width=d.pst+'%';const cnt=$('#elCount');cnt.hidden=!wait;if(wait)cnt.innerHTML=elCountdown();
-  const top=Math.max(...d.cs.map(c=>c.v));
-  d.cs.forEach((c,i)=>{const el=$('#elc'+i);if(!el)return;elTween(el.querySelector('.pc'),c.p,n=>elP(n,2)+'%');elTween(el.querySelector('.vt'),c.v,n=>elV(n)+' votos');
-    const lead=!wait&&c.v===top&&d.cs.filter(x=>x.v===top).length===1;el.classList.toggle('lead',lead||c.e);const t=el.querySelector('.tag');
-    if(c.e){t.hidden=false;t.textContent='Eleito';t.classList.add('win')}else if(lead&&!d.fim){t.hidden=false;t.textContent='À frente';t.classList.remove('win')}else t.hidden=true});
-  if(d.cs.length===2){$('#elA').style.width=(wait?50:d.cs[0].p)+'%';$('#elB').style.width=(wait?50:d.cs[1].p)+'%';$('#elA').style.background=wait?'rgba(255,255,255,.16)':elColor(d.cs[0].n);$('#elB').style.background=wait?'rgba(255,255,255,.16)':elColor(d.cs[1].n);$('#elAl').textContent=wait?'':elP(d.cs[0].p,1)+'%';$('#elBl').textContent=wait?'':elP(d.cs[1].p,1)+'%';
-    elTween($('#elDif'),Math.abs(d.cs[0].v-d.cs[1].v),elV);elOddsPaint(d,wait)}else $('#elDif').textContent='–';
-  elTween($('#elVv'),d.vv,elV);elTween($('#elBn'),d.vb+d.vn,elV);elTween($('#elAb'),d.pab,n=>elP(n,1)+'%');if(wait)['#elDif','#elVv','#elBn','#elAb'].forEach(k=>{const e=$(k);if(e){e.dataset.v=0;e.textContent='–'}});
-  $('#elFoot').innerHTML=(wait?'A apuração começa às 17h de Brasília':`Atualizado às ${esc(d.hg.slice(0,5))}`+(d.fim?'':' · atualiza sozinho'))+' · Fonte: TSE'}
-/* Apuração por estado no mapa (TEMPORÁRIO, junto com a eleição): cada estado ganha a cor de quem lidera,
-   mais forte conforme a vantagem e mais preenchido conforme as urnas apuradas. Dados: um arquivo do TSE por estado. */
-const FEATURE_ELEICAO_MAPA=true;
-const EL_UFS=['ac','al','am','ap','ba','ce','df','es','go','ma','mg','ms','mt','pa','pb','pe','pi','pr','rj','rn','ro','rr','rs','sc','se','sp','to'];
-const EL_COL={'13':[229,72,77],'22':[34,197,94]};
-let ST_RES={},EL_NAT=null,ELM_SIM=false,elmBusy=false;
-const elMapOn=()=>FEATURE_ELEICAO_MAPA&&!!EL_NAT;
-/* contorno simplificado dos estados (Douglas-Peucker, 0,04°): mesmo desenho na tela, bem menos pontos por quadro */
-function elSimp(ring,tol){if(ring.length<=8)return ring;const keep=new Uint8Array(ring.length);keep[0]=keep[ring.length-1]=1;const st=[[0,ring.length-1]];
-  while(st.length){const[a,b]=st.pop();const[ax,ay]=ring[a],[bx,by]=ring[b],dx=bx-ax,dy=by-ay,L=Math.hypot(dx,dy);let mi=-1,md=tol;
-    for(let i=a+1;i<b;i++){const d=L<1e-9?Math.hypot(ring[i][0]-ax,ring[i][1]-ay):Math.abs(dy*ring[i][0]-dx*ring[i][1]+bx*ay-by*ax)/L; /* anel fechado: começo e fim no mesmo ponto */if(d>md){md=d;mi=i}}if(mi>0){keep[mi]=1;st.push([a,mi],[mi,b])}}
-  const out=ring.filter((_,i)=>keep[i]);return out.length>=4?out:ring}
-function elLite(s){return s.lite||(s.lite={type:'Feature',geometry:{type:'MultiPolygon',coordinates:s.feat.geometry.coordinates.map(poly=>poly.map(r=>elSimp(r,0.04)))}})}
-function drawElStates(c){c.lineWidth=0.8;for(const s of BR_UF){const r=ST_RES[s.uf];c.beginPath();gpath(elLite(s));
-    if(!r||!r.vv){c.fillStyle='rgba(255,255,255,0.09)';c.fill();c.strokeStyle='rgba(255,255,255,0.26)';c.stroke();continue}
-    const top=r.cs.slice().sort((a,b)=>b.v-a.v);const lead=top[0],sec=top[1]||{p:0};const col=EL_COL[lead.n]||[200,200,200];
-    const margin=Math.abs(lead.p-sec.p);const a=(0.28+0.5*Math.min(1,margin/25))*(0.35+0.65*Math.min(1,r.pst/100));
-    c.fillStyle=`rgba(${col[0]},${col[1]},${col[2]},${a.toFixed(3)})`;c.fill();c.strokeStyle='rgba(255,255,255,0.35)';c.stroke()}}
-/* contagem regressiva até as 17h de Brasília: 6:42:15, e no último minuto 0:59 */
-function elCountShort(){const ms=EL_START-Date.now();if(ms<=0)return'aguardando o TSE';const t=Math.ceil(ms/1000),h=Math.floor(t/3600),m=Math.floor(t%3600/60),sec=t%60,p=n=>String(n).padStart(2,'0');return'começa em '+(h?`${h}:${p(m)}:${p(sec)}`:`${m}:${p(sec)}`)}
-setInterval(()=>{const b=$('#elLeg');if(!b||b.hidden||!b.classList.contains('wait')||document.hidden)return;b.querySelector('#elbS span').textContent=elCountShort()},1000);
-const elFirst=nm=>{const f=String(nm||'').split(' ')[0];return f==='Flavio'?'Flávio':f};
-function paintElLeg(){const b=$('#elLeg');if(!b)return;const N=EL_NAT;fwCheck(N);if(!FEATURE_ELEICAO_MAPA||!N||!N.cs||N.cs.length<2){b.hidden=true;return}
-  const A=N.cs.find(c=>c.n==='13')||N.cs[0],B=N.cs.find(c=>c.n==='22')||N.cs[1];const wait=!N.vv;b.classList.toggle('wait',wait);const sm=$('#elbS');sm.classList.toggle('fin',!!N.fim);
-  if(wait){$('#elbA').textContent=elFirst(A.nm);$('#elbB').textContent=elFirst(B.nm);sm.querySelector('span').textContent=elCountShort();$('#elbBarA').style.width='50%';$('#elbBarB').style.width='50%';b.hidden=false;return}
-  const tot=(A.p+B.p)||1;const pa=A.p/tot*100,pb=B.p/tot*100;
-  $('#elbA').textContent=`${elFirst(A.nm)} ${elP(A.p,1)}%`;$('#elbB').textContent=`${elP(B.p,1)}% ${elFirst(B.nm)}`;
-  const won=N.cs.find(c=>c.e),sp=sm.querySelector('span'),alt=won&&elLegAlt;sp.classList.toggle('win',!!alt);
-  sp.textContent=alt?`${elFirst(won.nm)} eleito`:N.fim?'apuração encerrada':`${Math.floor(N.pst)}% das urnas`;
-  $('#elbBarA').style.width=pa+'%';$('#elbBarB').style.width=pb+'%';b.hidden=false}
-$('#elLeg').onclick=()=>{haptic();openEleicao()};
-/* com eleito declarado, o texto do meio da barra alterna a cada 3 s entre "apuração encerrada" e "Fulano eleito" */
-let elLegAlt=false;
-setInterval(()=>{const N=EL_NAT,b=$('#elLeg');if(!N||!N.cs||!N.cs.some(c=>c.e)||!b||b.hidden||document.hidden)return;const sp=$('#elbS span');sp.style.opacity=0;
-  setTimeout(()=>{elLegAlt=!elLegAlt;paintElLeg();sp.style.opacity=1},250)},3000);
-/* Fogos verde, amarelo e azul sobre o Brasil quando o TSE declarar o Flávio (22) eleito. Só depois do resultado oficial.
-   Ficam contínuos enquanto o mapa está à vista (pausam com uma página aberta) e acabam 24 h depois do horário do resultado no TSE. */
-const FW_FOR='22',FW_COL=['#22C55E','#00B347','#FFDF00','#FFE66B','#3B82F6','#60A5FA'];
-let fwState=0,fwPts=null,fwEnd=0,fwFirst=true;
-function fwPoints(){if(fwPts)return fwPts;fwPts=[];let s=11;const r=()=>(s=s*16807%2147483647)/2147483647;
-  for(let i=0;i<5000&&fwPts.length<90;i++){const p=[-73+r()*39,-33+r()*38];if(d3.geoContains(BRST,p))fwPts.push(p)}return fwPts}
-function fwCheck(N){if(fwState||!N||!N.cs||!N.cs.some(c=>c.e&&c.n===FW_FOR))return;
-  const m=/^(\d\d)\/(\d\d)\/(\d{4})$/.exec(N.dg||''),t=m&&/^\d\d:\d\d:\d\d$/.test(N.hg)?Date.parse(`${m[3]}-${m[2]}-${m[1]}T${N.hg}-03:00`):NaN;
-  fwEnd=(isNaN(t)?Date.now():t)+864e5;if(Date.now()>=fwEnd){fwState=3;return}fwState=1;fwTry()}
-function fwTry(){if(fwState!==1)return;if(Date.now()>=fwEnd){fwState=3;return}if(stack.length||document.hidden){setTimeout(fwTry,700);return}fwState=2;fwRun()}
-function fwRun(){const cv=$('#fw'),c=cv.getContext('2d');cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR);cv.hidden=false;
-  if(fwFirst){fwFirst=false;flyTo(-52,-14,W*1.3/RPZ,1400);haptic()}
-  const pts=fwPoints(),rk=[],ps=[],T0=performance.now(),pick=a=>a[Math.floor(Math.random()*a.length)];let next=T0+1100,last=T0;
-  const launch=now=>rk.push({a:pick(pts),t0:now,h:60+Math.random()*90,dur:600+Math.random()*350,col:pick(FW_COL)});
-  const burst=r=>{const n=70+Math.floor(Math.random()*40),sp=1.6+Math.random()*1.2,c2=pick(FW_COL);
-    for(let i=0;i<n;i++){const ang=Math.random()*6.283,v=sp*(.5+Math.random()*.5);ps.push({a:r.a,x:0,y:-r.h,vx:Math.cos(ang)*v,vy:Math.sin(ang)*v,life:1,dec:.010+Math.random()*.008,col:i%3?r.col:c2})}
-    ps.push({a:r.a,x:0,y:-r.h,vx:0,vy:0,life:1,dec:.06,col:'#ffffff',flash:1})};
-  const frame=now=>{const dt=Math.min(3,(now-last)/16.7);last=now;const el=now-T0;
-    const stop=stack.length||document.hidden||Date.now()>=fwEnd;
-    if(stop&&!ps.length&&!rk.length){c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,cv.width,cv.height);cv.hidden=true;if(Date.now()>=fwEnd)fwState=3;else{fwState=1;setTimeout(fwTry,700)}return}
-    if(!stop&&now>=next){launch(now);if(Math.random()<(el<15000?.5:.25))launch(now);next=now+(el<15000?240+Math.random()*420:500+Math.random()*700)}
-    if(cv.width!==Math.round(W*DPR)||cv.height!==Math.round(H*DPR)){cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR)}
-    c.setTransform(DPR,0,0,DPR,0,0);c.clearRect(0,0,W,H);c.globalCompositeOperation='lighter';c.lineCap='round';
-    const center=[-rot[0],-rot[1]],at=a=>d3.geoDistance(a,center)<Math.PI/2-.05?gproj(a):null;
-    for(let i=rk.length-1;i>=0;i--){const r=rk[i],k=(now-r.t0)/r.dur;if(k>=1){burst(r);rk.splice(i,1);continue}const q=at(r.a);if(!q)continue;const y=-r.h*(1-Math.pow(1-k,2));
-      c.globalAlpha=.9;c.strokeStyle=r.col;c.lineWidth=2;c.beginPath();c.moveTo(q[0],q[1]+y+12);c.lineTo(q[0],q[1]+y);c.stroke()}
-    for(let i=ps.length-1;i>=0;i--){const p=ps[i];p.vx*=Math.pow(.984,dt);p.vy=p.vy*Math.pow(.984,dt)+.03*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.life-=p.dec*dt;
-      if(p.life<=0){ps.splice(i,1);continue}const q=at(p.a);if(!q)continue;const x=q[0]+p.x,y=q[1]+p.y;
-      if(p.flash){c.globalAlpha=p.life*.8;const g=c.createRadialGradient(x,y,0,x,y,26);g.addColorStop(0,'rgba(255,255,255,.9)');g.addColorStop(1,'rgba(255,255,255,0)');c.fillStyle=g;c.beginPath();c.arc(x,y,26,0,6.283);c.fill();continue}
-      c.globalAlpha=Math.min(1,p.life*1.4);c.strokeStyle=p.col;c.lineWidth=1.8;c.beginPath();c.moveTo(x-p.vx*3,y-p.vy*3);c.lineTo(x,y);c.stroke()}
-    c.globalCompositeOperation='source-over';c.globalAlpha=1;
-    requestAnimationFrame(frame)};
-  requestAnimationFrame(frame)}
-/* busca com limite de 8 s: uma leitura lenta nunca trava as próximas */
-const elGet=url=>{const ac=new AbortController(),t=setTimeout(()=>ac.abort(),8000);return fetch(url,{cache:'no-cache',signal:ac.signal}).then(r=>r.ok?r.json():null).catch(()=>null).finally(()=>clearTimeout(t))};
-async function loadElStates(){if(!FEATURE_ELEICAO_MAPA||ELM_SIM||elmBusy||document.hidden||!me)return;elmBusy=true;
-  try{const nat=await elGet(EL_URL);if(!nat)return;const N=elParse(nat);const first=!EL_NAT;if(!EL_NAT||N.pst>=EL_NAT.pst){EL_NAT=N;paintElLeg();if(first)applyTransform()}if(!N.pst&&!N.vv)return;
-    const UFS=[...EL_UFS,'zz'];const res=await Promise.all(UFS.map(uf=>elGet(`https://resultados.tse.jus.br/oficial/ele2026/6258/dados/${uf}/${uf}-c0001-e006258-u.json`)));
-    let ch=false;res.forEach((d,i)=>{if(!d)return;const r=elParse(d);const old=ST_RES[UFS[i]];if(!old||r.pst>=old.pst){ST_RES[UFS[i]]=r;ch=true}});
-    if(ch){paintElLeg();applyTransform();if(EL&&$('#elOdds'))elOddsPaint(EL,elWaiting(EL))}}finally{elmBusy=false}}
-setInterval(loadElStates,10000);setInterval(()=>{if(EL_NAT&&!EL_NAT.vv)paintElLeg()},30000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)loadElStates()});
-function openEleicao(){openSheet('shEleicao');elPaint();elLoad()}
-/* Apuração por estado e cidade: lista dos estados com a apuração de cada um e busca de qualquer cidade.
-   Tocar num lugar abre os números dele. A lista de cidades e os votos de cada cidade vêm do TSE, só quando a pessoa pede. */
-const EL_BASEURL='https://resultados.tse.jus.br/oficial/ele2026/6258/';
-const UF_NM={ac:'Acre',al:'Alagoas',am:'Amazonas',ap:'Amapá',ba:'Bahia',ce:'Ceará',df:'Distrito Federal',es:'Espírito Santo',go:'Goiás',ma:'Maranhão',mg:'Minas Gerais',ms:'Mato Grosso do Sul',mt:'Mato Grosso',pa:'Pará',pb:'Paraíba',pe:'Pernambuco',pi:'Piauí',pr:'Paraná',rj:'Rio de Janeiro',rn:'Rio Grande do Norte',ro:'Rondônia',rr:'Roraima',rs:'Rio Grande do Sul',sc:'Santa Catarina',se:'Sergipe',sp:'São Paulo',to:'Tocantins',zz:'Exterior'};
-const elNorm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
-let ELR_MUN=null,elrMunBusy=false,ELR_LOC=null;const ELR_CACHE={};
-async function elrLoadMun(){if(ELR_MUN||elrMunBusy)return;elrMunBusy=true;const d=await elGet(EL_BASEURL+'config/mun-e006258-cm.json');elrMunBusy=false;
-  if(!d||!d.abr)return;ELR_MUN=[];d.abr.forEach(a=>{const uf=a.cd.toLowerCase();(a.mu||[]).forEach(m=>{const nm=elName(m.nm);ELR_MUN.push({uf,cd:m.cd,nm,cap:m.c==='s',k:elNorm(nm)})})});if(stack.includes('shElReg'))renderElReg()}
-function openElReg(){$('#elrQ').value='';openSheet('shElReg');renderElReg();elrLoadMun();if(!Object.keys(ST_RES).length)loadElStates()}
-function elrMini(r){if(!r||!r.vv||r.cs.length<2)return'<span class="elrmini"></span>';return`<span class="elrmini">${r.cs.map(c=>`<i style="width:${c.p}%;background:${elColor(c.n)}"></i>`).join('')}</span>`}
-function elrLine(r){if(!r||(!r.pst&&!r.vv))return'Aguardando as urnas';const w=r.cs.find(c=>c.e);
-  return(r.fim?'Apuração encerrada':`${Math.floor(r.pst)}% apurado`)+' · '+r.cs.map(c=>`${elFirst(c.nm)} ${elP(c.p,1)}%`).join(' · ')}
-function elrStateRow(uf){const r=ST_RES[uf];return`<button class="row" data-elr="${uf}"><span class="t"><b>${esc(UF_NM[uf])}</b><small>${esc(elrLine(r))}</small></span>${elrMini(r)}<span class="chev">›</span></button>`}
-function renderElReg(){const q=elNorm($('#elrQ').value),box=$('#elrList');const ufs=[...EL_UFS,'zz'].sort((a,b)=>a==='zz'?1:b==='zz'?-1:UF_NM[a].localeCompare(UF_NM[b]));
-  if(!q){box.innerHTML=`<p class="elrtip">Toque num estado ou digite o nome da sua cidade</p><div class="sec">Estados <span>${ufs.length}</span></div>`+ufs.map(elrStateRow).join('');return}
-  const sts=ufs.filter(uf=>(' '+elNorm(UF_NM[uf])).includes(' '+q)||uf===q);let h=sts.length?`<div class="sec">Estados</div>`+sts.map(elrStateRow).join(''):'';
-  if(!ELR_MUN)h+=`<div class="empty">Carregando as cidades…</div>`;
-  else{const ms=ELR_MUN.filter(m=>m.k.includes(q)).sort((a,b)=>((b.k===q)-(a.k===q))||(b.k.startsWith(q)-a.k.startsWith(q))||(b.cap-a.cap)||a.nm.localeCompare(b.nm));
-    if(ms.length)h+=`<div class="sec">Cidades <span>${ms.length}</span></div>`+ms.slice(0,60).map(m=>`<button class="row" data-elr="${m.uf}" data-cd="${m.cd}"><span class="t"><b>${esc(m.nm)}</b><small>${esc(UF_NM[m.uf]||m.uf.toUpperCase())}</small></span><span class="chev">›</span></button>`).join('')+(ms.length>60?`<p class="elrtip">Digite mais letras para ver as outras ${ms.length-60}</p>`:'');
-    else if(!sts.length)h=`<div class="empty"><b>Nenhum lugar encontrado.</b>Confira o nome e tente de novo.</div>`}
-  box.innerHTML=h}
-$('#elrQ').addEventListener('input',()=>{clearTimeout(renderElReg.t);renderElReg.t=setTimeout(renderElReg,120)});
-$('#elrList').addEventListener('click',e=>{const b=e.target.closest('[data-elr]');if(!b)return;haptic();const uf=b.dataset.elr,cd=b.dataset.cd||'';
-  const m=cd&&ELR_MUN?ELR_MUN.find(x=>x.uf===uf&&x.cd===cd):null;openElLoc({uf,cd,nm:m?m.nm:UF_NM[uf],sub:cd?UF_NM[uf]:uf==='zz'?'Votos de quem mora fora do Brasil':'Estado'})});
-function elrKey(l){return l.uf+(l.cd||'')}
-function openElLoc(l){ELR_LOC=l;$('#elrTitle').textContent=l.nm;openSheet('shElLoc');paintElLoc();loadElLoc()}
-async function loadElLoc(){const l=ELR_LOC;if(!l)return;const d=await elGet(`${EL_BASEURL}dados/${l.uf}/${elrKey(l)}-c0001-e006258-u.json`);if(!d)return;const r=elParse(d),k=elrKey(l),old=ELR_CACHE[k];
-  if(!old||r.pst>=old.pst){ELR_CACHE[k]=r;if(!l.cd)ST_RES[l.uf]=ST_RES[l.uf]&&ST_RES[l.uf].pst>r.pst?ST_RES[l.uf]:r}if(ELR_LOC===l)paintElLoc()}
-function paintElLoc(){const l=ELR_LOC,b=$('#elrBody');if(!l)return;const r=ELR_CACHE[elrKey(l)]||(!l.cd&&ST_RES[l.uf]);
-  if(!r){b.innerHTML=`<p class="elrsub">${esc(l.sub)}</p><div class="elload">Carregando…</div>`;return}
-  const wait=!r.pst&&!r.vv,top=Math.max(...r.cs.map(c=>c.v)),uniq=r.cs.filter(c=>c.v===top).length===1,dif=r.cs.length===2?Math.abs(r.cs[0].v-r.cs[1].v):0;
-  b.innerHTML=`<p class="elrsub">${esc(l.sub)}</p>
-  <div class="elhero"><span class="ellive${wait?' wait':r.fim?' fin':''}"><i></i><span>${wait?'AGUARDANDO':r.fim?'APURAÇÃO ENCERRADA':'AO VIVO'}</span></span><div class="elpst"><b>${elP(r.pst,2)}%</b><span>das urnas apuradas</span></div><div class="elprog"><i style="width:${r.pst}%"></i></div>${wait?'<div class="elcount">Os votos daqui ainda não chegaram ao TSE. Esta página atualiza sozinha.</div>':''}</div>
-  <div class="elrduel">${r.cs.map(c=>{const lead=!wait&&c.v===top&&uniq;return`<div class="elrc${lead?' lead':''}" style="--c:${elColor(c.n)}">${lead?`<span class="tag">${r.fim?'VENCEU AQUI':'À FRENTE'}</span>`:'<span class="tag" style="visibility:hidden">–</span>'}<h3>${esc([elFirst(c.nm),...c.nm.split(' ').slice(1)].join(' '))}</h3><div class="pc">${wait?'–':elP(c.p,2)+'%'}</div><div class="vt">${wait?'0 votos':elV(c.v)+' votos'}</div></div>`}).join('')}</div>
-  ${r.cs.length===2?`<div class="elsplit"><i style="width:${wait?50:r.cs[0].p}%;background:${wait?'rgba(255,255,255,.16)':elColor(r.cs[0].n)}"></i><i style="width:${wait?50:r.cs[1].p}%;background:${wait?'rgba(255,255,255,.16)':elColor(r.cs[1].n)}"></i></div>`:''}
-  <div class="elgrid"><div><small>Diferença</small><b>${wait?'–':elV(dif)}</b></div><div><small>Votos válidos</small><b>${wait?'–':elV(r.vv)}</b></div><div><small>Eleitores</small><b>${r.te?elV(r.te):'–'}</b></div><div><small>Compareceram</small><b>${wait?'–':elP(r.pcp,1)+'%'}</b></div><div><small>Brancos e nulos</small><b>${wait?'–':elV(r.vb+r.vn)}</b></div><div><small>Abstenção</small><b>${wait?'–':elP(r.pab,1)+'%'}</b></div></div>
-  <p class="elfoot">${r.hg?`Atualizado às ${esc(r.hg.slice(0,5))}`:''}${r.fim?'':' · atualiza sozinho'} · Fonte: TSE</p>`}
-setInterval(()=>{if(!document.hidden&&stack[stack.length-1]==='shElLoc')loadElLoc();else if(!document.hidden&&stack[stack.length-1]==='shElReg'&&!$('#elrQ').value)renderElReg()},20000);
-const elOn=()=>FEATURE_ELEICAO&&!document.hidden&&me&&(stack.includes('shEleicao')||stack.includes('shInbox'));
-setInterval(()=>{if(elOn())elLoad()},10000);
-setInterval(()=>{const c=$('#elCount');if(c&&stack.includes('shEleicao'))c.innerHTML=elCountdown()},15000);
-document.addEventListener('visibilitychange',()=>{if(elOn())elLoad()});
 const FEATURE_MEMBERS=true;
 function openGlobalMembers(){$('#gmQ').value='';renderGlobalMembers();openSheet('shMembers')}
 function globalMentionsUnread(){if(!me)return 0;const seen=store.get('cityseen.global','');return cityThread('global').filter(x=>x.kind==='text'&&x.from!==me.id&&x.at>seen&&((x.mentions||[]).includes(me.id)||isAllMsg(x))).length}
@@ -1467,9 +1189,8 @@ function openInbox(){$('#inboxQ').value='';renderInbox();openSheet('shInbox');sy
 $('#inboxQ').addEventListener('input',renderInbox);
 $('#gmQ').addEventListener('input',renderGlobalMembers);
 function renderInbox(){const q=($('#inboxQ').value||'').trim().toLowerCase();const list=conversations().filter(c=>!q||byId(c.id).name.toLowerCase().includes(q));const el=$('#inboxBody');
-  const cityRows=(me?['global']:[]).concat(myCities()).map(cityConvRow).join('');el.innerHTML=pushBanner()+(FEATURE_ELEICAO&&me&&!q?elRowHtml():'')+cityRows+(list.length?list.map(c=>{const m=byId(c.id);const mineLast=c.last.from===me.id;return`<button class="row convrow${c.unread?' unread':''}" data-chat="${c.id}">${avatar(m)}<span class="t"><b><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(m.name)}</span><small>${whenShort(c.last.at)}</small></b><small class="snip">${DRAFTS[c.id]?`<span class="draft">Rascunho:</span> ${esc(DRAFTS[c.id])}`:`${mineLast?'Você: ':''}${esc(c.last.body)}`}</small></span>${c.unread?`<span class="dot" aria-label="${c.unread} não lidas"></span>`:''}</button>`}).join('')
+  const cityRows=(me?['global']:[]).concat(myCities()).map(cityConvRow).join('');el.innerHTML=pushBanner()+cityRows+(list.length?list.map(c=>{const m=byId(c.id);const mineLast=c.last.from===me.id;return`<button class="row convrow${c.unread?' unread':''}" data-chat="${c.id}">${avatar(m)}<span class="t"><b><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(m.name)}</span><small>${whenShort(c.last.at)}</small></b><small class="snip">${DRAFTS[c.id]?`<span class="draft">Rascunho:</span> ${esc(DRAFTS[c.id])}`:`${mineLast?'Você: ':''}${esc(c.last.body)}`}</small></span>${c.unread?`<span class="dot" aria-label="${c.unread} não lidas"></span>`:''}</button>`}).join('')
     :(q?`<div class="empty"><b>Nenhum resultado.</b>Nenhuma conversa com esse nome.</div>`:cityRows?'':`<div class="empty"><b>Nenhuma conversa ainda.</b>Toque em um membro no mapa para enviar uma mensagem.</div>`));
-  const er=$('#elRow');if(er){er.onclick=()=>{haptic();openEleicao()};if(!EL)elLoad()}
   const pa=$('#pushAsk');if(pa)pa.onclick=async()=>{pa.disabled=true;if(await enablePush()){haptic();toast('Avisos ativados')}renderInbox()};
   el.querySelectorAll('[data-chat]').forEach(b=>b.onclick=()=>{haptic();openChat(b.dataset.chat)})}
 function openChat(id,prefill){const m=byId(id);if(!m)return;chatWith=id;$('#chatMenu').hidden=true;setReply(null);
@@ -1687,7 +1408,7 @@ function renderSuggest(){const home=me&&me.home?city(me.home):null;const evs=[];
   $('#ciSuggest').innerHTML=h}
 const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 const sub=c=>c.c===BR?c.s:c.c;
-function cityMatches(q){q=norm(q.trim());if(!q)return[];const w=c=>(c.w||1)+(c.k?10:0);const starts=c=>norm(c.n).startsWith(q);const has=c=>norm(c.n).includes(q)||norm(c.c).includes(q);
+function cityMatches(q){q=norm(q.trim());if(!q)return[];const w=c=>(c.w||1)+(c.k?10:0);const starts=c=>norm(c.n).startsWith(q)||!!c.a&&norm(c.a).startsWith(q);const has=c=>norm(c.n).includes(q)||norm(c.c).includes(q)||!!c.a&&norm(c.a).includes(q); /* c.a: nome no idioma local, ex. Asunción */
   const a=CITIES.filter(starts).sort((x,y)=>w(y)-w(x)||x.n.localeCompare(y.n));const b=a.length<10?CITIES.filter(c=>!starts(c)&&has(c)).sort((x,y)=>w(y)-w(x)||x.n.localeCompare(y.n)):[];return a.concat(b).slice(0,10)}
 function cityListHtml(list){return list.map(c=>`<button type="button" data-pick="${c.id}">${esc(c.n)}<small>${esc(sub(c))}</small></button>`).join('')||`<p class="hint" style="color:var(--fg3);padding:10px 2px">Nenhuma cidade com esse nome.</p>`}
 function renderCityList(){const q=$('#citySearch').value.trim();if(!q){$('#cityList').innerHTML='';$('#ciSuggest').hidden=false;return}$('#ciSuggest').hidden=true;$('#cityList').innerHTML=cityListHtml(cityMatches(q))}
@@ -1712,13 +1433,14 @@ $('#shCheckin').addEventListener('click',async e=>{const b=e.target.closest('[da
 $('#tripChips').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;haptic();{ci.trip=true;ci.until=null;ci.from=null;$('#tripFrom').min=D(1);$('#tripTo').min=D(1);$('#untilDate').hidden=true;if(!$('#tripFrom').value)$('#tripFrom').value=D(7);if(!$('#tripTo').value)$('#tripTo').value=D(10);ci.from=$('#tripFrom').value;ci.until=$('#tripTo').value;renderCi();return}});
 $('#untilChips').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;haptic();ci.trip=false;$('#tripDates').hidden=true;if(b.dataset.until==='date'){$('#untilDate').hidden=false;$('#untilDate').min=D(0);if(!$('#untilDate').value)$('#untilDate').value=D(3);ci.until=$('#untilDate').value;renderCi();try{$('#untilDate').showPicker&&$('#untilDate').showPicker()}catch(x){}}else{$('#untilDate').hidden=true;ci.until=D(+b.dataset.until);goStep(3)}});
 $('#untilDate').addEventListener('change',()=>{if($('#untilDate').value){ci.until=$('#untilDate').value;goStep(3)}});
-$('#tripFrom').addEventListener('change',()=>{ci.from=$('#tripFrom').value;if(ci.until&&ci.until<ci.from){ci.until=ci.from;$('#tripTo').value=ci.until}renderCi()});$('#tripTo').addEventListener('change',()=>{ci.until=$('#tripTo').value;renderCi()});
+$('#tripFrom').addEventListener('change',()=>{ci.from=$('#tripFrom').value;if(ci.from){const mx=new Date(Date.parse(ci.from)+120*864e5).toISOString().slice(0,10);$('#tripTo').max=mx;if(ci.until&&ci.until>mx){ci.until=mx;$('#tripTo').value=mx}}if(ci.until&&ci.until<ci.from){ci.until=ci.from;$('#tripTo').value=ci.until}renderCi()});$('#tripTo').addEventListener('change',()=>{ci.until=$('#tripTo').value;renderCi()});
 $('#openChips').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;const o=b.dataset.open;haptic();if(o==='só avisando')ci.open=ci.open.includes(o)?[]:[o];else{ci.open=ci.open.filter(x=>x!=='só avisando');ci.open.includes(o)?ci.open=ci.open.filter(x=>x!==o):ci.open.push(o)}renderCi()});
 $('#ciBack').onclick=()=>goStep(ciStep===3&&ci.place&&ci.place.startsWith('ev:')?1:ciStep-1);
 $('#btnConfirm').onclick=async()=>{if(ciStep<3){goStep(ciStep+1);return}
   const btn=$('#btnConfirm');btn.disabled=true;btn.textContent='Salvando…';
-  if(ci.trip){const {data,error}=await sb.from('trips').insert({member_id:me.id,place:ci.place,place_name:city(ci.place).n,starts_on:ci.from,ends_on:ci.until,open_to:[...ci.open]}).select().single();btn.disabled=false;btn.textContent='Confirmar';
-    if(error){toast(/6 viagens/.test(error.message||'')?'Você já tem 6 viagens marcadas.':'Não foi possível salvar. Verifique a conexão.');return}
+  if(ci.trip){const bad=tripDatesError(ci.from,ci.until);if(bad){btn.disabled=false;btn.textContent='Confirmar';toast(bad);return}
+    const {data,error}=await sb.from('trips').insert({member_id:me.id,place:ci.place,place_name:city(ci.place).n,starts_on:ci.from,ends_on:ci.until,open_to:[...ci.open]}).select().single();btn.disabled=false;btn.textContent='Confirmar';
+    if(error){const m=error.message||'';toast(/6 viagens/.test(m)?'Você já tem 6 viagens marcadas.':/amanhã/.test(m)?'A viagem precisa começar amanhã ou depois':/trips_check1/.test(m)?'A viagem pode ter no máximo 120 dias':/trips_check/.test(m)?'A volta precisa ser depois da ida':'Não foi possível salvar. Verifique a conexão.');return}
     if(data)TRIPS.push({id:data.id,m:me.id,place:data.place,start:data.starts_on,end:data.ends_on,open:data.open_to||[]});haptic();closeAll();refresh();toast(`Viagem marcada: ${city(ci.place).n} · ${rangeLabel(ci.from,ci.until)}`);setTimeout(()=>openCity(ci.place),380);return}
   const {error}=await sb.from('checkins').upsert({member_id:me.id,place:ci.place,place_name:ci.place.startsWith('ev:')?null:city(ci.place).n,until:ci.until,open_to:[...ci.open]},{onConflict:'member_id'});
   btn.disabled=false;btn.textContent='Confirmar';
@@ -1908,7 +1630,7 @@ $('#codeForm').onsubmit=async e=>{e.preventDefault();if(entering)return;const c=
   }catch(x){err.textContent='Sem conexão com o servidor. Tente de novo.';err.hidden=false}
   finally{entering=false;btn.disabled=false;btn.textContent='Entrar'}};
 let idleT=0;function idleSpin(on){cancelAnimationFrame(idleT);idleT=0;if(!on||matchMedia('(prefers-reduced-motion:reduce)').matches)return;const step=()=>{if(me){idleT=0;return}rot[0]-=0.045;applyTransform();idleT=requestAnimationFrame(step)};idleT=requestAnimationFrame(step)}
-function enter(m){idleSpin(false);me=m;shownBubbles=new Set();bubbleFirst=true;subscribeLive();presenceStart();setTimeout(loadElStates,1500);startMsgPoll();haptic();$('#login').classList.add('out');refresh();initPush();setTimeout(maybePushGate,1800);
+function enter(m){idleSpin(false);me=m;shownBubbles=new Set();bubbleFirst=true;subscribeLive();presenceStart();startMsgPoll();haptic();$('#login').classList.add('out');refresh();initPush();setTimeout(maybePushGate,1800);
   const qc=new URLSearchParams(location.search).get('chat');if(qc&&byId(qc)){history.replaceState(null,'',location.pathname);setTimeout(()=>openChat(qc),900)}
   const qcc=new URLSearchParams(location.search).get('citychat');if(qcc&&(qcc==='global'||knownCity(qcc))){history.replaceState(null,'',location.pathname);setTimeout(()=>openCityChat(qcc),900)}
   const qcity=new URLSearchParams(location.search).get('city');if(qcity&&knownCity(qcity)){history.replaceState(null,'',location.pathname);setTimeout(()=>openCity(qcity),900)}
@@ -1949,7 +1671,7 @@ function refresh(){
 }
 let entering=false;
 if(sb)sb.auth.onAuthStateChange((ev,session)=>{if(ev==='SIGNED_IN'&&session&&!me&&!entering&&!$('#login').classList.contains('out')){entering=true;setTimeout(async()=>{try{await loadAll();if(me&&me.active!==false)enter(me);else await signOutLocal('Acesso exclusivo para membros do The Group.')}catch(e){}finally{entering=false}},0)}});
-const APP_VERSION='1792967461';
+const APP_VERSION='1792974508';
 if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';document.head.appendChild(l)}
 async function checkUpdate(){if(!/^\d+$/.test(APP_VERSION))return;try{const r=await fetch('version.json?nc='+Date.now(),{cache:'no-store'});if(!r.ok)return;const {v}=await r.json();if(!v||String(v)===APP_VERSION)return;
   let tried='';try{tried=sessionStorage.getItem('themap.tried')||''}catch(e){}if(tried===String(v))return;try{sessionStorage.setItem('themap.tried',String(v))}catch(e){}
